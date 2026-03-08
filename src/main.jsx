@@ -8,11 +8,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import Panel from './Panel.jsx'
+import QRGenerator from './QRGenerator.jsx'
 
-const isPanel = window.location.pathname === '/panel'
+const path = window.location.pathname
+const isPanel = path === '/panel'
+const isQR = path === '/qr'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {isPanel ? <Panel /> : <App />}
+    {isPanel ? <Panel /> : isQR ? <QRGenerator /> : <App />}
   </StrictMode>,
 )
