@@ -32,6 +32,9 @@ function Logo() {
 }
 
 export default function App() {
+  const hamacaUrl = window.location.pathname.split('/hamaca/')[1] || '14B'
+  const hamacaNum = decodeURIComponent(hamacaUrl)
+
   const [cat, setCat] = useState('all')
   const [cart, setCart] = useState({})
   const [screen, setScreen] = useState('menu')
@@ -72,7 +75,7 @@ export default function App() {
       const { data: hamaca } = await supabase
         .from('hamacas')
         .select('id')
-        .eq('numero', '14B')
+        .eq('numero', hamacaNum)
         .eq('chiringuito_id', chiringuito.id)
         .single()
 
@@ -134,7 +137,7 @@ export default function App() {
         <div style={s.header}>
           <div style={s.headerRow}>
             <Logo />
-            <div style={s.hamaca}>🏖️ Hamaca 14B</div>
+            <div style={s.hamaca}>🏖️ Hamaca {hamacaNum}</div>
           </div>
           <p style={s.wave}>〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</p>
         </div>
@@ -201,7 +204,7 @@ export default function App() {
         <div style={s.inner}>
           <button style={s.back} onClick={()=>setScreen('menu')}>← Volver al menú</button>
           <p style={s.pageTitle}>Tu pedido 🧾</p>
-          <p style={s.pageSub}>Hamaca 14B · Chiringuito Playa Sol</p>
+          <p style={s.pageSub}>Hamaca {hamacaNum} · Chiringuito Playa Sol</p>
 
           {Object.entries(cart).filter(([,q])=>q>0).map(([id,q])=>{
             const item = items.find(i=>i.id==id)
@@ -252,7 +255,7 @@ export default function App() {
             Tu pedido está siendo preparado.<br/>En breve llega a tu hamaca.
           </p>
           <div style={s.etaCard}>
-            {[['📍 Hamaca','14B'],['🏖️ Chiringuito','Playa Sol'],['⏱️ Tiempo est.','~8 min']].map(([l,v])=>(
+            {[['📍 Hamaca',hamacaNum],['🏖️ Chiringuito','Playa Sol'],['⏱️ Tiempo est.','~8 min']].map(([l,v])=>(
               <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid #EEF8FB',fontSize:14}}>
                 <span style={{color:'#AAA',fontWeight:600}}>{l}</span>
                 <span style={{fontWeight:800,color:'#0A2540'}}>{v}</span>
