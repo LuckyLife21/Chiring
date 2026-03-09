@@ -7,13 +7,6 @@ import '@fontsource/poppins/900.css'
 import { supabase } from './supabase'
 import Pago from './Pago'
 
-const cats = [
-  {id:'all', label:'Todo', emoji:'🍽️'},
-  {id:'comida', label:'Comida', emoji:'🍔'},
-  {id:'bebidas', label:'Bebidas', emoji:'🍺'},
-  {id:'helados', label:'Helados', emoji:'🍧'},
-]
-
 function Logo() {
   return (
     <div style={{display:'flex', alignItems:'center', gap:10}}>
@@ -34,24 +27,35 @@ export default function App() {
   const hamacaUrl = window.location.pathname.split('/hamaca/')[1] || '14B'
   const hamacaNum = decodeURIComponent(hamacaUrl)
 
-  const [cat, setCat] = useState('all')
+  const [cat, setCat] = useState(null)
   const [cart, setCart] = useState({})
   const [screen, setScreen] = useState('menu')
   const [items, setItems] = useState([])
+  const [categorias, setCategorias] = useState([])
   const [loading, setLoading] = useState(true)
   const [guardando, setGuardando] = useState(false)
   const [pedidoId, setPedidoId] = useState(null)
 
   useEffect(() => {
-    async function cargarProductos() {
-      const { data, error } = await supabase
+    async function cargarDatos() {
+      const { data: prods } = await supabase
         .from('productos')
         .select('*')
         .eq('disponible', true)
-      if (!error) setItems(data)
+      if (prods) setItems(prods)
+
+      const { data: cats } = await supabase
+        .from('categorias')
+        .select('*')
+        .order('orden')
+      if (cats) {
+        setCategorias(cats)
+        if (cats.length > 0) setCat(cats[0].nombre)
+      }
+
       setLoading(false)
     }
-    cargarProductos()
+    cargarDatos()
   }, [])
 
   const total = Object.entries(cart).reduce((s,[id,q]) => {
@@ -120,7 +124,7 @@ export default function App() {
     setScreen('success')
   }
 
-  const filteredItems = cat === 'all' ? items : items.filter(i => i.categoria === cat)
+  const filteredItems = cat === null ? items : items.filter(i => i.categoria === cat.toLowerCase())
 
   return (
     <div style={s.phone}>
@@ -145,11 +149,11 @@ export default function App() {
 
         <div style={{padding:'20px 16px 8px', background:'white', borderBottom:'1px solid #F0F0F0'}}>
           <div style={s.catsRow}>
-            {cats.map(c=>(
-              <button key={c.id} onClick={()=>setCat(c.id)}
-                style={{...s.cat, ...(cat===c.id ? s.catOn : s.catOff)}}>
+            {categorias.map(c=>(
+              <button key={c.id} onClick={()=>setCat(c.nombre)}
+                style={{...s.cat, ...(cat===c.nombre ? s.catOn : s.catOff)}}>
                 <span style={{fontSize:20}}>{c.emoji}</span>
-                <span style={{fontSize:11,fontWeight:700,marginTop:4}}>{c.label}</span>
+                <span style={{fontSize:11,fontWeight:700,marginTop:4}}>{c.nombre}</span>
               </button>
             ))}
           </div>
