@@ -72,6 +72,8 @@ function Manager({ chiringuito, onVolver }) {
   const [hamacas, setHamacas] = useState([])
   const [loading, setLoading] = useState(true)
   const [vista, setVista] = useState('hoy')
+  const [fechaDesde, setFechaDesde] = useState('')
+  const [fechaHasta, setFechaHasta] = useState('')
   const [chiringData, setChiringData] = useState(chiringuito)
   const [editando, setEditando] = useState(null)
 
@@ -80,6 +82,21 @@ function Manager({ chiringuito, onVolver }) {
   const [nuevaHamaca, setNuevaHamaca] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [msg, setMsg] = useState('')
+
+  // Config - cambio contraseña
+  const [cambiandoPass, setCambiandoPass] = useState(false)
+  const [codigoEnviadoPass, setCodigoEnviadoPass] = useState(false)
+  const [codigoPass, setCodigoPass] = useState('')
+  const [codigoVerifPass, setCodigoVerifPass] = useState('')
+  const [nuevaPass, setNuevaPass] = useState('')
+  const [nuevaPass2, setNuevaPass2] = useState('')
+
+  // Config - cambio PIN
+  const [cambiandoPin, setCambiandoPin] = useState(false)
+  const [codigoEnviadoPin, setCodigoEnviadoPin] = useState(false)
+  const [codigoPin, setCodigoPin] = useState('')
+  const [codigoVerifPin, setCodigoVerifPin] = useState('')
+  const [nuevoPin, setNuevoPin] = useState('')
 
   useEffect(() => { cargarTodo() }, [])
 
@@ -97,13 +114,25 @@ function Manager({ chiringuito, onVolver }) {
     setLoading(false)
   }
 
-  function mostrarMsg(m) { setMsg(m); setTimeout(() => setMsg(''), 3000) }
+  function mostrarMsg(m) { setMsg(m); setTimeout(() => setMsg(''), 4000) }
 
-  const hoy = new Date().toDateString()
-  const pedidosHoy = pedidos.filter(p => new Date(p.created_at).toDateString() === hoy && p.estado === 'entregado')
-  const pedidosSemana = pedidos.filter(p => (new Date() - new Date(p.created_at)) / 86400000 <= 7 && p.estado === 'entregado')
-  const pedidosMes = pedidos.filter(p => (new Date() - new Date(p.created_at)) / 86400000 <= 30 && p.estado === 'entregado')
-  const pedidosFiltrados = vista === 'hoy' ? pedidosHoy : vista === 'semana' ? pedidosSemana : pedidosMes
+  // Stats - filtrado por periodo
+  const ahora = new Date()
+  function filtrarPorPeriodo(lista) {
+    if (vista === 'custom' && fechaDesde && fechaHasta) {
+      const desde = new Date(fechaDesde)
+      const hasta = new Date(fechaHasta); hasta.setHours(23,59,59)
+      return lista.filter(p => {
+        const f = new Date(p.created_at)
+        return f >= desde && f <= hasta && p.estado === 'entregado'
+      })
+    }
+    const dias = { hoy:0, '7d':7, '30d':30, '6m':180, '1a':365 }[vista]
+    if (vista === 'hoy') return lista.filter(p => new Date(p.created_at).toDateString() === ahora.toDateString() && p.estado === 'entregado')
+    return lista.filter(p => (ahora - new Date(p.created_at)) / 86400000 <= dias && p.estado === 'entregado')
+  }
+
+  const pedidosFiltrados = filtrarPorPeriodo(pedidos)
   const ingresos = pedidosFiltrados.reduce((s,p) => s + Number(p.total), 0)
   const ticketMedio = pedidosFiltrados.length > 0 ? ingresos / pedidosFiltrados.length : 0
   const conteoProductos = {}
@@ -119,6 +148,7 @@ function Manager({ chiringuito, onVolver }) {
   })
   const maxVenta = Math.max(...Object.values(ventasPorHora), 1)
 
+  // Productos
   async function toggleProducto(id, disponible) {
     await supabase.from('productos').update({ disponible }).eq('id', id)
     cargarTodo()
@@ -148,6 +178,7 @@ function Manager({ chiringuito, onVolver }) {
     setGuardando(false)
   }
 
+  // Categorías
   async function añadirCategoria() {
     if (!nuevaCat.nombre || !nuevaCat.emoji) return mostrarMsg('⚠️ Nombre y emoji obligatorios')
     await supabase.from('categorias').insert({
@@ -165,6 +196,7 @@ function Manager({ chiringuito, onVolver }) {
     mostrarMsg('✅ Categoría eliminada')
   }
 
+  // Hamacas
   async function añadirHamaca() {
     if (!nuevaHamaca) return mostrarMsg('⚠️ Escribe el número de hamaca')
     await supabase.from('hamacas').insert({ numero: nuevaHamaca, chiringuito_id: chiringuito.id, activa: true })
@@ -183,15 +215,48 @@ function Manager({ chiringuito, onVolver }) {
     mostrarMsg('✅ Hamaca eliminada')
   }
 
-  async function guardarConfig() {
+  // Config - enviar código
+  async function enviarCodigo(tipo) {
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString()
+    if (tipo === 'pass') { setCodigoPass(codigo); setCodigoEnviadoPass(true) }
+    else { setCodigoPin(codigo); setCodigoEnviadoPin(true) }
+
+    const { data } = await supabase.from('chiringuitos').select('email').eq('id', chiringuito.id).single()
+    await supabase.functions.invoke('enviar-codigo', {
+      body: { email: data.email, codigo, tipo }
+    })
+    mostrarMsg(`✅ Código enviado a ${data.email}`)
+  }
+
+  async function verificarYCambiarPass() {
+    if (codigoVerifPass !== codigoPass) return mostrarMsg('⚠️ Código incorrecto')
+    if (nuevaPass !== nuevaPass2) return mostrarMsg('⚠️ Las contraseñas no coinciden')
+    if (nuevaPass.length < 6) return mostrarMsg('⚠️ Mínimo 6 caracteres')
     setGuardando(true)
-    await supabase.from('chiringuitos').update({ nombre: chiringData.nombre, pin_manager: chiringData.pin_manager }).eq('id', chiringuito.id)
-    mostrarMsg('✅ Configuración guardada')
+    const { error } = await supabase.auth.updateUser({ password: nuevaPass })
+    if (error) mostrarMsg('❌ Error al cambiar contraseña')
+    else {
+      mostrarMsg('✅ Contraseña cambiada correctamente')
+      setCambiandoPass(false); setCodigoEnviadoPass(false)
+      setCodigoPass(''); setCodigoVerifPass(''); setNuevaPass(''); setNuevaPass2('')
+    }
+    setGuardando(false)
+  }
+
+  async function verificarYCambiarPin() {
+    if (codigoVerifPin !== codigoPin) return mostrarMsg('⚠️ Código incorrecto')
+    if (nuevoPin.length !== 4) return mostrarMsg('⚠️ El PIN debe tener 4 dígitos')
+    setGuardando(true)
+    await supabase.from('chiringuitos').update({ pin_manager: nuevoPin }).eq('id', chiringuito.id)
+    mostrarMsg('✅ PIN cambiado correctamente')
+    setCambiandoPin(false); setCodigoEnviadoPin(false)
+    setCodigoPin(''); setCodigoVerifPin(''); setNuevoPin('')
     setGuardando(false)
   }
 
   const tabs = [['stats','📊 Stats'],['productos','📦 Productos'],['categorias','🗂️ Categorías'],['hamacas','🪑 Hamacas'],['config','⚙️ Config']]
   const baseUrl = window.location.origin
+  const periodos = [['hoy','Hoy'],['7d','7 días'],['30d','30 días'],['6m','6 meses'],['1a','1 año'],['custom','📅 Fechas']]
 
   return (
     <div style={{minHeight:'100vh', background:'#F0F8FF', fontFamily:'Poppins, sans-serif'}}>
@@ -223,13 +288,22 @@ function Manager({ chiringuito, onVolver }) {
 
       <div style={{maxWidth:1100, margin:'0 auto', padding:'20px 16px'}}>
 
+        {/* STATS */}
         {tab === 'stats' && <>
-          <div style={{display:'flex', gap:8, marginBottom:20}}>
-            {[['hoy','Hoy'],['semana','7 días'],['mes','30 días']].map(([v,l]) => (
+          <div style={{display:'flex', gap:8, marginBottom:16, flexWrap:'wrap'}}>
+            {periodos.map(([v,l]) => (
               <button key={v} onClick={() => setVista(v)}
                 style={{...ms.tabBtn, ...(vista===v ? ms.tabOn : ms.tabOff)}}>{l}</button>
             ))}
           </div>
+          {vista === 'custom' && (
+            <div style={{display:'flex', gap:12, marginBottom:16, alignItems:'center'}}>
+              <div style={ms.label}>Desde</div>
+              <input type="date" style={{...ms.input, width:'auto'}} value={fechaDesde} onChange={e=>setFechaDesde(e.target.value)} />
+              <div style={ms.label}>Hasta</div>
+              <input type="date" style={{...ms.input, width:'auto'}} value={fechaHasta} onChange={e=>setFechaHasta(e.target.value)} />
+            </div>
+          )}
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:12, marginBottom:20}}>
             {[['💰',ingresos.toFixed(0)+'€','Ingresos'],['🧾',pedidosFiltrados.length,'Pedidos'],['🎯',ticketMedio.toFixed(2)+'€','Ticket medio'],['🪑',new Set(pedidosFiltrados.map(p=>p.hamacas?.numero)).size,'Hamacas activas']].map(([icon,num,label]) => (
               <div key={label} style={ms.statCard}>
@@ -285,6 +359,7 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
+        {/* PRODUCTOS */}
         {tab === 'productos' && <>
           {editando && (
             <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.5)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
@@ -360,6 +435,7 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
+        {/* CATEGORÍAS */}
         {tab === 'categorias' && <>
           <div style={ms.section}>
             <div style={ms.sectionTitle}>➕ Añadir categoría</div>
@@ -384,6 +460,7 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
+        {/* HAMACAS */}
         {tab === 'hamacas' && <>
           <div style={ms.section}>
             <div style={ms.sectionTitle}>➕ Añadir hamaca</div>
@@ -423,26 +500,79 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
+        {/* CONFIG */}
         {tab === 'config' && <>
+
+          {/* Nombre del negocio - solo lectura */}
           <div style={ms.section}>
-            <div style={ms.sectionTitle}>⚙️ Configuración del chiringuito</div>
-            <div style={{display:'flex', flexDirection:'column', gap:12, maxWidth:400}}>
-              <div>
-                <div style={ms.label}>Nombre del chiringuito</div>
-                <input style={ms.input} value={chiringData.nombre||''}
-                  onChange={e=>setChiringData({...chiringData,nombre:e.target.value})} />
-              </div>
-              <div>
-                <div style={ms.label}>PIN de manager</div>
-                <input style={ms.input} type="password" value={chiringData.pin_manager||''}
-                  onChange={e=>setChiringData({...chiringData,pin_manager:e.target.value})}
-                  placeholder="••••" maxLength={4} />
-              </div>
-              <button style={{...ms.btnAdd,opacity:guardando?0.7:1}} onClick={guardarConfig} disabled={guardando}>
-                {guardando?'Guardando...':'💾 Guardar cambios'}
-              </button>
+            <div style={ms.sectionTitle}>🏪 Nombre del negocio</div>
+            <div style={{background:'#F7F7F7', borderRadius:12, padding:'14px 16px', fontSize:16, fontWeight:700, color:'#0A2540', display:'flex', alignItems:'center', gap:10}}>
+              <span style={{fontSize:20}}>🔒</span>
+              {chiringData.nombre}
             </div>
+            <div style={{fontSize:12, color:'#aaa', marginTop:8}}>El nombre del negocio solo puede ser modificado por el equipo de Chiring. Contacta con soporte si necesitas cambiarlo.</div>
           </div>
+
+          {/* Cambio de contraseña */}
+          <div style={ms.section}>
+            <div style={ms.sectionTitle}>🔑 Cambiar contraseña</div>
+            {!cambiandoPass ? (
+              <button style={ms.btnAdd} onClick={() => setCambiandoPass(true)}>🔑 Cambiar contraseña</button>
+            ) : !codigoEnviadoPass ? (
+              <div>
+                <div style={{fontSize:14, color:'#666', marginBottom:12}}>Te enviaremos un código de verificación al email registrado.</div>
+                <div style={{display:'flex', gap:10}}>
+                  <button style={ms.btnAdd} onClick={() => enviarCodigo('pass')}>📧 Enviar código</button>
+                  <button style={{...ms.btnAdd, background:'#eee', color:'#555'}} onClick={() => setCambiandoPass(false)}>Cancelar</button>
+                </div>
+              </div>
+            ) : (
+              <div style={{display:'flex', flexDirection:'column', gap:8, maxWidth:400}}>
+                <div style={ms.label}>Código recibido por email</div>
+                <input style={ms.input} placeholder="123456" value={codigoVerifPass} onChange={e=>setCodigoVerifPass(e.target.value)} />
+                <div style={ms.label}>Nueva contraseña</div>
+                <input style={ms.input} type="password" placeholder="Mínimo 6 caracteres" value={nuevaPass} onChange={e=>setNuevaPass(e.target.value)} />
+                <div style={ms.label}>Repetir contraseña</div>
+                <input style={ms.input} type="password" placeholder="Repite la contraseña" value={nuevaPass2} onChange={e=>setNuevaPass2(e.target.value)} />
+                <div style={{display:'flex', gap:10}}>
+                  <button style={{...ms.btnAdd, background:'#eee', color:'#555'}} onClick={() => {setCambiandoPass(false); setCodigoEnviadoPass(false)}}>Cancelar</button>
+                  <button style={{...ms.btnAdd, opacity:guardando?0.7:1}} onClick={verificarYCambiarPass} disabled={guardando}>
+                    {guardando ? 'Guardando...' : '💾 Confirmar cambio'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Cambio de PIN */}
+          <div style={ms.section}>
+            <div style={ms.sectionTitle}>🔐 Cambiar PIN de manager</div>
+            {!cambiandoPin ? (
+              <button style={ms.btnAdd} onClick={() => setCambiandoPin(true)}>🔐 Cambiar PIN</button>
+            ) : !codigoEnviadoPin ? (
+              <div>
+                <div style={{fontSize:14, color:'#666', marginBottom:12}}>Te enviaremos un código de verificación al email registrado.</div>
+                <div style={{display:'flex', gap:10}}>
+                  <button style={ms.btnAdd} onClick={() => enviarCodigo('pin')}>📧 Enviar código</button>
+                  <button style={{...ms.btnAdd, background:'#eee', color:'#555'}} onClick={() => setCambiandoPin(false)}>Cancelar</button>
+                </div>
+              </div>
+            ) : (
+              <div style={{display:'flex', flexDirection:'column', gap:8, maxWidth:400}}>
+                <div style={ms.label}>Código recibido por email</div>
+                <input style={ms.input} placeholder="123456" value={codigoVerifPin} onChange={e=>setCodigoVerifPin(e.target.value)} />
+                <div style={ms.label}>Nuevo PIN (4 dígitos)</div>
+                <input style={{...ms.input, textAlign:'center', fontSize:24, letterSpacing:8}} type="password" placeholder="••••" maxLength={4} value={nuevoPin} onChange={e=>setNuevoPin(e.target.value)} />
+                <div style={{display:'flex', gap:10}}>
+                  <button style={{...ms.btnAdd, background:'#eee', color:'#555'}} onClick={() => {setCambiandoPin(false); setCodigoEnviadoPin(false)}}>Cancelar</button>
+                  <button style={{...ms.btnAdd, opacity:guardando?0.7:1}} onClick={verificarYCambiarPin} disabled={guardando}>
+                    {guardando ? 'Guardando...' : '💾 Confirmar cambio'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
         </>}
 
       </div>
