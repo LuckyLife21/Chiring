@@ -4,6 +4,7 @@ import '@fontsource/poppins/600.css'
 import '@fontsource/poppins/700.css'
 import '@fontsource/poppins/800.css'
 import '@fontsource/poppins/900.css'
+import '@fontsource/righteous/400.css'
 import { supabase } from './supabase'
 import Pago from './Pago'
 
@@ -12,8 +13,8 @@ function Logo() {
     <div style={{display:'flex', alignItems:'center', gap:10}}>
       <div style={{width:46,height:46,borderRadius:16,background:'rgba(255,255,255,0.2)',backdropFilter:'blur(10px)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,border:'1.5px solid rgba(255,255,255,0.3)'}}>🌊</div>
       <div>
-        <div style={{fontSize:28,fontWeight:900,color:'white',letterSpacing:-1,lineHeight:1}}>
-          Chiring<span style={{color:'#B2F0FB'}}>App</span>
+        <div className="logo-text" style={{fontSize:28,fontWeight:400,color:'white',letterSpacing:0,lineHeight:1}}>
+          Chiring
         </div>
         <div style={{fontSize:11,color:'rgba(255,255,255,0.8)',fontWeight:500,marginTop:2}}>
           Chiringuito Playa Sol · Malvarrosa
