@@ -1,4 +1,5 @@
 import Stripe from 'https://esm.sh/stripe@14.21.0'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
   apiVersion: '2023-10-16',
@@ -12,6 +13,28 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
+  }
+
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: 'No autorizado' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL'),
+    Deno.env.get('SUPABASE_ANON_KEY'),
+    { global: { headers: { Authorization: authHeader } } }
+  )
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: 'No autorizado' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 
   const { chiringuito_id, email, nombre } = await req.json()
@@ -28,22 +51,20 @@ Deno.serve(async (req) => {
 
   const accountLink = await stripe.accountLinks.create({
     account: account.id,
-    refresh_url: 'https://chiringapp.com/panel',
-    return_url: 'https://chiringapp.com/panel?stripe=ok',
+    refresh_url: 'https://chiring-yfrt.vercel.app/panel',
+    return_url: 'https://chiring-yfrt.vercel.app/panel?stripe=ok',
     type: 'account_onboarding',
   })
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')
-  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-  await fetch(`${supabaseUrl}/rest/v1/chiringuitos?id=eq.${chiringuito_id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': supabaseKey,
-      'Authorization': `Bearer ${supabaseKey}`,
-    },
-    body: JSON.stringify({ stripe_account_id: account.id }),
-  })
+  const supabaseAdmin = createClient(
+    Deno.env.get('SUPABASE_URL'),
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  )
+
+  await supabaseAdmin
+    .from('chiringuitos')
+    .update({ stripe_account_id: account.id })
+    .eq('id', chiringuito_id)
 
   return new Response(JSON.stringify({ url: accountLink.url }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
