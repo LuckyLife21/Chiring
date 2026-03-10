@@ -49,11 +49,15 @@ function BannerStripe({ chiringuito }) {
   async function conectarStripe() {
     setCargando(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       const { data, error } = await supabase.functions.invoke('stripe-connect-onboarding', {
         body: {
           chiringuito_id: chiringuito.id,
           email: chiringuito.email,
           nombre: chiringuito.nombre,
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
         }
       })
       if (error) throw error
