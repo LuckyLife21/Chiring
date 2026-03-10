@@ -43,6 +43,57 @@ function Login({ onLogin }) {
   )
 }
 
+function BannerStripe({ chiringuito }) {
+  const [cargando, setCargando] = useState(false)
+
+  async function conectarStripe() {
+    setCargando(true)
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-connect-onboarding', {
+        body: {
+          chiringuito_id: chiringuito.id,
+          email: chiringuito.email,
+          nombre: chiringuito.nombre,
+        }
+      })
+      if (error) throw error
+      window.location.href = data.url
+    } catch (e) {
+      alert('Error al conectar con Stripe. Inténtalo de nuevo.')
+      setCargando(false)
+    }
+  }
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, #FF6B35, #FF8C42)',
+      borderRadius: 16, padding: '16px 20px', marginBottom: 20,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      boxShadow: '0 4px 20px rgba(255,107,53,0.3)', gap: 12, flexWrap: 'wrap',
+    }}>
+      <div style={{display:'flex', alignItems:'center', gap:12}}>
+        <div style={{fontSize:28}}>🚀</div>
+        <div>
+          <div style={{fontWeight:800, color:'white', fontSize:15}}>¡Ya casi estás!</div>
+          <div style={{fontSize:13, color:'rgba(255,255,255,0.85)'}}>Conecta tu cuenta bancaria para empezar a recibir pedidos</div>
+        </div>
+      </div>
+      <button
+        onClick={conectarStripe}
+        disabled={cargando}
+        style={{
+          background: 'white', color: '#FF6B35', border: 'none',
+          borderRadius: 50, padding: '10px 22px', fontSize: 14, fontWeight: 800,
+          cursor: cargando ? 'default' : 'pointer', opacity: cargando ? 0.7 : 1,
+          whiteSpace: 'nowrap', fontFamily: 'Poppins, sans-serif',
+        }}
+      >
+        {cargando ? 'Cargando...' : 'Completar registro →'}
+      </button>
+    </div>
+  )
+}
+
 function PinManager({ pinCorrecto, onAcceso }) {
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
@@ -605,6 +656,16 @@ export default function Panel() {
     cargarChiringuito()
   }, [session])
 
+  // Detectar retorno desde Stripe
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('stripe') === 'ok' && chiringuito) {
+      supabase.from('chiringuitos').update({ stripe_completado: true }).eq('id', chiringuito.id)
+      setChiringuito(prev => ({ ...prev, stripe_completado: true }))
+      window.history.replaceState({}, '', '/panel')
+    }
+  }, [chiringuito])
+
   async function cargarPedidos() {
     if (!chiringuito) return
     const { data, error } = await supabase
@@ -673,6 +734,11 @@ export default function Panel() {
       </div>
 
       <div style={s.body}>
+
+        {chiringuito && !chiringuito.stripe_completado && (
+          <BannerStripe chiringuito={chiringuito} />
+        )}
+
         <div style={s.statsRow}>
           <div style={s.stat}><div style={s.statNum}>{pedidos.filter(p=>p.estado==='pendiente').length}</div><div style={s.statLabel}>Nuevos</div></div>
           <div style={s.stat}><div style={s.statNum}>{pedidos.filter(p=>p.estado==='preparando').length}</div><div style={s.statLabel}>Preparando</div></div>
