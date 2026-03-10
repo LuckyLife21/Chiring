@@ -34,6 +34,10 @@ function Login({ onLogin }) {
         <button style={{...ls.btn, opacity: loading ? 0.7 : 1}} onClick={handleLogin} disabled={loading}>
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
+        <div style={{textAlign:'center', marginTop:20, fontSize:13, color:'#aaa'}}>
+          ¿No tienes cuenta?{' '}
+          <a href="/registro" style={{color:'#0077B6', fontWeight:700, textDecoration:'none'}}>Regístrate gratis</a>
+        </div>
       </div>
     </div>
   )
