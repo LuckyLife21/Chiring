@@ -83,7 +83,6 @@ function Manager({ chiringuito, onVolver }) {
   const [guardando, setGuardando] = useState(false)
   const [msg, setMsg] = useState('')
 
-  // Config - cambio contraseña
   const [cambiandoPass, setCambiandoPass] = useState(false)
   const [codigoEnviadoPass, setCodigoEnviadoPass] = useState(false)
   const [codigoPass, setCodigoPass] = useState('')
@@ -91,7 +90,6 @@ function Manager({ chiringuito, onVolver }) {
   const [nuevaPass, setNuevaPass] = useState('')
   const [nuevaPass2, setNuevaPass2] = useState('')
 
-  // Config - cambio PIN
   const [cambiandoPin, setCambiandoPin] = useState(false)
   const [codigoEnviadoPin, setCodigoEnviadoPin] = useState(false)
   const [codigoPin, setCodigoPin] = useState('')
@@ -116,7 +114,6 @@ function Manager({ chiringuito, onVolver }) {
 
   function mostrarMsg(m) { setMsg(m); setTimeout(() => setMsg(''), 4000) }
 
-  // Stats - filtrado por periodo
   const ahora = new Date()
   function filtrarPorPeriodo(lista) {
     if (vista === 'custom' && fechaDesde && fechaHasta) {
@@ -127,7 +124,7 @@ function Manager({ chiringuito, onVolver }) {
         return f >= desde && f <= hasta && p.estado === 'entregado'
       })
     }
-    const dias = { hoy:0, '7d':7, '30d':30, '6m':180, '1a':365 }[vista]
+    const dias = { '7d':7, '30d':30, '6m':180, '1a':365 }[vista]
     if (vista === 'hoy') return lista.filter(p => new Date(p.created_at).toDateString() === ahora.toDateString() && p.estado === 'entregado')
     return lista.filter(p => (ahora - new Date(p.created_at)) / 86400000 <= dias && p.estado === 'entregado')
   }
@@ -148,7 +145,6 @@ function Manager({ chiringuito, onVolver }) {
   })
   const maxVenta = Math.max(...Object.values(ventasPorHora), 1)
 
-  // Productos
   async function toggleProducto(id, disponible) {
     await supabase.from('productos').update({ disponible }).eq('id', id)
     cargarTodo()
@@ -178,7 +174,6 @@ function Manager({ chiringuito, onVolver }) {
     setGuardando(false)
   }
 
-  // Categorías
   async function añadirCategoria() {
     if (!nuevaCat.nombre || !nuevaCat.emoji) return mostrarMsg('⚠️ Nombre y emoji obligatorios')
     await supabase.from('categorias').insert({
@@ -196,7 +191,6 @@ function Manager({ chiringuito, onVolver }) {
     mostrarMsg('✅ Categoría eliminada')
   }
 
-  // Hamacas
   async function añadirHamaca() {
     if (!nuevaHamaca) return mostrarMsg('⚠️ Escribe el número de hamaca')
     await supabase.from('hamacas').insert({ numero: nuevaHamaca, chiringuito_id: chiringuito.id, activa: true })
@@ -215,17 +209,15 @@ function Manager({ chiringuito, onVolver }) {
     mostrarMsg('✅ Hamaca eliminada')
   }
 
-  // Config - enviar código
   async function enviarCodigo(tipo) {
     const codigo = Math.floor(100000 + Math.random() * 900000).toString()
     if (tipo === 'pass') { setCodigoPass(codigo); setCodigoEnviadoPass(true) }
     else { setCodigoPin(codigo); setCodigoEnviadoPin(true) }
-
-    const { data } = await supabase.from('chiringuitos').select('email').eq('id', chiringuito.id).single()
+    const { data } = await supabase.from('chiringuitos').select('email_notificaciones').eq('id', chiringuito.id).single()
     await supabase.functions.invoke('enviar-codigo', {
-      body: { email: data.email, codigo, tipo }
+      body: { email: data.email_notificaciones, codigo, tipo }
     })
-    mostrarMsg(`✅ Código enviado a ${data.email}`)
+    mostrarMsg(`✅ Código enviado a ${data.email_notificaciones}`)
   }
 
   async function verificarYCambiarPass() {
@@ -288,7 +280,6 @@ function Manager({ chiringuito, onVolver }) {
 
       <div style={{maxWidth:1100, margin:'0 auto', padding:'20px 16px'}}>
 
-        {/* STATS */}
         {tab === 'stats' && <>
           <div style={{display:'flex', gap:8, marginBottom:16, flexWrap:'wrap'}}>
             {periodos.map(([v,l]) => (
@@ -359,7 +350,6 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
-        {/* PRODUCTOS */}
         {tab === 'productos' && <>
           {editando && (
             <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.5)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
@@ -435,7 +425,6 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
-        {/* CATEGORÍAS */}
         {tab === 'categorias' && <>
           <div style={ms.section}>
             <div style={ms.sectionTitle}>➕ Añadir categoría</div>
@@ -460,7 +449,6 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
-        {/* HAMACAS */}
         {tab === 'hamacas' && <>
           <div style={ms.section}>
             <div style={ms.sectionTitle}>➕ Añadir hamaca</div>
@@ -500,10 +488,7 @@ function Manager({ chiringuito, onVolver }) {
           </div>
         </>}
 
-        {/* CONFIG */}
         {tab === 'config' && <>
-
-          {/* Nombre del negocio - solo lectura */}
           <div style={ms.section}>
             <div style={ms.sectionTitle}>🏪 Nombre del negocio</div>
             <div style={{background:'#F7F7F7', borderRadius:12, padding:'14px 16px', fontSize:16, fontWeight:700, color:'#0A2540', display:'flex', alignItems:'center', gap:10}}>
@@ -513,7 +498,6 @@ function Manager({ chiringuito, onVolver }) {
             <div style={{fontSize:12, color:'#aaa', marginTop:8}}>El nombre del negocio solo puede ser modificado por el equipo de Chiring. Contacta con soporte si necesitas cambiarlo.</div>
           </div>
 
-          {/* Cambio de contraseña */}
           <div style={ms.section}>
             <div style={ms.sectionTitle}>🔑 Cambiar contraseña</div>
             {!cambiandoPass ? (
@@ -544,7 +528,6 @@ function Manager({ chiringuito, onVolver }) {
             )}
           </div>
 
-          {/* Cambio de PIN */}
           <div style={ms.section}>
             <div style={ms.sectionTitle}>🔐 Cambiar PIN de manager</div>
             {!cambiandoPin ? (
@@ -572,7 +555,6 @@ function Manager({ chiringuito, onVolver }) {
               </div>
             )}
           </div>
-
         </>}
 
       </div>
