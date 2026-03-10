@@ -4,7 +4,16 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
   apiVersion: '2023-10-16',
 })
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   const { chiringuito_id, email, nombre } = await req.json()
 
   const account = await stripe.accounts.create({
@@ -37,6 +46,6 @@ Deno.serve(async (req) => {
   })
 
   return new Response(JSON.stringify({ url: accountLink.url }), {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 })
