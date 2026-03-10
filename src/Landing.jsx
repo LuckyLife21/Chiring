@@ -35,17 +35,21 @@ export default function Landing() {
 
           {/* Desktop nav */}
           {!mobile && (
-            <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
               {['#como-funciona|Cómo funciona', '#precios|Precios', '#contacto|Contacto'].map(item => {
                 const [href, label] = item.split('|')
                 return <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>{label}</a>
               })}
-              <a href="/panel" style={{
-                background: navBg ? 'linear-gradient(135deg,#00B4D8,#0077B6)' : 'rgba(255,255,255,0.2)',
-                border: navBg ? 'none' : '2px solid rgba(255,255,255,0.6)',
-                color: 'white', padding: '10px 22px', borderRadius: 50,
+              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}>
+                Iniciar sesión
+              </a>
+              <a href="/registro" style={{
+                background: navBg ? 'linear-gradient(135deg,#00B4D8,#0077B6)' : 'white',
+                color: navBg ? 'white' : '#0077B6',
+                padding: '10px 22px', borderRadius: 50,
                 textDecoration: 'none', fontSize: 14, fontWeight: 700,
-              }}>Acceder al panel</a>
+                boxShadow: navBg ? 'none' : '0 4px 15px rgba(0,0,0,0.15)',
+              }}>Registrarse gratis</a>
             </div>
           )}
 
@@ -67,11 +71,14 @@ export default function Landing() {
               const [href, label] = item.split('|')
               return <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{label}</a>
             })}
-            <a href="/panel" onClick={() => setMenuOpen(false)} style={{
+            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>
+              Iniciar sesión
+            </a>
+            <a href="/registro" onClick={() => setMenuOpen(false)} style={{
               background: 'linear-gradient(135deg,#00B4D8,#0077B6)',
               color: 'white', padding: '14px', borderRadius: 50,
               textDecoration: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center'
-            }}>Acceder al panel</a>
+            }}>Registrarse gratis</a>
           </div>
         )}
       </nav>
@@ -109,7 +116,7 @@ export default function Landing() {
             </p>
 
             <div style={{ display: 'flex', flexDirection: mobile ? 'column' : 'row', gap: 12 }}>
-              <a href="#registro" style={{
+              <a href="/registro" style={{
                 background: 'white', color: '#0077B6', padding: '15px 28px',
                 borderRadius: 50, textDecoration: 'none', fontSize: 15, fontWeight: 800,
                 boxShadow: '0 8px 30px rgba(0,0,0,0.2)', textAlign: 'center',
@@ -233,7 +240,7 @@ export default function Landing() {
             {[
               { icon: '🪑', num: '30', label: 'hamacas máx.' },
               { icon: '📱', num: '2 min', label: 'para instalar' },
-              { icon: '💶', num: '0%', label: 'comisión' },
+              { icon: '💶', num: '15%', label: 'solo si vendes' },
               { icon: '🔔', num: '24/7', label: 'soporte' },
             ].map(s => (
               <div key={s.label} style={{ background: 'white', borderRadius: 16, padding: 18, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
@@ -251,41 +258,31 @@ export default function Landing() {
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Sin sorpresas</div>
-            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>Un precio simple y justo</h2>
-            <p style={{ fontSize: 15, color: '#666' }}>Sin comisiones por pedido. Sin letras pequeñas.</p>
+            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>Solo pagas cuando vendes</h2>
+            <p style={{ fontSize: 15, color: '#666' }}>15% por pedido procesado. Sin cuotas fijas. Sin letras pequeñas.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 20 }}>
-            {[
-              { plan: 'Básico', precio: '29', badge: null, dark: false, features: ['Hasta 20 hamacas', 'Menú digital ilimitado', 'Panel en tiempo real', 'Estadísticas básicas', 'Soporte por email'] },
-              { plan: 'Pro', precio: '49', badge: '⭐ Más popular', dark: true, features: ['Hamacas ilimitadas', 'Menú digital ilimitado', 'Panel en tiempo real', 'Estadísticas avanzadas', 'Soporte prioritario 24/7', 'Personalización del menú'] },
-            ].map(p => (
-              <div key={p.plan} style={{
-                background: p.dark ? 'linear-gradient(135deg,#0A2540,#0077B6)' : '#F8FAFF',
-                border: p.dark ? 'none' : '2px solid #E0E8FF',
-                borderRadius: 24, padding: 28, position: 'relative',
-                boxShadow: p.dark ? '0 20px 50px rgba(0,119,182,0.3)' : '0 4px 16px rgba(0,0,0,0.04)',
-                marginTop: p.badge ? 16 : 0,
-              }}>
-                {p.badge && (
-                  <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', background: '#FFD700', color: '#0A2540', padding: '5px 18px', borderRadius: 50, fontSize: 12, fontWeight: 800, whiteSpace: 'nowrap' }}>{p.badge}</div>
-                )}
-                <div style={{ fontSize: 15, fontWeight: 800, color: p.dark ? 'rgba(255,255,255,0.7)' : '#666', marginBottom: 6 }}>{p.plan}</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                  <span style={{ fontSize: 44, fontWeight: 900, color: p.dark ? 'white' : '#0A2540', lineHeight: 1 }}>{p.precio}€</span>
-                  <span style={{ fontSize: 14, color: p.dark ? 'rgba(255,255,255,0.5)' : '#aaa' }}>/mes</span>
+          <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', borderRadius: 24, padding: mobile ? 28 : 40, position: 'relative', boxShadow: '0 20px 50px rgba(0,119,182,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>Precio único</div>
+            <div style={{ fontSize: 64, fontWeight: 900, color: 'white', lineHeight: 1 }}>15%</div>
+            <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', marginBottom: 32, marginTop: 8 }}>por pedido procesado · sin cuota mensual</div>
+            <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 32, textAlign: 'left' }}>
+              {[
+                'Hamacas ilimitadas',
+                'Menú digital ilimitado',
+                'Panel en tiempo real',
+                'Estadísticas completas',
+                'Soporte prioritario 24/7',
+                'Sin permanencia',
+              ].map(f => (
+                <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <span style={{ color: '#7FDBFF', fontWeight: 800 }}>✓</span>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)' }}>{f}</span>
                 </div>
-                <div style={{ fontSize: 12, color: p.dark ? 'rgba(255,255,255,0.4)' : '#bbb', marginBottom: 22 }}>+ IVA · Sin permanencia</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-                  {p.features.map(f => (
-                    <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <span style={{ color: p.dark ? '#7FDBFF' : '#00B4D8', fontWeight: 800 }}>✓</span>
-                      <span style={{ fontSize: 13, color: p.dark ? 'rgba(255,255,255,0.85)' : '#444' }}>{f}</span>
-                    </div>
-                  ))}
-                </div>
-                <a href="#registro" style={{ display: 'block', textAlign: 'center', background: p.dark ? 'white' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: p.dark ? '#0077B6' : 'white', padding: '13px', borderRadius: 50, textDecoration: 'none', fontSize: 14, fontWeight: 800 }}>Empezar ahora →</a>
-              </div>
-            ))}
+              ))}
+            </div>
+            <a href="/registro" style={{ display: 'inline-block', background: 'white', color: '#0077B6', padding: '16px 40px', borderRadius: 50, textDecoration: 'none', fontSize: 16, fontWeight: 800 }}>
+              Empezar gratis →
+            </a>
           </div>
           <div style={{ textAlign: 'center', marginTop: 22, fontSize: 13, color: '#aaa' }}>
             ¿Tienes varios chiringuitos? <a href="#contacto" style={{ color: '#00B4D8', fontWeight: 700 }}>Contacta para precio especial</a>
@@ -293,20 +290,29 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* REGISTRO */}
-      <div id="registro" style={{
+      {/* CTA REGISTRO */}
+      <div style={{
         padding: mobile ? '60px 20px' : '100px 40px',
         background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 60%, #00B4D8 100%)',
-        position: 'relative', overflow: 'hidden'
+        position: 'relative', overflow: 'hidden', textAlign: 'center'
       }}>
         <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', top: -100, right: -100 }} />
-        <div style={{ maxWidth: 580, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+        <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative' }}>
           <div style={{ fontSize: 44, marginBottom: 12 }}>🏖️</div>
           <h2 style={{ fontSize: mobile ? 28 : 40, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>¿Listo para empezar?</h2>
           <p style={{ fontSize: mobile ? 14 : 16, color: 'rgba(255,255,255,0.75)', marginBottom: 36, lineHeight: 1.7 }}>
-            Primer mes gratis. Configuración incluida. Sin permanencia.
+            Configura tu chiringuito en 2 minutos. Solo pagas cuando vendes.
           </p>
-          <RegistroForm mobile={mobile} />
+          <a href="/registro" style={{
+            display: 'inline-block', background: 'white', color: '#0077B6',
+            padding: '18px 40px', borderRadius: 50, textDecoration: 'none',
+            fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+          }}>
+            🚀 Crear mi cuenta gratis
+          </a>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
+            ¿Ya tienes cuenta? <a href="/panel" style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>Inicia sesión aquí</a>
+          </div>
         </div>
       </div>
 
@@ -329,67 +335,10 @@ export default function Landing() {
           <div style={{ display: 'flex', gap: 20, fontSize: 13 }}>
             <a href="#" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>Privacidad</a>
             <a href="#" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>Términos</a>
-            <a href="/panel" style={{ color: '#00B4D8', textDecoration: 'none', fontWeight: 700 }}>Panel ↗</a>
+            <a href="/panel" style={{ color: '#00B4D8', textDecoration: 'none', fontWeight: 700 }}>Iniciar sesión ↗</a>
           </div>
         </div>
       </footer>
-    </div>
-  )
-}
-
-function RegistroForm({ mobile }) {
-  const [nombre, setNombre] = useState('')
-  const [email, setEmail] = useState('')
-  const [telefono, setTelefono] = useState('')
-  const [enviado, setEnviado] = useState(false)
-  const [enviando, setEnviando] = useState(false)
-
-  async function handleSubmit() {
-    if (!nombre || !email) return
-    setEnviando(true)
-    await new Promise(r => setTimeout(r, 1000))
-    setEnviado(true)
-    setEnviando(false)
-  }
-
-  if (enviado) {
-    return (
-      <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 22, padding: 28, backdropFilter: 'blur(10px)' }}>
-        <div style={{ fontSize: 44, marginBottom: 10 }}>🎉</div>
-        <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>¡Solicitud recibida!</div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>Te contactamos en menos de 24 horas para configurar tu chiringuito.</div>
-      </div>
-    )
-  }
-
-  const inputStyle = {
-    padding: '14px 18px', borderRadius: 14,
-    border: '1.5px solid rgba(255,255,255,0.25)',
-    background: 'rgba(255,255,255,0.1)', color: 'white',
-    fontSize: 15, fontFamily: 'Poppins, sans-serif',
-    outline: 'none', width: '100%', boxSizing: 'border-box',
-  }
-
-  return (
-    <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 22, padding: mobile ? 22 : 32, backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <input style={inputStyle} placeholder="Nombre de tu chiringuito" value={nombre} onChange={e => setNombre(e.target.value)} />
-        <input style={inputStyle} placeholder="Tu email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
-        <input style={inputStyle} placeholder="Teléfono (opcional)" value={telefono} onChange={e => setTelefono(e.target.value)} />
-        <button
-          onClick={handleSubmit}
-          disabled={enviando || !nombre || !email}
-          style={{
-            padding: '15px', background: (enviando || !nombre || !email) ? 'rgba(255,255,255,0.4)' : 'white',
-            color: '#0077B6', border: 'none', borderRadius: 50,
-            fontSize: 15, fontWeight: 800, cursor: nombre && email ? 'pointer' : 'default',
-            fontFamily: 'Poppins, sans-serif', boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
-          }}
-        >{enviando ? 'Enviando...' : '🚀 Quiero empezar — primer mes gratis'}</button>
-      </div>
-      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 12 }}>
-        Sin permanencia · Primer mes gratis · Configuración incluida
-      </div>
     </div>
   )
 }
