@@ -9,7 +9,7 @@ import './index.css'
 import App from './App.jsx'
 import Panel from './Panel.jsx'
 import QRGenerator from './QRGenerator.jsx'
-import Landing from './Landing.jsx'
+import ComingSoon from './ComingSoon.jsx'
 
 const path = window.location.pathname
 const isPanel = path === '/panel'
@@ -18,6 +18,6 @@ const isHamaca = path.startsWith('/hamaca/')
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {isPanel ? <Panel /> : isQR ? <QRGenerator /> : isHamaca ? <App /> : <Landing />}
+    {isPanel ? <Panel /> : isQR ? <QRGenerator /> : isHamaca ? <App /> : <ComingSoon />}
   </StrictMode>,
 )
