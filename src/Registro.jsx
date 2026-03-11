@@ -12,6 +12,7 @@ export default function Registro() {
   const [form, setForm] = useState({
     nombre: '',
     email: '',
+    email2: '',
     password: '',
     password2: '',
     telefono: '',
@@ -30,8 +31,12 @@ export default function Registro() {
   }
 
   async function registrar() {
-    if (!form.nombre || !form.email || !form.password || !form.telefono || !form.ciudad) {
+    if (!form.nombre || !form.email || !form.email2 || !form.password || !form.telefono || !form.ciudad) {
       setError('Por favor rellena todos los campos obligatorios')
+      return
+    }
+    if (form.email !== form.email2) {
+      setError('Los emails no coinciden')
       return
     }
     if (form.password.length < 6) {
@@ -191,15 +196,27 @@ export default function Registro() {
               />
             </div>
 
-            <div>
-              <label style={labelStyle}>📧 Email *</label>
-              <input
-                style={inputStyle}
-                type="email"
-                placeholder="tu@email.com"
-                value={form.email}
-                onChange={e => cambiar('email', e.target.value)}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
+              <div>
+                <label style={labelStyle}>📧 Email *</label>
+                <input
+                  style={inputStyle}
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={form.email}
+                  onChange={e => cambiar('email', e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>📧 Repetir email *</label>
+                <input
+                  style={inputStyle}
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={form.email2}
+                  onChange={e => cambiar('email2', e.target.value)}
+                />
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
