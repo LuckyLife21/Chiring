@@ -17,6 +17,7 @@ export default function Registro() {
     password2: '',
     telefono: '',
     ciudad: '',
+    pin: '',
   })
 
   useEffect(() => {
@@ -47,6 +48,10 @@ export default function Registro() {
       setError('Las contraseñas no coinciden')
       return
     }
+    if (form.pin.length !== 4 || !/^\d{4}$/.test(form.pin)) {
+      setError('El PIN de manager debe tener exactamente 4 dígitos')
+      return
+    }
 
     setCargando(true)
     setError('')
@@ -60,6 +65,7 @@ export default function Registro() {
             nombre: form.nombre,
             telefono: form.telefono,
             ciudad: form.ciudad,
+            pin_manager: form.pin,
           }
         }
       })
@@ -262,6 +268,18 @@ export default function Registro() {
                   onChange={e => cambiar('ciudad', e.target.value)}
                 />
               </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>🔐 PIN de manager * <span style={{fontSize:11, color:'#aaa', fontWeight:500}}>(4 dígitos — para acceder al modo manager)</span></label>
+              <input
+                style={{...inputStyle, textAlign:'center', fontSize: 24, letterSpacing: 10}}
+                type="password"
+                placeholder="••••"
+                maxLength={4}
+                value={form.pin}
+                onChange={e => cambiar('pin', e.target.value.replace(/\D/g, ''))}
+              />
             </div>
 
             {error && (
