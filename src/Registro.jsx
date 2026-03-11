@@ -18,6 +18,7 @@ export default function Registro() {
     telefono: '',
     ciudad: '',
     pin: '',
+    pin2: '',
   })
 
   useEffect(() => {
@@ -50,6 +51,10 @@ export default function Registro() {
     }
     if (form.pin.length !== 4 || !/^\d{4}$/.test(form.pin)) {
       setError('El PIN de manager debe tener exactamente 4 dígitos')
+      return
+    }
+    if (form.pin !== form.pin2) {
+      setError('Los PINs no coinciden')
       return
     }
 
@@ -270,16 +275,29 @@ export default function Registro() {
               </div>
             </div>
 
-            <div>
-              <label style={labelStyle}>🔐 PIN de manager * <span style={{fontSize:11, color:'#aaa', fontWeight:500}}>(4 dígitos — para acceder al modo manager)</span></label>
-              <input
-                style={{...inputStyle, textAlign:'center', fontSize: 24, letterSpacing: 10}}
-                type="password"
-                placeholder="••••"
-                maxLength={4}
-                value={form.pin}
-                onChange={e => cambiar('pin', e.target.value.replace(/\D/g, ''))}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
+              <div>
+                <label style={labelStyle}>🔐 PIN de manager * <span style={{fontSize:11, color:'#aaa', fontWeight:500}}>(4 dígitos)</span></label>
+                <input
+                  style={{...inputStyle, textAlign:'center', fontSize: 24, letterSpacing: 10}}
+                  type="password"
+                  placeholder="••••"
+                  maxLength={4}
+                  value={form.pin}
+                  onChange={e => cambiar('pin', e.target.value.replace(/\D/g, ''))}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>🔐 Repetir PIN *</label>
+                <input
+                  style={{...inputStyle, textAlign:'center', fontSize: 24, letterSpacing: 10}}
+                  type="password"
+                  placeholder="••••"
+                  maxLength={4}
+                  value={form.pin2}
+                  onChange={e => cambiar('pin2', e.target.value.replace(/\D/g, ''))}
+                />
+              </div>
             </div>
 
             {error && (
