@@ -698,9 +698,16 @@ export default function Panel() {
     } catch(e) {}
   }
 
+  // ← ÚNICO CAMBIO: bloqueamos que se setee la sesión si venimos de recovery
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    supabase.auth.onAuthStateChange((_event, session) => setSession(session))
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (window.location.hash.includes('type=recovery')) return
+      setSession(session)
+    })
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (window.location.hash.includes('type=recovery')) return
+      setSession(session)
+    })
   }, [])
 
   useEffect(() => {
@@ -712,7 +719,6 @@ export default function Panel() {
     cargarChiringuito()
   }, [session])
 
-  // Detectar retorno desde Stripe
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('stripe') === 'ok' && chiringuito) {
