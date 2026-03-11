@@ -676,6 +676,7 @@ export default function Panel() {
   const [chiringuito, setChiringuito] = useState(null)
   const [vistaManager, setVistaManager] = useState(false)
   const [pinVerificado, setPinVerificado] = useState(false)
+  const [isRecovery, setIsRecovery] = useState(false)
   const [nuevaPassRecovery, setNuevaPassRecovery] = useState('')
   const [nuevaPassRecovery2, setNuevaPassRecovery2] = useState('')
   const [recoveryLoading, setRecoveryLoading] = useState(false)
@@ -698,14 +699,16 @@ export default function Panel() {
     } catch(e) {}
   }
 
-  // ← ÚNICO CAMBIO: bloqueamos que se setee la sesión si venimos de recovery
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (window.location.hash.includes('type=recovery')) return
       setSession(session)
     })
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (window.location.hash.includes('type=recovery')) return
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecovery(true)
+        return
+      }
       setSession(session)
     })
   }, [])
@@ -779,7 +782,7 @@ export default function Panel() {
     setRecoveryLoading(false)
   }
 
-  if (window.location.hash.includes('type=recovery')) return (
+  if (isRecovery) return (
     <div style={ls.bg}>
       <div style={ls.card}>
         <div style={ls.logo}>🌊 Chiring</div>
