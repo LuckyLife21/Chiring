@@ -20,7 +20,7 @@ export default function Bienvenida() {
             nombre: meta.nombre,
             telefono: meta.telefono,
             ciudad: meta.ciudad,
-            pin_manager: Math.floor(1000 + Math.random() * 9000).toString(),
+            pin_manager: meta.pin_manager || Math.floor(1000 + Math.random() * 9000).toString(),
             verificado: false,
           })
 
