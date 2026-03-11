@@ -5,7 +5,7 @@ const isMobile = () => window.innerWidth < 768
 
 export default function Registro() {
   const [mobile, setMobile] = useState(isMobile())
-  const [paso, setPaso] = useState(1) // 1 = formulario, 2 = éxito
+  const [paso, setPaso] = useState(1)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
 
@@ -30,7 +30,6 @@ export default function Registro() {
   }
 
   async function registrar() {
-    // Validaciones
     if (!form.nombre || !form.email || !form.password || !form.telefono || !form.ciudad) {
       setError('Por favor rellena todos los campos obligatorios')
       return
@@ -48,10 +47,16 @@ export default function Registro() {
     setError('')
 
     try {
-      // 1. Crear usuario en Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
+        options: {
+          data: {
+            nombre: form.nombre,
+            telefono: form.telefono,
+            ciudad: form.ciudad,
+          }
+        }
       })
 
       if (authError) {
@@ -64,34 +69,6 @@ export default function Registro() {
         return
       }
 
-      // 2. Crear registro en tabla chiringuitos
-      const { error: dbError } = await supabase
-        .from('chiringuitos')
-        .insert({
-          email: form.email,
-          email_notificaciones: form.email,
-          nombre: form.nombre,
-          telefono: form.telefono,
-          ciudad: form.ciudad,
-          pin_manager: Math.floor(1000 + Math.random() * 9000).toString(),
-          verificado: false,
-        })
-
-      if (dbError) {
-        setError('Error al guardar los datos: ' + dbError.message)
-        setCargando(false)
-        return
-      }
-
-      // 3. Enviar email de bienvenida
-      await supabase.functions.invoke('enviar-bienvenida', {
-        body: {
-          email: form.email,
-          nombre: form.nombre,
-        }
-      })
-
-      // 4. Éxito
       setPaso(2)
     } catch (e) {
       setError('Error inesperado. Inténtalo de nuevo.')
@@ -125,26 +102,21 @@ export default function Registro() {
         <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -80, left: -80 }} />
 
         <div style={{ textAlign: 'center', maxWidth: 480, position: 'relative' }}>
-          <div style={{ fontSize: 72, marginBottom: 20 }}>🎉</div>
+          <div style={{ fontSize: 72, marginBottom: 20 }}>📧</div>
           <h1 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 16 }}>
-            ¡Bienvenido/a a Chiring!
+            Revisa tu email
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 12 }}>
-            Tu cuenta ha sido creada correctamente.
+            Te hemos enviado un email de confirmación a:
           </p>
           <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 16, padding: '14px 20px', marginBottom: 32, border: '1px solid rgba(255,255,255,0.2)' }}>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', margin: 0 }}>
-              📧 Te hemos enviado un email de bienvenida a <strong style={{ color: 'white' }}>{form.email}</strong>
+            <p style={{ fontSize: 16, color: 'white', margin: 0, fontWeight: 700 }}>
+              {form.email}
             </p>
           </div>
-          <a href="/panel" style={{
-            display: 'block', background: 'white', color: '#0077B6',
-            padding: '16px 32px', borderRadius: 50, textDecoration: 'none',
-            fontSize: 16, fontWeight: 800, boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-            marginBottom: 16
-          }}>
-            Ir al panel →
-          </a>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, marginBottom: 32 }}>
+            Haz click en el botón del email para activar tu cuenta. Sin confirmar el email no podrás acceder al panel.
+          </p>
           <a href="/" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, textDecoration: 'none' }}>
             Volver al inicio
           </a>
@@ -156,7 +128,6 @@ export default function Registro() {
   return (
     <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
 
-      {/* Header */}
       <div style={{
         background: 'linear-gradient(135deg, #0A2540, #0077B6)',
         padding: mobile ? '20px' : '24px 40px',
@@ -171,7 +142,6 @@ export default function Registro() {
         </div>
       </div>
 
-      {/* Hero pequeño */}
       <div style={{
         background: 'linear-gradient(135deg, #0A2540, #0077B6)',
         padding: mobile ? '32px 20px 60px' : '40px 40px 70px',
@@ -190,7 +160,6 @@ export default function Registro() {
         </div>
       </div>
 
-      {/* Formulario — solapado sobre el hero */}
       <div style={{ maxWidth: 580, margin: mobile ? '-30px 20px 40px' : '-40px auto 60px', position: 'relative' }}>
         <div style={{
           background: 'white', borderRadius: 24,
@@ -198,7 +167,6 @@ export default function Registro() {
           padding: mobile ? 24 : 40,
         }}>
 
-          {/* Pasos indicador */}
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32, gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#00B4D8,#0077B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: 'white' }}>1</div>
@@ -213,7 +181,6 @@ export default function Registro() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-            {/* Nombre chiringuito */}
             <div>
               <label style={labelStyle}>🏖️ Nombre del chiringuito *</label>
               <input
@@ -224,7 +191,6 @@ export default function Registro() {
               />
             </div>
 
-            {/* Email */}
             <div>
               <label style={labelStyle}>📧 Email *</label>
               <input
@@ -236,7 +202,6 @@ export default function Registro() {
               />
             </div>
 
-            {/* Contraseñas */}
             <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
               <div>
                 <label style={labelStyle}>🔒 Contraseña *</label>
@@ -260,7 +225,6 @@ export default function Registro() {
               </div>
             </div>
 
-            {/* Teléfono y ciudad */}
             <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
               <div>
                 <label style={labelStyle}>📱 Teléfono *</label>
@@ -283,14 +247,12 @@ export default function Registro() {
               </div>
             </div>
 
-            {/* Error */}
             {error && (
               <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>
                 ⚠️ {error}
               </div>
             )}
 
-            {/* Botón */}
             <button
               onClick={registrar}
               disabled={cargando}
@@ -313,7 +275,6 @@ export default function Registro() {
           </div>
         </div>
 
-        {/* Info debajo del form */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginTop: 20 }}>
           {[
             { icon: '⚡', text: 'Configuración en 2 minutos' },
