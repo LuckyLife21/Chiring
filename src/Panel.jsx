@@ -10,6 +10,10 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [olvidado, setOlvidado] = useState(false)
+  const [emailReset, setEmailReset] = useState('')
+  const [resetEnviado, setResetEnviado] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
 
   async function handleLogin() {
     setLoading(true)
@@ -18,6 +22,47 @@ function Login({ onLogin }) {
     if (error) setError('Email o contraseña incorrectos')
     else onLogin()
     setLoading(false)
+  }
+
+  async function handleReset() {
+    if (!emailReset) return
+    setResetLoading(true)
+    await supabase.auth.resetPasswordForEmail(emailReset, {
+      redirectTo: 'https://chiringapp.com/panel',
+    })
+    setResetEnviado(true)
+    setResetLoading(false)
+  }
+
+  if (olvidado) {
+    return (
+      <div style={ls.bg}>
+        <div style={ls.card}>
+          <div style={ls.logo}>🌊 Chiring</div>
+          <div style={ls.sub}>Recuperar contraseña</div>
+          {!resetEnviado ? <>
+            <input style={ls.input} type="email" placeholder="Tu email" value={emailReset}
+              onChange={e => setEmailReset(e.target.value)} />
+            <button style={{...ls.btn, opacity: resetLoading ? 0.7 : 1}} onClick={handleReset} disabled={resetLoading}>
+              {resetLoading ? 'Enviando...' : 'Enviar enlace de recuperación'}
+            </button>
+            <div style={{textAlign:'center', marginTop:20, fontSize:13, color:'#aaa'}}>
+              <span style={{color:'#0077B6', fontWeight:700, cursor:'pointer'}} onClick={() => setOlvidado(false)}>← Volver al login</span>
+            </div>
+          </> : <>
+            <div style={{textAlign:'center', fontSize:15, color:'#28a745', fontWeight:700, marginBottom:16}}>
+              ✅ Email enviado
+            </div>
+            <div style={{textAlign:'center', fontSize:13, color:'#aaa', marginBottom:24}}>
+              Revisa tu bandeja de entrada y sigue el enlace para restablecer tu contraseña.
+            </div>
+            <div style={{textAlign:'center', fontSize:13, color:'#aaa'}}>
+              <span style={{color:'#0077B6', fontWeight:700, cursor:'pointer'}} onClick={() => { setOlvidado(false); setResetEnviado(false) }}>← Volver al login</span>
+            </div>
+          </>}
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -34,7 +79,10 @@ function Login({ onLogin }) {
         <button style={{...ls.btn, opacity: loading ? 0.7 : 1}} onClick={handleLogin} disabled={loading}>
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
-        <div style={{textAlign:'center', marginTop:20, fontSize:13, color:'#aaa'}}>
+        <div style={{textAlign:'center', marginTop:16, fontSize:13}}>
+          <span style={{color:'#0077B6', fontWeight:700, cursor:'pointer'}} onClick={() => setOlvidado(true)}>¿Olvidaste tu contraseña?</span>
+        </div>
+        <div style={{textAlign:'center', marginTop:12, fontSize:13, color:'#aaa'}}>
           ¿No tienes cuenta?{' '}
           <a href="/registro" style={{color:'#0077B6', fontWeight:700, textDecoration:'none'}}>Regístrate gratis</a>
         </div>
