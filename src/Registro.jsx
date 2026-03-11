@@ -83,7 +83,15 @@ export default function Registro() {
         return
       }
 
-      // 3. Éxito
+      // 3. Enviar email de bienvenida
+      await supabase.functions.invoke('enviar-bienvenida', {
+        body: {
+          email: form.email,
+          nombre: form.nombre,
+        }
+      })
+
+      // 4. Éxito
       setPaso(2)
     } catch (e) {
       setError('Error inesperado. Inténtalo de nuevo.')
@@ -119,14 +127,14 @@ export default function Registro() {
         <div style={{ textAlign: 'center', maxWidth: 480, position: 'relative' }}>
           <div style={{ fontSize: 72, marginBottom: 20 }}>🎉</div>
           <h1 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 16 }}>
-            ¡Bienvenido a Chiring!
+            ¡Bienvenido/a a Chiring!
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 12 }}>
             Tu cuenta ha sido creada correctamente.
           </p>
           <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 16, padding: '14px 20px', marginBottom: 32, border: '1px solid rgba(255,255,255,0.2)' }}>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', margin: 0 }}>
-              📧 Revisa tu email <strong style={{ color: 'white' }}>{form.email}</strong> para confirmar tu cuenta antes de entrar.
+              📧 Te hemos enviado un email de bienvenida a <strong style={{ color: 'white' }}>{form.email}</strong>
             </p>
           </div>
           <a href="/panel" style={{
