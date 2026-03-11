@@ -676,6 +676,10 @@ export default function Panel() {
   const [chiringuito, setChiringuito] = useState(null)
   const [vistaManager, setVistaManager] = useState(false)
   const [pinVerificado, setPinVerificado] = useState(false)
+  const [nuevaPassRecovery, setNuevaPassRecovery] = useState('')
+  const [nuevaPassRecovery2, setNuevaPassRecovery2] = useState('')
+  const [recoveryLoading, setRecoveryLoading] = useState(false)
+  const [recoveryMsg, setRecoveryMsg] = useState('')
   const pedidosAnteriores = useRef([])
 
   function sonar() {
@@ -755,6 +759,36 @@ export default function Panel() {
     setVistaManager(false); setPinVerificado(false)
     pedidosAnteriores.current = []
   }
+
+  async function guardarNuevaPass() {
+    if (nuevaPassRecovery.length < 6) { setRecoveryMsg('⚠️ Mínimo 6 caracteres'); return }
+    if (nuevaPassRecovery !== nuevaPassRecovery2) { setRecoveryMsg('⚠️ Las contraseñas no coinciden'); return }
+    setRecoveryLoading(true)
+    const { error } = await supabase.auth.updateUser({ password: nuevaPassRecovery })
+    if (error) setRecoveryMsg('❌ Error al cambiar la contraseña')
+    else {
+      setRecoveryMsg('✅ Contraseña cambiada correctamente')
+      setTimeout(() => window.location.href = '/panel', 2000)
+    }
+    setRecoveryLoading(false)
+  }
+
+  if (window.location.hash.includes('type=recovery')) return (
+    <div style={ls.bg}>
+      <div style={ls.card}>
+        <div style={ls.logo}>🌊 Chiring</div>
+        <div style={ls.sub}>Crea una nueva contraseña</div>
+        <input style={ls.input} type="password" placeholder="Nueva contraseña" value={nuevaPassRecovery}
+          onChange={e => setNuevaPassRecovery(e.target.value)} />
+        <input style={ls.input} type="password" placeholder="Repetir contraseña" value={nuevaPassRecovery2}
+          onChange={e => setNuevaPassRecovery2(e.target.value)} />
+        {recoveryMsg && <div style={{...ls.error, color: recoveryMsg.includes('✅') ? '#28a745' : '#e74c3c'}}>{recoveryMsg}</div>}
+        <button style={{...ls.btn, opacity: recoveryLoading ? 0.7 : 1}} onClick={guardarNuevaPass} disabled={recoveryLoading}>
+          {recoveryLoading ? 'Guardando...' : '💾 Guardar nueva contraseña'}
+        </button>
+      </div>
+    </div>
+  )
 
   if (!session) return <Login onLogin={() => {}} />
   if (vistaManager && !pinVerificado)
