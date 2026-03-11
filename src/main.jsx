@@ -14,11 +14,12 @@ import Registro from './Registro.jsx'
 import Bienvenida from './Bienvenida.jsx'
 
 const path = window.location.pathname
+const hash = window.location.hash
 const isPanel = path === '/panel'
 const isQR = path === '/qr'
 const isHamaca = path.startsWith('/hamaca/')
 const isRegistro = path === '/registro'
-const isBienvenida = path === '/bienvenida'
+const isBienvenida = path === '/bienvenida' || hash.includes('access_token')
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
