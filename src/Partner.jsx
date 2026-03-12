@@ -15,6 +15,9 @@ export default function Partner() {
   const [form, setForm] = useState({
     nombre: '',
     email: '',
+    email2: '',
+    password: '',
+    password2: '',
     telefono: '',
     ciudad: '',
     chiringuitos_conocidos: '',
@@ -49,8 +52,20 @@ export default function Partner() {
   }
 
   async function registrar() {
-    if (!form.nombre || !form.email || !form.telefono || !form.ciudad) {
+    if (!form.nombre || !form.email || !form.email2 || !form.password || !form.password2 || !form.telefono || !form.ciudad) {
       setError('Por favor rellena todos los campos obligatorios')
+      return
+    }
+    if (form.email !== form.email2) {
+      setError('Los emails no coinciden')
+      return
+    }
+    if (form.password !== form.password2) {
+      setError('Las contraseñas no coinciden')
+      return
+    }
+    if (form.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres')
       return
     }
 
@@ -60,6 +75,24 @@ export default function Partner() {
     try {
       const codigo_ref = generarCodigo(form.nombre)
 
+      // Crear cuenta en Supabase Auth
+      const { error: authError } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: { data: { nombre: form.nombre, rol: 'partner', codigo_ref } }
+      })
+
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          setError('Este email ya está registrado. Inicia sesión desde el menú.')
+        } else {
+          setError('Error al crear la cuenta. Inténtalo de nuevo.')
+        }
+        setCargando(false)
+        return
+      }
+
+      // Guardar en tabla colaboradores
       const { error: dbError } = await supabase
         .from('colaboradores')
         .insert({
@@ -71,30 +104,24 @@ export default function Partner() {
           codigo_ref,
         })
 
-      if (dbError) {
-        if (dbError.message.includes('duplicate') || dbError.message.includes('unique')) {
-          const codigo_ref2 = generarCodigo(form.nombre)
-          await supabase.from('colaboradores').insert({
-            nombre: form.nombre,
-            email: form.email,
-            telefono: form.telefono,
-            ciudad: form.ciudad,
-            chiringuitos_conocidos: form.chiringuitos_conocidos,
-            codigo_ref: codigo_ref2,
-          })
-          setCodigoGuardado(codigo_ref2)
-          await enviarEmail(form.email, form.nombre, codigo_ref2)
-          setPaso(2)
-        } else {
-          setError('Error al registrarte. Inténtalo de nuevo.')
-          setCargando(false)
-          return
-        }
+      if (dbError && dbError.message.includes('unique')) {
+        const codigo_ref2 = generarCodigo(form.nombre)
+        await supabase.from('colaboradores').insert({
+          nombre: form.nombre,
+          email: form.email,
+          telefono: form.telefono,
+          ciudad: form.ciudad,
+          chiringuitos_conocidos: form.chiringuitos_conocidos,
+          codigo_ref: codigo_ref2,
+        })
+        setCodigoGuardado(codigo_ref2)
+        await enviarEmail(form.email, form.nombre, codigo_ref2)
       } else {
         setCodigoGuardado(codigo_ref)
         await enviarEmail(form.email, form.nombre, codigo_ref)
-        setPaso(2)
       }
+
+      setPaso(2)
     } catch (e) {
       setError('Error inesperado. Inténtalo de nuevo.')
     }
@@ -141,8 +168,12 @@ export default function Partner() {
             </div>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 14, padding: '14px 18px', marginBottom: 32, fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+          <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 14, padding: '14px 18px', marginBottom: 12, fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
             📧 Te hemos enviado un email con tu link y todos los detalles a <strong style={{ color: 'white' }}>{form.email}</strong>
+          </div>
+
+          <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 14, padding: '14px 18px', marginBottom: 32, fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+            ✅ Confirma tu email para poder iniciar sesión en tu panel
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 32 }}>
@@ -204,28 +235,45 @@ export default function Partner() {
         <div style={{ background: 'white', borderRadius: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.12)', padding: mobile ? 24 : 40 }}>
 
           <h2 style={{ fontSize: 20, fontWeight: 900, color: '#0A2540', marginBottom: 6 }}>Regístrate como Partner</h2>
-          <p style={{ fontSize: 13, color: '#888', marginBottom: 28 }}>Rellena el formulario y en menos de 24h recibes tu link único</p>
+          <p style={{ fontSize: 13, color: '#888', marginBottom: 28 }}>Rellena el formulario y recibe tu link único al instante</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+
             <div>
               <label style={labelStyle}>👤 Nombre completo *</label>
               <input style={inputStyle} placeholder="Tu nombre y apellidos" value={form.nombre} onChange={e => cambiar('nombre', e.target.value)} />
             </div>
 
+            <div>
+              <label style={labelStyle}>📧 Email *</label>
+              <input style={inputStyle} type="email" placeholder="tu@email.com" value={form.email} onChange={e => cambiar('email', e.target.value)} />
+            </div>
+
+            <div>
+              <label style={labelStyle}>📧 Confirma tu email *</label>
+              <input style={{ ...inputStyle, borderColor: form.email2 && form.email !== form.email2 ? '#ffb3b3' : '#E0E8F0' }} type="email" placeholder="tu@email.com" value={form.email2} onChange={e => cambiar('email2', e.target.value)} />
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
               <div>
-                <label style={labelStyle}>📧 Email *</label>
-                <input style={inputStyle} type="email" placeholder="tu@email.com" value={form.email} onChange={e => cambiar('email', e.target.value)} />
+                <label style={labelStyle}>🔒 Contraseña *</label>
+                <input style={inputStyle} type="password" placeholder="Mínimo 6 caracteres" value={form.password} onChange={e => cambiar('password', e.target.value)} />
               </div>
+              <div>
+                <label style={labelStyle}>🔒 Repite la contraseña *</label>
+                <input style={{ ...inputStyle, borderColor: form.password2 && form.password !== form.password2 ? '#ffb3b3' : '#E0E8F0' }} type="password" placeholder="Repite la contraseña" value={form.password2} onChange={e => cambiar('password2', e.target.value)} />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
               <div>
                 <label style={labelStyle}>📱 Teléfono *</label>
                 <input style={inputStyle} type="tel" placeholder="600 000 000" value={form.telefono} onChange={e => cambiar('telefono', e.target.value)} />
               </div>
-            </div>
-
-            <div>
-              <label style={labelStyle}>📍 Ciudad o zona donde operas *</label>
-              <input style={inputStyle} placeholder="Ej: Costa del Sol, Murcia, Valencia..." value={form.ciudad} onChange={e => cambiar('ciudad', e.target.value)} />
+              <div>
+                <label style={labelStyle}>📍 Ciudad *</label>
+                <input style={inputStyle} placeholder="Ej: Murcia, Valencia..." value={form.ciudad} onChange={e => cambiar('ciudad', e.target.value)} />
+              </div>
             </div>
 
             <div>
@@ -251,7 +299,7 @@ export default function Partner() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginTop: 20 }}>
           {[
-            { icon: '⚡', text: 'Link listo en 24h' },
+            { icon: '⚡', text: 'Link al instante' },
             { icon: '💶', text: '1% de cada pedido' },
             { icon: '♾️', text: 'Sin límite de referidos' },
           ].map(i => (
