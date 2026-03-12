@@ -106,7 +106,10 @@ export default function Partner() {
       const { error: authError } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
-        options: { data: { nombre: form.nombre, rol: 'partner', codigo_ref } }
+        options: {
+          data: { nombre: form.nombre, rol: 'partner', codigo_ref },
+          emailRedirectTo: 'https://chiringapp.com/partner'
+        }
       })
 
       if (authError) {
