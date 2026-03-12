@@ -3,6 +3,8 @@ import { supabase } from './supabase'
 
 const isMobile = () => window.innerWidth < 768
 
+const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsZXpueWN2aGlmbnh2cWpmY2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NTQ3MDksImV4cCI6MjA1NzAzMDcwOX0.hfBLjGXbnWPMqA3xjkpNO853YBfSAYSVrCMDwwKFaAA"
+
 export default function Partner() {
   const [mobile, setMobile] = useState(isMobile())
   const [paso, setPaso] = useState(1)
@@ -33,6 +35,17 @@ export default function Partner() {
     const base = nombre.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '')
     const num = Math.floor(100 + Math.random() * 900)
     return base + num
+  }
+
+  async function enviarEmail(email, nombre, codigo_ref) {
+    await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + ANON_KEY
+      },
+      body: JSON.stringify({ email, nombre, codigo_ref })
+    })
   }
 
   async function registrar() {
@@ -70,11 +83,7 @@ export default function Partner() {
             codigo_ref: codigo_ref2,
           })
           setCodigoGuardado(codigo_ref2)
-          await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: form.email, nombre: form.nombre, codigo_ref: codigo_ref2 })
-          })
+          await enviarEmail(form.email, form.nombre, codigo_ref2)
           setPaso(2)
         } else {
           setError('Error al registrarte. Inténtalo de nuevo.')
@@ -83,11 +92,7 @@ export default function Partner() {
         }
       } else {
         setCodigoGuardado(codigo_ref)
-        await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: form.email, nombre: form.nombre, codigo_ref })
-        })
+        await enviarEmail(form.email, form.nombre, codigo_ref)
         setPaso(2)
       }
     } catch (e) {
