@@ -40,8 +40,13 @@ export default function Landing() {
 
   const testimonios = [
     { nombre: 'Carlos M.', lugar: 'Chiringuito La Brisa · Marbella', texto: 'Desde que usamos Chiring los clientes piden el doble. Ya no hay que ir mesa por mesa, el pedido llega solo al panel.', estrellas: 5 },
-    { nombre: 'Marta L.', lugar: 'Restaurante Bahía · Almería', texto: 'Lo que más me gusta es que el cobro es automático. Sin cambio, sin olvidarse de pagar. Perfecto para el verano.', estrellas: 5 },
-    { nombre: 'Paco R.', lugar: 'Beach Club Sol · Torrevieja', texto: 'En 15 minutos lo teníamos todo configurado. Los clientes flipan cuando ven que pueden pedir desde la hamaca.', estrellas: 5 },
+    { nombre: 'Marta L.', lugar: 'Beach Club Playa Bella · Almería', texto: 'Lo que más me gusta es que el cobro es automático. Sin cambio, sin olvidarse de pagar. Perfecto para el verano.', estrellas: 5 },
+    { nombre: 'Paco R.', lugar: 'Chiringuito El Ancla · Torrevieja', texto: 'En 15 minutos lo teníamos todo configurado. Los clientes flipan cuando ven que pueden pedir desde la hamaca.', estrellas: 5 },
+    { nombre: 'Lucía F.', lugar: 'La Palmera Beach · Benidorm', texto: 'Antes perdíamos ventas porque los clientes no se levantaban a pedir. Ahora piden desde la hamaca sin pensárselo.', estrellas: 5 },
+    { nombre: 'Javi S.', lugar: 'Chiringuito Marea Alta · Cádiz', texto: 'El panel en tiempo real es una pasada. Escuchas el sonido del pedido y ya sabes lo que tienes que preparar.', estrellas: 5 },
+    { nombre: 'Ana P.', lugar: 'Sol y Sal Beach Bar · Málaga', texto: 'Hemos aumentado el ticket medio un 30%. La gente pide más cuando ve el menú completo en el móvil.', estrellas: 5 },
+    { nombre: 'Rafa G.', lugar: 'Chiringuito Poniente · Huelva', texto: 'Sin cuota mensual y solo pagamos cuando vendemos. Para un chiringuito de temporada es perfecto.', estrellas: 5 },
+    { nombre: 'Elena T.', lugar: 'La Ola Beach Club · Valencia', texto: 'El soporte es muy rápido. Tuvimos una duda el primer día y nos la resolvieron en minutos. Muy recomendable.', estrellas: 5 },
   ]
 
   return (
@@ -61,16 +66,16 @@ export default function Landing() {
             🌊 chiringapp
           </div>
           {!mobile && (
-            <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-              {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#faq|FAQ', '#contacto|Contacto'].map(item => {
+            <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+              {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#colabora|Partners', '#faq|FAQ', '#contacto|Contacto'].map(item => {
                 const [href, label] = item.split('|')
-                return <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>{label}</a>
+                return <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{label}</a>
               })}
-              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}>Iniciar sesión</a>
+              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>Iniciar sesión</a>
               <a href="/registro" style={{
                 background: navBg ? 'linear-gradient(135deg,#00B4D8,#0077B6)' : 'white',
                 color: navBg ? 'white' : '#0077B6',
-                padding: '10px 22px', borderRadius: 50, textDecoration: 'none', fontSize: 14, fontWeight: 700,
+                padding: '10px 22px', borderRadius: 50, textDecoration: 'none', fontSize: 13, fontWeight: 700,
                 boxShadow: navBg ? 'none' : '0 4px 15px rgba(0,0,0,0.15)',
               }}>Registrarse gratis</a>
             </div>
@@ -83,7 +88,7 @@ export default function Landing() {
         </div>
         {mobile && menuOpen && (
           <div style={{ background: 'white', padding: '16px 20px 24px', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#faq|FAQ', '#contacto|Contacto'].map(item => {
+            {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#colabora|Partners', '#faq|FAQ', '#contacto|Contacto'].map(item => {
               const [href, label] = item.split('|')
               return <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{label}</a>
             })}
@@ -108,7 +113,6 @@ export default function Landing() {
             <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="white" />
           </svg>
         </div>
-
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 40 : 60, alignItems: 'center' }}>
           <div style={{ textAlign: mobile ? 'center' : 'left' }}>
             <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 50, padding: '6px 16px', fontSize: 12, fontWeight: 700, color: 'white', marginBottom: 20 }}>
@@ -139,7 +143,6 @@ export default function Landing() {
               ))}
             </div>
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
             <div style={{ width: mobile ? 210 : 265, height: mobile ? 420 : 530, background: '#0A2540', borderRadius: 36, border: '7px solid rgba(255,255,255,0.15)', boxShadow: '0 30px 70px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
               <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 16 }}>
@@ -251,18 +254,18 @@ export default function Landing() {
             <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>Lo que dicen nuestros clientes</h2>
             <p style={{ fontSize: 15, color: '#666' }}>Chiringuitos que ya usan Chiring cada día</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr 1fr', gap: 18 }}>
             {testimonios.map((t, i) => (
-              <div key={i} style={{ background: 'linear-gradient(160deg,#F0F8FF,#E8F4FF)', borderRadius: 22, padding: 28, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: 20, marginBottom: 14, color: '#FFB800' }}>{'★'.repeat(t.estrellas)}</div>
-                <p style={{ fontSize: 14, color: '#444', lineHeight: 1.7, marginBottom: 20, fontStyle: 'italic' }}>"{t.texto}"</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg,#00B4D8,#0077B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'white', fontWeight: 800 }}>
+              <div key={i} style={{ background: 'linear-gradient(160deg,#F0F8FF,#E8F4FF)', borderRadius: 22, padding: 24, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+                <div style={{ fontSize: 16, marginBottom: 12, color: '#FFB800' }}>{'★'.repeat(t.estrellas)}</div>
+                <p style={{ fontSize: 13, color: '#444', lineHeight: 1.7, marginBottom: 18, fontStyle: 'italic' }}>"{t.texto}"</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#00B4D8,#0077B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'white', fontWeight: 800, flexShrink: 0 }}>
                     {t.nombre[0]}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: '#0A2540' }}>{t.nombre}</div>
-                    <div style={{ fontSize: 11, color: '#888' }}>{t.lugar}</div>
+                    <div style={{ fontWeight: 800, fontSize: 12, color: '#0A2540' }}>{t.nombre}</div>
+                    <div style={{ fontSize: 10, color: '#888' }}>{t.lugar}</div>
                   </div>
                 </div>
               </div>
@@ -301,8 +304,55 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* COLABORA CON NOSOTROS */}
+      <div id="colabora" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Colabora con nosotros</div>
+            <h2 style={{ fontSize: mobile ? 30 : 42, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 14 }}>¿Conoces chiringuitos?<br />Gana comisión por cada uno.</h2>
+            <p style={{ fontSize: 15, color: '#666', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
+              Conviértete en Chiring Partner, consigue tu link único y gana el <strong>1% de cada pedido</strong> de los chiringuitos que traigas. Sin límite.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr', gap: 24, marginBottom: 56 }}>
+            {[
+              { icon: '🔗', title: 'Tu link único', desc: 'Recibes un link personalizado para compartir con chiringuitos. Cada registro con tu link se asocia automáticamente a ti.', color: '#E0F8FF' },
+              { icon: '💰', title: '1% de comisión', desc: 'Ganas el 1% de cada pedido procesado por los chiringuitos que hayas traído. Sin techo, sin caducidad.', color: '#FFF5E0' },
+              { icon: '📊', title: 'Panel de seguimiento', desc: 'Accede a tu panel personal para ver tus chiringuitos, pedidos generados y comisiones acumuladas en tiempo real.', color: '#E8FFE8' },
+            ].map(c => (
+              <div key={c.title} style={{ background: c.color, borderRadius: 22, padding: 28, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>{c.icon}</div>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0A2540', marginBottom: 10 }}>{c.title}</h3>
+                <p style={{ fontSize: 14, color: '#555', lineHeight: 1.7 }}>{c.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', borderRadius: 24, padding: mobile ? 28 : 48, textAlign: 'center', boxShadow: '0 20px 50px rgba(0,119,182,0.2)' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🤝</div>
+            <h3 style={{ fontSize: mobile ? 24 : 32, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>
+              ¿Listo para ser Chiring Partner?
+            </h3>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 32, lineHeight: 1.7, maxWidth: 480, margin: '0 auto 32px' }}>
+              Regístrate gratis, recibe tu link único y empieza a ganar comisiones desde el primer chiringuito.
+            </p>
+            <a href="/partner" style={{
+              display: 'inline-block', background: 'white', color: '#0077B6',
+              padding: '18px 44px', borderRadius: 50, textDecoration: 'none',
+              fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+            }}>
+              🤝 Conviértete en Chiring Partner
+            </a>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 16 }}>
+              Gratis · Sin permanencia · Comisiones de por vida
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* FAQ */}
-      <div id="faq" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
+      <div id="faq" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'linear-gradient(160deg,#F0F8FF,#E8F4FF)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>FAQ</div>
@@ -310,7 +360,7 @@ export default function Landing() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {faqs.map((faq, i) => (
-              <div key={i} style={{ border: '1.5px solid #E0E8F0', borderRadius: 16, overflow: 'hidden' }}>
+              <div key={i} style={{ border: '1.5px solid #E0E8F0', borderRadius: 16, overflow: 'hidden', background: 'white' }}>
                 <button onClick={() => setFaqOpen(faqOpen === i ? null : i)} style={{
                   width: '100%', padding: '18px 20px', background: faqOpen === i ? '#F0F8FF' : 'white',
                   border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -356,7 +406,6 @@ export default function Landing() {
             <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>¿Tienes preguntas?</h2>
             <p style={{ fontSize: 14, color: '#666' }}>Te respondemos en menos de 24 horas</p>
           </div>
-
           {formEnviado ? (
             <div style={{ background: 'white', borderRadius: 22, padding: 40, textAlign: 'center', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>
               <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
@@ -369,38 +418,18 @@ export default function Landing() {
                 <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>Nombre *</label>
-                    <input
-                      style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }}
-                      placeholder="Tu nombre"
-                      value={formData.nombre}
-                      onChange={e => setFormData(f => ({ ...f, nombre: e.target.value }))}
-                    />
+                    <input style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }} placeholder="Tu nombre" value={formData.nombre} onChange={e => setFormData(f => ({ ...f, nombre: e.target.value }))} />
                   </div>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>Email *</label>
-                    <input
-                      style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }}
-                      type="email"
-                      placeholder="tu@email.com"
-                      value={formData.email}
-                      onChange={e => setFormData(f => ({ ...f, email: e.target.value }))}
-                    />
+                    <input style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }} type="email" placeholder="tu@email.com" value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} />
                   </div>
                 </div>
                 <div>
                   <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>Mensaje *</label>
-                  <textarea
-                    style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540', resize: 'vertical', minHeight: 120 }}
-                    placeholder="¿En qué podemos ayudarte?"
-                    value={formData.mensaje}
-                    onChange={e => setFormData(f => ({ ...f, mensaje: e.target.value }))}
-                  />
+                  <textarea style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540', resize: 'vertical', minHeight: 120 }} placeholder="¿En qué podemos ayudarte?" value={formData.mensaje} onChange={e => setFormData(f => ({ ...f, mensaje: e.target.value }))} />
                 </div>
-                <button
-                  onClick={enviarContacto}
-                  disabled={formCargando || !formData.nombre || !formData.email || !formData.mensaje}
-                  style={{ padding: '14px', background: (!formData.nombre || !formData.email || !formData.mensaje) ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: (!formData.nombre || !formData.email || !formData.mensaje) ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}
-                >
+                <button onClick={enviarContacto} disabled={formCargando || !formData.nombre || !formData.email || !formData.mensaje} style={{ padding: '14px', background: (!formData.nombre || !formData.email || !formData.mensaje) ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: (!formData.nombre || !formData.email || !formData.mensaje) ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
                   {formCargando ? 'Enviando...' : '📧 Enviar mensaje'}
                 </button>
                 <div style={{ textAlign: 'center', fontSize: 13, color: '#aaa' }}>
@@ -434,7 +463,7 @@ export default function Landing() {
             </div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Cuenta</div>
-              {['/panel|Iniciar sesión', '/registro|Crear cuenta', '#contacto|Soporte'].map(item => {
+              {['/panel|Iniciar sesión', '/registro|Crear cuenta', '#contacto|Soporte', '/partner|Ser Partner'].map(item => {
                 const [href, label] = item.split('|')
                 return <div key={href} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{label}</a></div>
               })}
