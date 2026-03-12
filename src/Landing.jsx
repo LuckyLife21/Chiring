@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { supabase } from './supabase'
 
 const isMobile = () => window.innerWidth < 768
 
@@ -10,6 +11,10 @@ export default function Landing() {
   const [formData, setFormData] = useState({ nombre: '', email: '', mensaje: '' })
   const [formEnviado, setFormEnviado] = useState(false)
   const [formCargando, setFormCargando] = useState(false)
+  const [partnerModal, setPartnerModal] = useState(false)
+  const [partnerLogin, setPartnerLogin] = useState({ email: '', password: '' })
+  const [partnerError, setPartnerError] = useState('')
+  const [partnerCargando, setPartnerCargando] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
@@ -27,6 +32,25 @@ export default function Landing() {
     await new Promise(r => setTimeout(r, 1000))
     setFormCargando(false)
     setFormEnviado(true)
+  }
+
+  async function loginPartner() {
+    if (!partnerLogin.email || !partnerLogin.password) {
+      setPartnerError('Rellena todos los campos')
+      return
+    }
+    setPartnerCargando(true)
+    setPartnerError('')
+    const { error } = await supabase.auth.signInWithPassword({
+      email: partnerLogin.email,
+      password: partnerLogin.password,
+    })
+    if (error) {
+      setPartnerError('Email o contraseña incorrectos')
+      setPartnerCargando(false)
+    } else {
+      window.location.href = '/partner'
+    }
   }
 
   const faqs = [
@@ -49,8 +73,51 @@ export default function Landing() {
     { nombre: 'Elena T.', lugar: 'La Ola Beach Club · Valencia', texto: 'El soporte es muy rápido. Tuvimos una duda el primer día y nos la resolvieron en minutos. Muy recomendable.', estrellas: 5 },
   ]
 
+  const inputStyle = { width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }
+
   return (
     <div style={{ fontFamily: "'Poppins', sans-serif", overflowX: 'hidden', background: '#fff', margin: 0, padding: 0, width: '100%' }}>
+
+      {/* MODAL PARTNER LOGIN */}
+      {partnerModal && (
+        <div onClick={() => setPartnerModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <div style={{ fontSize: 36, marginBottom: 8 }}>🤝</div>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Chiring Partners</h2>
+              <p style={{ fontSize: 13, color: '#888' }}>Inicia sesión en tu panel de partner</p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 Email</label>
+                <input style={inputStyle} type="email" placeholder="tu@email.com" value={partnerLogin.email} onChange={e => { setPartnerLogin(f => ({ ...f, email: e.target.value })); setPartnerError('') }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 Contraseña</label>
+                <input style={inputStyle} type="password" placeholder="••••••••" value={partnerLogin.password} onChange={e => { setPartnerLogin(f => ({ ...f, password: e.target.value })); setPartnerError('') }} onKeyDown={e => e.key === 'Enter' && loginPartner()} />
+              </div>
+
+              {partnerError && (
+                <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>
+                  ⚠️ {partnerError}
+                </div>
+              )}
+
+              <button onClick={loginPartner} disabled={partnerCargando} style={{ padding: '14px', background: partnerCargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: partnerCargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                {partnerCargando ? 'Entrando...' : 'Entrar al panel'}
+              </button>
+
+              <div style={{ textAlign: 'center', fontSize: 13, color: '#888', lineHeight: 1.8 }}>
+                ¿No tienes cuenta?{' '}
+                <a href="/partner" style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>Regístrate como partner</a>
+                <br />
+                <a href="/partner?reset=1" style={{ color: '#aaa', fontSize: 12, textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* NAV */}
       <nav style={{
@@ -67,10 +134,11 @@ export default function Landing() {
           </div>
           {!mobile && (
             <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-              {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#colabora|Partners', '#faq|FAQ', '#contacto|Contacto'].map(item => {
+              {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#faq|FAQ', '#contacto|Contacto'].map(item => {
                 const [href, label] = item.split('|')
                 return <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{label}</a>
               })}
+              <button onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>Partners</button>
               <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>Iniciar sesión</a>
               <a href="/registro" style={{
                 background: navBg ? 'linear-gradient(135deg,#00B4D8,#0077B6)' : 'white',
@@ -92,6 +160,7 @@ export default function Landing() {
               const [href, label] = item.split('|')
               return <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{label}</a>
             })}
+            <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>Acceso Partners</button>
             <a href="/panel" onClick={() => setMenuOpen(false)} style={{ color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>Iniciar sesión</a>
             <a href="/registro" onClick={() => setMenuOpen(false)} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, textDecoration: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center' }}>Registrarse gratis</a>
           </div>
