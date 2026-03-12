@@ -8,6 +8,7 @@ export default function Partner() {
   const [paso, setPaso] = useState(1)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
+  const [codigoGuardado, setCodigoGuardado] = useState('')
 
   const [form, setForm] = useState({
     nombre: '',
@@ -68,6 +69,7 @@ export default function Partner() {
             chiringuitos_conocidos: form.chiringuitos_conocidos,
             codigo_ref: codigo_ref2,
           })
+          setCodigoGuardado(codigo_ref2)
           setPaso(2)
         } else {
           setError('Error al registrarte. Inténtalo de nuevo.')
@@ -75,6 +77,7 @@ export default function Partner() {
           return
         }
       } else {
+        setCodigoGuardado(codigo_ref)
         setPaso(2)
       }
     } catch (e) {
@@ -83,8 +86,6 @@ export default function Partner() {
 
     setCargando(false)
   }
-
-  const codigoRef = form.nombre ? generarCodigo(form.nombre) : 'TUNOMBRE123'
 
   const inputStyle = {
     width: '100%', padding: '14px 16px', borderRadius: 12,
@@ -98,9 +99,6 @@ export default function Partner() {
   }
 
   if (paso === 2) {
-    const codigoFinal = form.nombre ? generarCodigo(form.nombre) : 'PARTNER123'
-    const linkFinal = `https://chiringapp.com/registro?ref=${codigoFinal}`
-
     return (
       <div style={{
         minHeight: '100vh',
@@ -124,7 +122,7 @@ export default function Partner() {
           <div style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.25)', borderRadius: 16, padding: '18px 20px', marginBottom: 12 }}>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 6, fontWeight: 600 }}>Tu link de referido</div>
             <div style={{ fontSize: mobile ? 13 : 15, color: 'white', fontWeight: 800, wordBreak: 'break-all' }}>
-              chiringapp.com/registro?ref=<span style={{ color: '#7FDBFF' }}>{form.nombre.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '')}XXX</span>
+              chiringapp.com/registro?ref=<span style={{ color: '#7FDBFF' }}>{codigoGuardado}</span>
             </div>
           </div>
 
@@ -157,7 +155,6 @@ export default function Partner() {
   return (
     <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
 
-      {/* HEADER */}
       <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', padding: mobile ? '20px' : '24px 40px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/" style={{ fontSize: 20, fontWeight: 900, color: 'white', textDecoration: 'none', letterSpacing: -1 }}>
@@ -169,7 +166,6 @@ export default function Partner() {
         </div>
       </div>
 
-      {/* HERO */}
       <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', padding: mobile ? '32px 20px 60px' : '40px 40px 70px', textAlign: 'center' }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>
           Chiring Partners
@@ -189,7 +185,6 @@ export default function Partner() {
         </div>
       </div>
 
-      {/* FORMULARIO */}
       <div style={{ maxWidth: 580, margin: mobile ? '-30px 20px 40px' : '-40px auto 60px', position: 'relative' }}>
         <div style={{ background: 'white', borderRadius: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.12)', padding: mobile ? 24 : 40 }}>
 
@@ -197,7 +192,6 @@ export default function Partner() {
           <p style={{ fontSize: 13, color: '#888', marginBottom: 28 }}>Rellena el formulario y en menos de 24h recibes tu link único</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-
             <div>
               <label style={labelStyle}>👤 Nombre completo *</label>
               <input style={inputStyle} placeholder="Tu nombre y apellidos" value={form.nombre} onChange={e => cambiar('nombre', e.target.value)} />
@@ -230,17 +224,7 @@ export default function Partner() {
               </div>
             )}
 
-            <button
-              onClick={registrar}
-              disabled={cargando}
-              style={{
-                padding: '16px', background: cargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)',
-                color: 'white', border: 'none', borderRadius: 50,
-                fontSize: 16, fontWeight: 800, cursor: cargando ? 'default' : 'pointer',
-                fontFamily: 'Poppins, sans-serif',
-                boxShadow: cargando ? 'none' : '0 8px 24px rgba(0,119,182,0.3)',
-              }}
-            >
+            <button onClick={registrar} disabled={cargando} style={{ padding: '16px', background: cargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 16, fontWeight: 800, cursor: cargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif', boxShadow: cargando ? 'none' : '0 8px 24px rgba(0,119,182,0.3)' }}>
               {cargando ? 'Registrando...' : '🤝 Quiero ser Chiring Partner'}
             </button>
 
