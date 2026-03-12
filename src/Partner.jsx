@@ -70,6 +70,9 @@ export default function Partner() {
             codigo_ref: codigo_ref2,
           })
           setCodigoGuardado(codigo_ref2)
+          await supabase.functions.invoke('enviar-partner', {
+            body: { email: form.email, nombre: form.nombre, codigo_ref: codigo_ref2 }
+          })
           setPaso(2)
         } else {
           setError('Error al registrarte. Inténtalo de nuevo.')
@@ -78,6 +81,9 @@ export default function Partner() {
         }
       } else {
         setCodigoGuardado(codigo_ref)
+        await supabase.functions.invoke('enviar-partner', {
+          body: { email: form.email, nombre: form.nombre, codigo_ref }
+        })
         setPaso(2)
       }
     } catch (e) {
