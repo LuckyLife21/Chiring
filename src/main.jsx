@@ -20,8 +20,8 @@ const isPanel = path === '/panel'
 const isQR = path === '/qr'
 const isHamaca = path.startsWith('/hamaca/')
 const isRegistro = path === '/registro'
+const isBienvenida = path === '/bienvenida' || hash.includes('access_token')
 const isPartner = path === '/partner'
-const isBienvenida = (path === '/bienvenida' || hash.includes('access_token')) && !isPartner
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
