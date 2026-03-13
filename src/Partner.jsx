@@ -34,38 +34,43 @@ export default function Partner() {
   }, [])
 
   useEffect(() => {
-    async function checkSession() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        const meta = session.user.user_metadata
-        if (meta?.rol === 'partner' && session.user.email_confirmed_at) {
-          setUsuario(session.user)
-          const { data } = await supabase
-            .from('colaboradores')
-            .select('*')
-            .eq('email', session.user.email)
-            .single()
-          if (data) {
-            setColaborador(data)
-            if (!data.confirmado) {
-              await supabase.from('colaboradores').update({ confirmado: true }).eq('email', session.user.email)
-              await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + ANON_KEY },
-                body: JSON.stringify({ email: data.email, nombre: data.nombre, codigo_ref: data.codigo_ref })
-              })
-            }
-            const { data: chirs } = await supabase
-              .from('chiringuitos')
-              .select('id, nombre, created_at')
-              .eq('ref_colaborador', data.codigo_ref)
-            setChiringuitos(chirs || [])
+    async function cargarPanel(session) {
+      if (!session?.user) { setCargandoPanel(false); return }
+      const meta = session.user.user_metadata
+      if (meta?.rol === 'partner' && session.user.email_confirmed_at) {
+        setUsuario(session.user)
+        const { data } = await supabase
+          .from('colaboradores')
+          .select('*')
+          .eq('email', session.user.email)
+          .single()
+        if (data) {
+          setColaborador(data)
+          if (!data.confirmado) {
+            await supabase.from('colaboradores').update({ confirmado: true }).eq('email', session.user.email)
+            await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Authorization": "Bearer " + ANON_KEY },
+              body: JSON.stringify({ email: data.email, nombre: data.nombre, codigo_ref: data.codigo_ref })
+            })
           }
+          const { data: chirs } = await supabase
+            .from('chiringuitos')
+            .select('id, nombre, created_at')
+            .eq('ref_colaborador', data.codigo_ref)
+          setChiringuitos(chirs || [])
         }
       }
       setCargandoPanel(false)
     }
-    checkSession()
+
+    supabase.auth.getSession().then(({ data: { session } }) => cargarPanel(session))
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      cargarPanel(session)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   function cambiar(campo, valor) {
