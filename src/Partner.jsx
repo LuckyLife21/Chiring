@@ -39,7 +39,7 @@ export default function Partner() {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         const meta = session.user.user_metadata
-        if (meta?.rol === 'partner' && session.user.email_confirmed_at) {
+        if (meta?.rol === 'partner') {
           setUsuario(session.user)
           const { data } = await supabase
             .from('colaboradores')
