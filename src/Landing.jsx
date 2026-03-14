@@ -14,17 +14,6 @@ function LogoLoginIcon({ size = 48, color = '#0077B6' }) {
   )
 }
 
-// Icono apretón de manos (Partners): dos manos entrelazadas, estilo line-art
-function HandshakeIcon({ size = 48, color = '#E6A800' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M18 28v-4c0-1.5 1.2-2.8 2.8-2.8h1.4l1.4 2.8 2.8-2.8h2.8c1.5 0 2.8 1.2 2.8 2.8v4l-2.8 4-2.8 2.8-2.8-1.4-2.8 1.4-2.8-2.8-2.8-4z" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round" />
-      <path d="M20 24l1.5 1.5 3-3 3 3 1.5-1.5" stroke={color} strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M22 18v2M26 18v2M24 16v2" stroke={color} strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.8" />
-    </svg>
-  )
-}
-
 export default function Landing() {
   const { lang, setLang, t } = useLanguage()
   const [scrollY, setScrollY] = useState(0)
@@ -38,10 +27,14 @@ export default function Landing() {
   const [formCargando, setFormCargando] = useState(false)
   const [formError, setFormError] = useState('')
   const [partnerModal, setPartnerModal] = useState(false)
+  const [chiringuitoModal, setChiringuitoModal] = useState(false)
   const [registroModal, setRegistroModal] = useState(false)
   const [partnerLogin, setPartnerLogin] = useState({ email: '', password: '' })
   const [partnerError, setPartnerError] = useState('')
   const [partnerCargando, setPartnerCargando] = useState(false)
+  const [chiringuitoLogin, setChiringuitoLogin] = useState({ email: '', password: '' })
+  const [chiringuitoError, setChiringuitoError] = useState('')
+  const [chiringuitoCargando, setChiringuitoCargando] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
@@ -104,6 +97,25 @@ export default function Landing() {
     }
   }
 
+  async function loginChiringuito() {
+    if (!chiringuitoLogin.email || !chiringuitoLogin.password) {
+      setChiringuitoError('Rellena todos los campos')
+      return
+    }
+    setChiringuitoCargando(true)
+    setChiringuitoError('')
+    const { error } = await supabase.auth.signInWithPassword({
+      email: chiringuitoLogin.email,
+      password: chiringuitoLogin.password,
+    })
+    if (error) {
+      setChiringuitoError('Email o contraseña incorrectos')
+      setChiringuitoCargando(false)
+    } else {
+      window.location.href = '/panel'
+    }
+  }
+
   const faqs = [
     { q: t('faq_0_q'), r: t('faq_0_r') },
     { q: t('faq_1_q'), r: t('faq_1_r') },
@@ -140,12 +152,47 @@ export default function Landing() {
   return (
     <div style={{ fontFamily: "'Poppins', sans-serif", overflowX: 'hidden', background: '#fff', margin: 0, padding: 0, width: '100%' }}>
 
+      {/* MODAL CHIRINGUITOS LOGIN (misma página, como Partners) */}
+      {chiringuitoModal && (
+        <div onClick={() => setChiringuitoModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={56} color="#0077B6" /></div>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Chiring</h2>
+              <p style={{ fontSize: 13, color: '#888' }}>{t('panel_subtitle')}</p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 {t('modal_partner_email')}</label>
+                <input style={inputStyle} type="email" placeholder="tu@email.com" value={chiringuitoLogin.email} onChange={e => { setChiringuitoLogin(c => ({ ...c, email: e.target.value })); setChiringuitoError('') }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 {t('modal_partner_password')}</label>
+                <input style={inputStyle} type="password" placeholder="••••••••" value={chiringuitoLogin.password} onChange={e => { setChiringuitoLogin(c => ({ ...c, password: e.target.value })); setChiringuitoError('') }} onKeyDown={e => e.key === 'Enter' && loginChiringuito()} />
+              </div>
+              {chiringuitoError && (
+                <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>⚠️ {chiringuitoError}</div>
+              )}
+              <button onClick={loginChiringuito} disabled={chiringuitoCargando} style={{ padding: '14px', background: chiringuitoCargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: chiringuitoCargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                {chiringuitoCargando ? t('modal_partner_entering') : t('panel_enter')}
+              </button>
+              <div style={{ textAlign: 'center', fontSize: 13, color: '#888' }}>
+                <a href="/panel" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
+                <br />
+                {t('modal_partner_noAccount')}{' '}
+                <a href="/registro" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('nav_registerFree')}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODAL PARTNER LOGIN */}
       {partnerModal && (
         <div onClick={() => setPartnerModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><HandshakeIcon size={56} color="#E6A800" /></div>
+              <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={56} color="#E6A800" /></div>
               <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>{t('modal_partner_title')}</h2>
               <p style={{ fontSize: 13, color: '#888' }}>{t('modal_partner_subtitle')}</p>
             </div>
@@ -197,7 +244,7 @@ export default function Landing() {
                 <span>{t('modal_register_chiringuito')}</span>
               </a>
               <a href="/partner" onClick={() => setRegistroModal(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', background: '#FFF8F0', border: '2px solid #E6A800', borderRadius: 16, textDecoration: 'none', color: '#0A2540', fontWeight: 800, fontSize: 15, fontFamily: 'Poppins, sans-serif' }}>
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><HandshakeIcon size={28} color="#E6A800" /></span>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LogoLoginIcon size={28} color="#E6A800" /></span>
                 <span>{t('modal_register_partner')}</span>
               </a>
             </div>
@@ -206,40 +253,52 @@ export default function Landing() {
         </div>
       )}
 
-      {/* Panel lateral tipo Just Eat: Únete y consigue más ventajas (desktop) */}
+      {/* Panel lateral estilo Just Eat: Mi cuenta + beneficios + CTA */}
       {!mobile && panelOpen && (
         <>
           <div role="presentation" onClick={() => setPanelOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 198 }} />
-          <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(360px, 90vw)', background: 'white', zIndex: 199, boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', padding: '80px 24px 24px', overflowY: 'auto' }}>
-            <button type="button" aria-label="Cerrar" onClick={() => setPanelOpen(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', fontSize: 24, color: '#888', cursor: 'pointer' }}>×</button>
-            <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0A2540', marginBottom: 16 }}>{t('menu_joinBenefits')}</h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {[t('menu_benefit1'), t('menu_benefit2'), t('menu_benefit3'), t('menu_benefit4')].map((text, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12, fontSize: 14, color: '#555' }}>
-                    <span style={{ color: '#00B4D8', fontWeight: 800 }}>✓</span>
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
+          <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(380px, 92vw)', background: '#FAFBFC', zIndex: 199, boxShadow: '-12px 0 40px rgba(0,0,0,0.15)', overflowY: 'auto', fontFamily: "'Poppins', sans-serif" }}>
+            <div style={{ padding: '24px 24px 32px', borderBottom: '1px solid #eee', background: 'white' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0A2540', margin: 0 }}>{t('menu_myAccount')}</h2>
+                <button type="button" aria-label="Cerrar" onClick={() => setPanelOpen(false)} style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0f0f0', border: 'none', borderRadius: '50%', fontSize: 18, color: '#555', cursor: 'pointer' }}>×</button>
+              </div>
+              <div style={{ background: 'linear-gradient(135deg, #E8F4FC 0%, #F0F8FF 100%)', borderRadius: 16, padding: 20, border: '1px solid rgba(0,180,216,0.2)' }}>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0A2540', marginBottom: 14, marginTop: 0 }}>{t('menu_joinBenefits')}</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 18px 0' }}>
+                  {[t('menu_benefit1'), t('menu_benefit2'), t('menu_benefit3'), t('menu_benefit4')].map((text, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8, fontSize: 13, color: '#444' }}>
+                      <span style={{ color: '#0077B6', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                      <span>{text}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button type="button" onClick={() => { setPanelOpen(false); setRegistroModal(true) }} style={{ width: '100%', padding: '14px 20px', background: 'linear-gradient(135deg,#E6A800,#D49400)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 800, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', boxShadow: '0 4px 14px rgba(230,168,0,0.35)' }}>
+                  {t('menu_loginOrRegister')}
+                </button>
+              </div>
             </div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>{t('footer_account')}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <a href="/panel" onClick={() => setPanelOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0077B6', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
-                <LogoLoginIcon size={20} color="#0077B6" />
-                {t('nav_chiringuitos')}
-              </a>
-              <button type="button" onClick={() => { setPanelOpen(false); setPartnerModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontWeight: 700, fontSize: 15, textAlign: 'left', padding: 0, fontFamily: 'Poppins, sans-serif' }}>
-                <HandshakeIcon size={20} color="#E6A800" />
-                {t('nav_partners')}
+            <div style={{ padding: '20px 24px' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 12 }}>{t('footer_account')}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <button type="button" onClick={() => { setPanelOpen(false); setChiringuitoModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', background: 'white', border: '1px solid #eee', borderRadius: 12, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', fontSize: 15, fontWeight: 700, color: '#0A2540', textAlign: 'left', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <LogoLoginIcon size={24} color="#0077B6" />
+                  {t('nav_chiringuitos')}
+                </button>
+                <button type="button" onClick={() => { setPanelOpen(false); setPartnerModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', background: 'white', border: '1.5px solid rgba(230,168,0,0.5)', borderRadius: 12, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', fontSize: 15, fontWeight: 700, color: '#0A2540', textAlign: 'left', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <LogoLoginIcon size={24} color="#E6A800" />
+                  {t('nav_partners')}
+                </button>
+              </div>
+              <button type="button" onClick={() => { setPanelOpen(false); setRegistroModal(true) }} style={{ width: '100%', marginTop: 20, padding: '16px', background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 14, fontSize: 16, fontWeight: 800, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', boxShadow: '0 6px 20px rgba(0,119,182,0.3)' }}>
+                {t('nav_registerFree')}
               </button>
-              <button type="button" onClick={() => { setPanelOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', marginTop: 8 }}>{t('nav_registerFree')}</button>
             </div>
-            <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #eee' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>{t('lang_label')}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ padding: '20px 24px 28px', borderTop: '1px solid #eee', background: 'white' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 12 }}>{t('lang_label')}</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {['es', 'en', 'it', 'fr'].map(l => (
-                  <button key={l} type="button" onClick={() => setLang(l)} style={{ padding: '8px 14px', borderRadius: 20, border: lang === l ? '2px solid #0077B6' : '1px solid #ddd', background: lang === l ? '#F0F8FF' : 'white', color: lang === l ? '#0077B6' : '#555', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{t(`lang_${l}`)}</button>
+                  <button key={l} type="button" onClick={() => setLang(l)} style={{ padding: '10px 16px', borderRadius: 10, border: lang === l ? '2px solid #0077B6' : '1px solid #ddd', background: lang === l ? '#F0F8FF' : '#f8f8f8', color: lang === l ? '#0077B6' : '#555', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{t(`lang_${l}`)}</button>
                 ))}
               </div>
             </div>
@@ -265,12 +324,12 @@ export default function Landing() {
               {[['#como-funciona', 'nav_howItWorks'], ['#precios', 'nav_prices'], ['#testimonios', 'nav_reviews'], ['#faq', 'nav_faq'], ['#contacto', 'nav_contact']].map(([href, key]) => (
                 <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{t(key)}</a>
               ))}
-              <a href="/panel" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>
+              <button type="button" onClick={() => setChiringuitoModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 700, fontFamily: 'Poppins, sans-serif', padding: 0, textDecoration: 'none' }}>
                 <LogoLoginIcon size={18} color={navBg ? '#0077B6' : 'rgba(255,255,255,0.9)'} />
                 {t('nav_chiringuitos')}
-              </a>
-              <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>
-                <HandshakeIcon size={18} color={navBg ? '#555' : 'rgba(255,255,255,0.9)'} />
+              </button>
+              <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 20, border: '1.5px solid ' + (navBg ? '#E6A800' : 'rgba(230,168,0,0.8)'), background: navBg ? 'rgba(230,168,0,0.12)' : 'rgba(230,168,0,0.2)', color: navBg ? '#B8860B' : 'rgba(255,255,255,0.95)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                <LogoLoginIcon size={18} color={navBg ? '#B8860B' : 'rgba(255,255,255,0.95)'} />
                 {t('nav_partners')}
               </button>
               <div style={{ position: 'relative' }}>
@@ -334,12 +393,12 @@ export default function Landing() {
             {[['#como-funciona', 'nav_howItWorks'], ['#precios', 'nav_prices'], ['#testimonios', 'nav_reviews'], ['#colabora', 'nav_partners'], ['#faq', 'nav_faq'], ['#contacto', 'nav_contact']].map(([href, key]) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{t(key)}</a>
             ))}
-            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>
+            <button type="button" onClick={() => { setMenuOpen(false); setChiringuitoModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>
               <LogoLoginIcon size={22} color="#0077B6" />
               {t('nav_chiringuitos')}
-            </a>
-            <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>
-              <HandshakeIcon size={22} color="#E6A800" />
+            </button>
+            <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', borderRadius: 20, border: '1.5px solid #E6A800', background: 'rgba(230,168,0,0.12)', color: '#B8860B', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', cursor: 'pointer' }}>
+              <LogoLoginIcon size={22} color="#E6A800" />
               {t('nav_partnersAccess')}
             </button>
             <button type="button" onClick={() => { setMenuOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center', width: '100%', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{t('nav_registerFree')}</button>
