@@ -208,20 +208,29 @@ function Manager({ chiringuito, onVolver }) {
   useEffect(() => { cargarTodo() }, [])
 
   async function cargarTodo() {
-    const [{ data: p }, { data: pr }, { data: c }, { data: h }] = await Promise.all([
-      supabase.from('pedidos').select(`*, hamacas(numero), pedido_items(cantidad, precio_unitario, productos(nombre))`).eq('chiringuito_id', chiringuito.id).order('created_at', { ascending: false }),
-      supabase.from('productos').select('*').eq('chiringuito_id', chiringuito.id).order('nombre'),
-      supabase.from('categorias').select('*').eq('chiringuito_id', chiringuito.id).order('orden'),
-      supabase.from('hamacas').select('*').eq('chiringuito_id', chiringuito.id).order('numero'),
-    ])
-    if (p) setPedidos(p)
-    if (pr) setProductos(pr)
-    if (c) setCategorias(c)
-    if (h) setHamacas(h)
     try {
-      const { data: cod } = await supabase.from('codigos_descuento').select('*').eq('chiringuito_id', chiringuito.id).order('codigo')
-      setCodigosDescuento(cod || [])
-    } catch (_) { setCodigosDescuento([]) }
+      if (!chiringuito?.id) { setLoading(false); return }
+      const [{ data: p }, { data: pr }, { data: c }, { data: h }] = await Promise.all([
+        supabase.from('pedidos').select(`*, hamacas(numero), pedido_items(cantidad, precio_unitario, productos(nombre))`).eq('chiringuito_id', chiringuito.id).order('created_at', { ascending: false }),
+        supabase.from('productos').select('*').eq('chiringuito_id', chiringuito.id).order('nombre'),
+        supabase.from('categorias').select('*').eq('chiringuito_id', chiringuito.id).order('orden'),
+        supabase.from('hamacas').select('*').eq('chiringuito_id', chiringuito.id).order('numero'),
+      ])
+      if (p) setPedidos(p)
+      if (pr) setProductos(pr)
+      if (c) setCategorias(c)
+      if (h) setHamacas(h)
+      try {
+        const { data: cod } = await supabase.from('codigos_descuento').select('*').eq('chiringuito_id', chiringuito.id).order('codigo')
+        setCodigosDescuento(cod || [])
+      } catch (_) { setCodigosDescuento([]) }
+    } catch (_) {
+      setPedidos([])
+      setProductos([])
+      setCategorias([])
+      setHamacas([])
+      setCodigosDescuento([])
+    }
     setLoading(false)
   }
 
@@ -922,9 +931,16 @@ export default function Panel() {
     return null
   }
   if (vistaManager && !pinVerificado)
-    return <PinManager pinCorrecto={chiringuito?.pin_manager || '1234'} onAcceso={() => setPinVerificado(true)} />
-  if (vistaManager && pinVerificado)
+    return <PinManager pinCorrecto={chiringuito?.pin_manager || session?.user?.user_metadata?.pin_manager || '1234'} onAcceso={() => setPinVerificado(true)} />
+  if (vistaManager && pinVerificado && chiringuito)
     return <Manager chiringuito={chiringuito} onVolver={() => { setVistaManager(false); setPinVerificado(false) }} />
+  if (vistaManager && pinVerificado && !chiringuito)
+    return (
+      <div style={s.bg}>
+        <div style={{ padding: 40, textAlign: 'center', color: '#0A2540' }}>Cargando Manager...</div>
+        <button style={s.logoutBtn} onClick={() => { setVistaManager(false); setPinVerificado(false) }}>← Volver</button>
+      </div>
+    )
 
   const colores = {
     pendiente_pago: { bg:'#FFE8D6', color:'#7C3A00', label:'⏳ PENDIENTE PAGO' },
@@ -974,6 +990,7 @@ export default function Panel() {
           <div style={{textAlign:'center',padding:60,color:'#aaa'}}>
             <div style={{fontSize:48,marginBottom:12}}>🏖️</div>
             <div style={{fontWeight:600}}>Esperando pedidos...</div>
+            <p style={{fontSize:13,color:'#00B4D8',marginTop:12,maxWidth:320,marginLeft:'auto',marginRight:'auto'}}>¿Primera vez? Entra en <strong>Manager</strong> (arriba) para ver los primeros pasos: añadir productos, crear hamacas e imprimir los QR.</p>
           </div>
         ) : (
           pedidos.map(pedido => {
