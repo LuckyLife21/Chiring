@@ -13,6 +13,7 @@ export default function Landing() {
   const [formCargando, setFormCargando] = useState(false)
   const [formError, setFormError] = useState('')
   const [partnerModal, setPartnerModal] = useState(false)
+  const [registroModal, setRegistroModal] = useState(false)
   const [partnerLogin, setPartnerLogin] = useState({ email: '', password: '' })
   const [partnerError, setPartnerError] = useState('')
   const [partnerCargando, setPartnerCargando] = useState(false)
@@ -148,6 +149,28 @@ export default function Landing() {
         </div>
       )}
 
+      {/* MODAL: ¿Registrarte como chiringuito o como partner? */}
+      {registroModal && (
+        <div onClick={() => setRegistroModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
+            <button type="button" onClick={() => setRegistroModal(false)} aria-label="Cerrar" style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', fontSize: 24, color: '#888', cursor: 'pointer', padding: 4, lineHeight: 1 }}>×</button>
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#0A2540', marginBottom: 8, textAlign: 'center', paddingRight: 24 }}>¿Quieres registrarte como chiringuito o como partner?</h2>
+            <p style={{ fontSize: 13, color: '#666', textAlign: 'center', marginBottom: 24 }}>Elige el tipo de cuenta que necesitas</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <a href="/registro" onClick={() => setRegistroModal(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', background: '#F0F8FF', border: '2px solid #00B4D8', borderRadius: 16, textDecoration: 'none', color: '#0A2540', fontWeight: 800, fontSize: 15, fontFamily: 'Poppins, sans-serif' }}>
+                <span style={{ fontSize: 28 }}>🏖️</span>
+                <span>Chiringuito — crea tu carta, hamacas y recibe pedidos</span>
+              </a>
+              <a href="/partner" onClick={() => setRegistroModal(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', background: '#FFF8F0', border: '2px solid #E6A800', borderRadius: 16, textDecoration: 'none', color: '#0A2540', fontWeight: 800, fontSize: 15, fontFamily: 'Poppins, sans-serif' }}>
+                <span style={{ fontSize: 28 }}>🤝</span>
+                <span>Partner — recomienda chiringuitos y gana comisiones</span>
+              </a>
+            </div>
+            <p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 16 }}>¿Ya tienes cuenta? <a href="/panel" style={{ color: '#0077B6', fontWeight: 700 }}>Chiringuitos</a> · <button type="button" onClick={() => { setRegistroModal(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', color: '#0077B6', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 12 }}>Partners</button></p>
+          </div>
+        </div>
+      )}
+
       {/* NAV */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, width: '100%',
@@ -168,13 +191,13 @@ export default function Landing() {
                 return <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{label}</a>
               })}
               <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>Partners</button>
-              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>Iniciar sesión</a>
-              <a href="/registro" style={{
+              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>Chiringuitos</a>
+              <button type="button" onClick={() => setRegistroModal(true)} style={{
                 background: navBg ? 'linear-gradient(135deg,#00B4D8,#0077B6)' : 'white',
                 color: navBg ? 'white' : '#0077B6',
-                padding: '10px 22px', borderRadius: 50, textDecoration: 'none', fontSize: 13, fontWeight: 700,
-                boxShadow: navBg ? 'none' : '0 4px 15px rgba(0,0,0,0.15)',
-              }}>Registrarse gratis</a>
+                padding: '10px 22px', borderRadius: 50, border: 'none', fontSize: 13, fontWeight: 700,
+                boxShadow: navBg ? 'none' : '0 4px 15px rgba(0,0,0,0.15)', cursor: 'pointer', fontFamily: 'Poppins, sans-serif',
+              }}>Registrarse gratis</button>
             </div>
           )}
           {mobile && (
@@ -190,8 +213,8 @@ export default function Landing() {
               return <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{label}</a>
             })}
             <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>Acceso Partners</button>
-            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>Iniciar sesión</a>
-            <a href="/registro" onClick={() => setMenuOpen(false)} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, textDecoration: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center' }}>Registrarse gratis</a>
+            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>Chiringuitos</a>
+            <button type="button" onClick={() => { setMenuOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center', width: '100%', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>Registrarse gratis</button>
           </div>
         )}
       </nav>
@@ -487,11 +510,11 @@ export default function Landing() {
           <p style={{ fontSize: mobile ? 14 : 16, color: 'rgba(255,255,255,0.75)', marginBottom: 36, lineHeight: 1.7 }}>
             Configura tu chiringuito en 2 minutos. Solo pagas cuando vendes.
           </p>
-          <a href="/registro" style={{ display: 'inline-block', background: 'white', color: '#0077B6', padding: '18px 40px', borderRadius: 50, textDecoration: 'none', fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)' }}>
+          <button type="button" onClick={() => setRegistroModal(true)} style={{ display: 'inline-block', background: 'white', color: '#0077B6', padding: '18px 40px', borderRadius: 50, border: 'none', fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
             🚀 Crear mi cuenta gratis
-          </a>
+          </button>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
-            ¿Ya tienes cuenta? <a href="/panel" style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>Inicia sesión aquí</a>
+            ¿Ya tienes cuenta? <a href="/panel" style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>Chiringuitos</a> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>Partners</button>
           </div>
         </div>
       </div>
@@ -587,7 +610,7 @@ export default function Landing() {
             </div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Cuenta</div>
-              {['/panel|Iniciar sesión', '/registro|Crear cuenta', '#contacto|Soporte', '/partner|Ser Partner'].map(item => {
+              {['/panel|Chiringuitos', '/registro|Crear cuenta', '#contacto|Soporte', '/partner|Ser Partner'].map(item => {
                 const [href, label] = item.split('|')
                 return <div key={href} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{label}</a></div>
               })}
@@ -609,19 +632,20 @@ export default function Landing() {
 
       {/* Botón flotante CTA */}
       {scrollY > 300 && (
-        <a
-          href="/registro"
-          aria-label="Ir a registrarse gratis"
+        <button
+          type="button"
+          onClick={() => setRegistroModal(true)}
+          aria-label="Registrarse gratis"
           style={{
             position: 'fixed', bottom: 24, right: 24, zIndex: 99,
             background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px 24px',
-            borderRadius: 50, fontSize: 14, fontWeight: 800, textDecoration: 'none',
-            boxShadow: '0 6px 24px rgba(0,180,216,0.45)',
+            borderRadius: 50, fontSize: 14, fontWeight: 800, border: 'none',
+            boxShadow: '0 6px 24px rgba(0,180,216,0.45)', cursor: 'pointer',
             fontFamily: 'Poppins, sans-serif',
           }}
         >
           Probar gratis →
-        </a>
+        </button>
       )}
     </div>
   )
