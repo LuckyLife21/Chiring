@@ -328,6 +328,35 @@ export default function Partner() {
         { v: 'año', l: 'Este año' },
         { v: 'custom', l: 'Rango' }
       ]
+      const textoPeriodoDetalle = periodoDetalle === 'custom' ? `${fechaDesde} a ${fechaHasta}` : periodosDetalle.find(x => x.v === periodoDetalle)?.l || periodoDetalle
+      function descargarCSVDetalle() {
+        const cabecera = 'Fecha;Chiringuito;Pedidos;Facturado (€);Comisión (€)\n'
+        const lineas = pedidosCFiltrados.map(p => {
+          const fecha = new Date(p.created_at).toLocaleDateString('es-ES')
+          const total = Number(p.total || 0)
+          const com = total * 0.01
+          return `${fecha};${c.nombre};1;${total.toFixed(2)};${com.toFixed(2)}`
+        })
+        const csv = '\uFEFF' + cabecera + lineas.join('\n')
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `resumen-${(c.nombre || 'chiringuito').replace(/[^a-z0-9-_]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href)
+      }
+      function imprimirResumenDetalle() {
+        const ventana = window.open('', '_blank')
+        ventana.document.write(`
+          <!DOCTYPE html><html><head><meta charset="utf-8"><title>Resumen · ${c.nombre}</title><style>body{font-family:sans-serif;padding:24px;max-width:800px;margin:0 auto}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#0A2540;color:#fff}</style></head><body>
+          <h1>Resumen · ${c.nombre}</h1>
+          <p><strong>Periodo:</strong> ${textoPeriodoDetalle}</p>
+          <p><strong>Pedidos:</strong> ${statsFiltrado.pedidos} · <strong>Comisión:</strong> ${statsFiltrado.comision.toFixed(2)} €</p>
+          <table><thead><tr><th>Fecha</th><th>Total (€)</th><th>Comisión (€)</th></tr></thead><tbody>
+          ${pedidosCFiltrados.map(p => `<tr><td>${new Date(p.created_at).toLocaleDateString('es-ES')}</td><td>${Number(p.total || 0).toFixed(2)}</td><td>${(Number(p.total || 0) * 0.01).toFixed(2)}</td></tr>`).join('')}
+          </tbody></table>
+          <p style="margin-top:24px;font-size:12px;color:#888">Chiringapp Partner · Generado el ${new Date().toLocaleString('es-ES')}</p>
+          </body></html>`)
+        ventana.document.close()
+        ventana.focus()
+        setTimeout(() => { ventana.print(); ventana.close() }, 500)
+      }
       return (
         <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
           <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', padding: mobile ? '16px 20px' : '20px 40px' }}>
@@ -366,6 +395,14 @@ export default function Partner() {
                 <div style={{ fontSize: 28, marginBottom: 8 }}>💰</div>
                 <div style={{ fontSize: 26, fontWeight: 900, color: '#00B4D8' }}>{statsFiltrado.comision.toFixed(2)} €</div>
                 <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>Tu comisión (1%)</div>
+              </div>
+            </div>
+            <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 12 }}>📥 Descargar resumen de este chiringuito</div>
+              <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>Exporta solo los datos de <strong>{c.nombre}</strong> para el periodo seleccionado.</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                <button onClick={descargarCSVDetalle} style={{ background: '#0A2540', color: 'white', border: 'none', borderRadius: 12, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>📄 Descargar CSV</button>
+                <button onClick={imprimirResumenDetalle} style={{ background: '#555', color: 'white', border: 'none', borderRadius: 12, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>🖨️ Imprimir / Guardar PDF</button>
               </div>
             </div>
             <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: 24 }}>
