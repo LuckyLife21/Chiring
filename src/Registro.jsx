@@ -49,8 +49,13 @@ export default function Registro() {
       setError('Los emails no coinciden')
       return
     }
-    if (form.password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
+    const p = form.password
+    if (p.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres')
+      return
+    }
+    if (!/[a-z]/.test(p) || !/[A-Z]/.test(p) || !/\d/.test(p)) {
+      setError('La contraseña debe incluir mayúscula, minúscula y número')
       return
     }
     if (form.password !== form.password2) {
@@ -245,7 +250,7 @@ export default function Registro() {
                 <input
                   style={inputStyle}
                   type="password"
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Mín. 8 caracteres, mayúscula, minúscula y número"
                   value={form.password}
                   onChange={e => cambiar('password', e.target.value)}
                 />
