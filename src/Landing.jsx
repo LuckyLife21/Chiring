@@ -158,9 +158,9 @@ export default function Landing() {
         boxSizing: 'border-box',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
-          <div style={{ fontSize: 22, fontWeight: 900, color: navBg ? '#0A2540' : 'white', letterSpacing: -1 }}>
+          <a href="/" aria-label="ChiringApp - Ir al inicio" style={{ fontSize: 22, fontWeight: 900, color: navBg ? '#0A2540' : 'white', letterSpacing: -1, textDecoration: 'none', cursor: 'pointer' }}>
             🌊 chiringapp
-          </div>
+          </a>
           {!mobile && (
             <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
               {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#faq|FAQ', '#contacto|Contacto'].map(item => {
