@@ -4,24 +4,23 @@ import { useLanguage } from './LanguageContext.jsx'
 
 const isMobile = () => window.innerWidth < 768
 
-// Icono tipo Just Eat: usuario/cuenta (login)
+// Icono tipo Just Eat: silueta usuario/cuenta (cabeza + hombros)
 function LogoLoginIcon({ size = 48, color = '#0077B6' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <circle cx="24" cy="18" r="8" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" fill="none" opacity="0.4" />
+      <circle cx="24" cy="18" r="7" stroke={color} strokeWidth="2.2" fill="none" />
+      <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke={color} strokeWidth="2.2" fill="none" strokeLinecap="round" />
     </svg>
   )
 }
 
-// Icono manos dándose la mano (Partners)
+// Icono apretón de manos (Partners): dos manos entrelazadas, estilo line-art
 function HandshakeIcon({ size = 48, color = '#E6A800' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M14 28v-6c0-2.2 1.8-4 4-4h2l2 4 4-4h4c2.2 0 4 1.8 4 4v6l-4 6-4 4-4-2-4 2-4-4-4-6z" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round" />
-      <path d="M18 24l2 2 4-4 4 4 2-2" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" fill="none" opacity="0.3" />
+      <path d="M18 28v-4c0-1.5 1.2-2.8 2.8-2.8h1.4l1.4 2.8 2.8-2.8h2.8c1.5 0 2.8 1.2 2.8 2.8v4l-2.8 4-2.8 2.8-2.8-1.4-2.8 1.4-2.8-2.8-2.8-4z" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round" />
+      <path d="M20 24l1.5 1.5 3-3 3 3 1.5-1.5" stroke={color} strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M22 18v2M26 18v2M24 16v2" stroke={color} strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.8" />
     </svg>
   )
 }
@@ -32,6 +31,7 @@ export default function Landing() {
   const [mobile, setMobile] = useState(isMobile())
   const [menuOpen, setMenuOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false)
   const [faqOpen, setFaqOpen] = useState(null)
   const [formData, setFormData] = useState({ nombre: '', email: '', mensaje: '' })
   const [formEnviado, setFormEnviado] = useState(false)
@@ -50,6 +50,13 @@ export default function Landing() {
     window.addEventListener('resize', onResize)
     return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onResize) }
   }, [])
+
+  useEffect(() => {
+    if (!langDropdownOpen) return
+    const close = () => setLangDropdownOpen(false)
+    document.addEventListener('click', close)
+    return () => document.removeEventListener('click', close)
+  }, [langDropdownOpen])
 
   const navBg = scrollY > 50 || menuOpen
 
@@ -98,34 +105,34 @@ export default function Landing() {
   }
 
   const faqs = [
-    { q: '¿Necesito instalar alguna app?', r: 'No. Ni tú ni tus clientes necesitáis instalar nada. Todo funciona desde el navegador del móvil.' },
-    { q: '¿Cómo recibo el dinero de los pedidos?', r: 'A través de Stripe, directamente en tu cuenta bancaria. El dinero llega en 2-7 días hábiles.' },
-    { q: '¿Qué pasa si el cliente no tiene tarjeta?', r: 'De momento solo aceptamos pago con tarjeta. Es la forma más rápida y segura para ti y para el cliente.' },
-    { q: '¿Cuántas hamacas puedo tener?', r: 'Las que necesites. Puedes añadir tantas hamacas como tenga tu chiringuito, sin límite.' },
-    { q: '¿Puedo cambiar el menú cuando quiera?', r: 'Sí, desde el panel puedes añadir, editar o desactivar productos en cualquier momento, al instante.' },
-    { q: '¿Hay permanencia o contrato?', r: 'No. Sin permanencia, sin cuota mensual. Solo pagas el 15% cuando procesas un pedido.' },
-    { q: '¿Cuándo puedo empezar a recibir pedidos?', r: 'En cuanto te registres: creas tu menú, añades las hamacas y generas los QR. En minutos puedes tener todo listo. Si tienes dudas, nuestro soporte te ayuda.' },
-    { q: '¿Cómo pongo los QR en cada hamaca?', r: 'Desde el panel generas e imprimes un QR por hamaca. Puedes plastificarlo o engancharlo en la hamaca para que el cliente lo escanee con la cámara del móvil.' },
-    { q: '¿Tengo varios chiringuitos o ubicaciones?', r: 'Cada chiringuito se configura con su propio menú y hamacas. Si tienes más de uno, regístrate con un email por ubicación o contáctanos para ver opciones.' },
-    { q: '¿Qué pasa si hay un problema con un pedido o un reembolso?', r: 'Los pagos se gestionan con Stripe. Para reembolsos o incidencias, puedes hacerlo desde tu panel o desde el dashboard de Stripe; si necesitas ayuda, nuestro soporte te orienta.' },
-    { q: '¿Funciona con mala cobertura o sin internet en la playa?', r: 'El cliente necesita datos para hacer el pedido y pagar. En la mayoría de playas hay 4G suficiente. Tú recibes los pedidos en el panel; si en tu bar tienes WiFi o buena cobertura, no hay problema. Si la zona es muy mala, el cliente puede pedir en el momento en que tenga señal.' },
-    { q: '¿Mis datos y los de los clientes están seguros?', r: 'Sí. Cumplimos con la normativa de protección de datos (RGPD). Los pagos los procesa Stripe, con los máximos estándares de seguridad. No vendemos ni compartimos datos con terceros para marketing.' },
-    { q: '¿Puedo dejar de usar Chiring cuando quiera?', r: 'Sí. No hay permanencia. Si un año no abres o prefieres no seguir, puedes dejar de usarlo; no te cobramos nada si no procesas pedidos.' },
-    { q: '¿El 15% se aplica sobre qué?', r: 'Solo sobre el importe de los pedidos que se cobran con éxito. Si no vendes, no pagas. No hay cuota fija ni costes ocultos.' },
-    { q: '¿Hay periodo de prueba?', r: 'El registro es gratis y solo pagas cuando procesas pedidos (15%). Puedes configurar tu menú y hamacas, probar el panel y, cuando estés listo, empezar a recibir pedidos sin compromiso.' },
-    { q: '¿Hay límite de productos en el menú?', r: 'No. Puedes añadir tantos productos y categorías como necesites para tu carta. Los editas cuando quieras desde el panel.' },
-    { q: '¿Puedo poner descuentos u ofertas?', r: 'Puedes crear productos con precios promocionales o editar precios en cualquier momento. Si quieres ofertas tipo "2x1" o códigos descuento, contáctanos y te contamos las opciones.' },
+    { q: t('faq_0_q'), r: t('faq_0_r') },
+    { q: t('faq_1_q'), r: t('faq_1_r') },
+    { q: t('faq_2_q'), r: t('faq_2_r') },
+    { q: t('faq_3_q'), r: t('faq_3_r') },
+    { q: t('faq_4_q'), r: t('faq_4_r') },
+    { q: t('faq_5_q'), r: t('faq_5_r') },
+    { q: t('faq_6_q'), r: t('faq_6_r') },
+    { q: t('faq_7_q'), r: t('faq_7_r') },
+    { q: t('faq_8_q'), r: t('faq_8_r') },
+    { q: t('faq_9_q'), r: t('faq_9_r') },
+    { q: t('faq_10_q'), r: t('faq_10_r') },
+    { q: t('faq_11_q'), r: t('faq_11_r') },
+    { q: t('faq_12_q'), r: t('faq_12_r') },
+    { q: t('faq_13_q'), r: t('faq_13_r') },
+    { q: t('faq_14_q'), r: t('faq_14_r') },
+    { q: t('faq_15_q'), r: t('faq_15_r') },
+    { q: t('faq_16_q'), r: t('faq_16_r') },
   ]
 
   const testimonios = [
-    { nombre: 'Carlos M.', lugar: 'Chiringuito La Brisa · Marbella', texto: 'Desde que usamos Chiring los clientes piden el doble. Ya no hay que ir mesa por mesa, el pedido llega solo al panel.', estrellas: 5 },
-    { nombre: 'Marta L.', lugar: 'Beach Club Playa Bella · Almería', texto: 'Lo que más me gusta es que el cobro es automático. Sin cambio, sin olvidarse de pagar. Perfecto para el verano.', estrellas: 5 },
-    { nombre: 'Paco R.', lugar: 'Chiringuito El Ancla · Torrevieja', texto: 'En 15 minutos lo teníamos todo configurado. Los clientes flipan cuando ven que pueden pedir desde la hamaca.', estrellas: 5 },
-    { nombre: 'Lucía F.', lugar: 'La Palmera Beach · Benidorm', texto: 'Antes perdíamos ventas porque los clientes no se levantaban a pedir. Ahora piden desde la hamaca sin pensárselo.', estrellas: 5 },
-    { nombre: 'Javi S.', lugar: 'Chiringuito Marea Alta · Cádiz', texto: 'El panel en tiempo real es una pasada. Escuchas el sonido del pedido y ya sabes lo que tienes que preparar.', estrellas: 5 },
-    { nombre: 'Ana P.', lugar: 'Sol y Sal Beach Bar · Málaga', texto: 'Hemos aumentado el ticket medio un 30%. La gente pide más cuando ve el menú completo en el móvil.', estrellas: 5 },
-    { nombre: 'Rafa G.', lugar: 'Chiringuito Poniente · Huelva', texto: 'Sin cuota mensual y solo pagamos cuando vendemos. Para un chiringuito de temporada es perfecto.', estrellas: 5 },
-    { nombre: 'Elena T.', lugar: 'La Ola Beach Club · Valencia', texto: 'El soporte es muy rápido. Tuvimos una duda el primer día y nos la resolvieron en minutos. Muy recomendable.', estrellas: 5 },
+    { nombre: t('t1_nombre'), lugar: t('t1_lugar'), texto: t('t1_texto'), estrellas: 5 },
+    { nombre: t('t2_nombre'), lugar: t('t2_lugar'), texto: t('t2_texto'), estrellas: 5 },
+    { nombre: t('t3_nombre'), lugar: t('t3_lugar'), texto: t('t3_texto'), estrellas: 5 },
+    { nombre: t('t4_nombre'), lugar: t('t4_lugar'), texto: t('t4_texto'), estrellas: 5 },
+    { nombre: t('t5_nombre'), lugar: t('t5_lugar'), texto: t('t5_texto'), estrellas: 5 },
+    { nombre: t('t6_nombre'), lugar: t('t6_lugar'), texto: t('t6_texto'), estrellas: 5 },
+    { nombre: t('t7_nombre'), lugar: t('t7_lugar'), texto: t('t7_texto'), estrellas: 5 },
+    { nombre: t('t8_nombre'), lugar: t('t8_lugar'), texto: t('t8_texto'), estrellas: 5 },
   ]
 
   const inputStyle = { width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }
@@ -218,8 +225,14 @@ export default function Landing() {
             </div>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>{t('footer_account')}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <a href="/panel" onClick={() => setPanelOpen(false)} style={{ color: '#0077B6', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>{t('nav_chiringuitos')}</a>
-              <button type="button" onClick={() => { setPanelOpen(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontWeight: 700, fontSize: 15, textAlign: 'left', padding: 0, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
+              <a href="/panel" onClick={() => setPanelOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0077B6', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
+                <LogoLoginIcon size={20} color="#0077B6" />
+                {t('nav_chiringuitos')}
+              </a>
+              <button type="button" onClick={() => { setPanelOpen(false); setPartnerModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontWeight: 700, fontSize: 15, textAlign: 'left', padding: 0, fontFamily: 'Poppins, sans-serif' }}>
+                <HandshakeIcon size={20} color="#E6A800" />
+                {t('nav_partners')}
+              </button>
               <button type="button" onClick={() => { setPanelOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', marginTop: 8 }}>{t('nav_registerFree')}</button>
             </div>
             <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #eee' }}>
@@ -252,14 +265,27 @@ export default function Landing() {
               {[['#como-funciona', 'nav_howItWorks'], ['#precios', 'nav_prices'], ['#testimonios', 'nav_reviews'], ['#faq', 'nav_faq'], ['#contacto', 'nav_contact']].map(([href, key]) => (
                 <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{t(key)}</a>
               ))}
-              <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>{t('nav_partners')}</button>
-              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>{t('nav_chiringuitos')}</a>
-              <select value={lang} onChange={e => setLang(e.target.value)} aria-label="Idioma" style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid ' + (navBg ? '#ddd' : 'rgba(255,255,255,0.5)'), background: navBg ? '#fff' : 'rgba(255,255,255,0.2)', color: navBg ? '#333' : 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-                <option value="es">{t('lang_es')}</option>
-                <option value="en">{t('lang_en')}</option>
-                <option value="it">{t('lang_it')}</option>
-                <option value="fr">{t('lang_fr')}</option>
-              </select>
+              <a href="/panel" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>
+                <LogoLoginIcon size={18} color={navBg ? '#0077B6' : 'rgba(255,255,255,0.9)'} />
+                {t('nav_chiringuitos')}
+              </a>
+              <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>
+                <HandshakeIcon size={18} color={navBg ? '#555' : 'rgba(255,255,255,0.9)'} />
+                {t('nav_partners')}
+              </button>
+              <div style={{ position: 'relative' }}>
+                <button type="button" onClick={e => { e.stopPropagation(); setLangDropdownOpen(!langDropdownOpen) }} aria-label="Idioma" aria-expanded={langDropdownOpen} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 8, border: '1px solid ' + (navBg ? '#ddd' : 'rgba(255,255,255,0.5)'), background: navBg ? '#fff' : 'rgba(255,255,255,0.2)', color: navBg ? '#333' : 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                  {t('lang_' + lang)}
+                  <span style={{ fontSize: 10, opacity: 0.9 }}>▼</span>
+                </button>
+                {langDropdownOpen && (
+                  <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, background: 'white', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', border: '1px solid #eee', minWidth: 140, zIndex: 110, overflow: 'hidden' }}>
+                    {['es', 'en', 'it', 'fr'].map(l => (
+                      <button key={l} type="button" onClick={() => { setLang(l); setLangDropdownOpen(false) }} style={{ display: 'block', width: '100%', padding: '10px 14px', border: 'none', background: lang === l ? '#F0F8FF' : 'white', color: lang === l ? '#0077B6' : '#333', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', textAlign: 'left' }}>{t('lang_' + l)}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button type="button" aria-label="Menú" onClick={() => setPanelOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0A2540' : 'white', padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
               </button>
@@ -273,12 +299,19 @@ export default function Landing() {
           )}
           {mobile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <select value={lang} onChange={e => setLang(e.target.value)} aria-label="Idioma" style={{ padding: '6px 8px', borderRadius: 8, border: '1px solid ' + (navBg ? '#ddd' : 'rgba(255,255,255,0.5)'), background: navBg ? '#fff' : 'rgba(255,255,255,0.2)', color: navBg ? '#333' : 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-                <option value="es">{t('lang_es')}</option>
-                <option value="en">{t('lang_en')}</option>
-                <option value="it">{t('lang_it')}</option>
-                <option value="fr">{t('lang_fr')}</option>
-              </select>
+              <div style={{ position: 'relative' }}>
+                <button type="button" onClick={e => { e.stopPropagation(); setLangDropdownOpen(!langDropdownOpen) }} aria-label="Idioma" aria-expanded={langDropdownOpen} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, border: '1px solid ' + (navBg ? '#ddd' : 'rgba(255,255,255,0.5)'), background: navBg ? '#fff' : 'rgba(255,255,255,0.2)', color: navBg ? '#333' : 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                  {t('lang_' + lang)}
+                  <span style={{ fontSize: 10, opacity: 0.9 }}>▼</span>
+                </button>
+                {langDropdownOpen && (
+                  <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, background: 'white', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', border: '1px solid #eee', minWidth: 140, zIndex: 110, overflow: 'hidden' }}>
+                    {['es', 'en', 'it', 'fr'].map(l => (
+                      <button key={l} type="button" onClick={() => { setLang(l); setLangDropdownOpen(false) }} style={{ display: 'block', width: '100%', padding: '10px 14px', border: 'none', background: lang === l ? '#F0F8FF' : 'white', color: lang === l ? '#0077B6' : '#333', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', textAlign: 'left' }}>{t('lang_' + l)}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button type="button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0A2540' : 'white', fontSize: 24, padding: 4 }}>
                 {menuOpen ? '✕' : '☰'}
               </button>
@@ -301,8 +334,14 @@ export default function Landing() {
             {[['#como-funciona', 'nav_howItWorks'], ['#precios', 'nav_prices'], ['#testimonios', 'nav_reviews'], ['#colabora', 'nav_partners'], ['#faq', 'nav_faq'], ['#contacto', 'nav_contact']].map(([href, key]) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{t(key)}</a>
             ))}
-            <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>{t('nav_partnersAccess')}</button>
-            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>{t('nav_chiringuitos')}</a>
+            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>
+              <LogoLoginIcon size={22} color="#0077B6" />
+              {t('nav_chiringuitos')}
+            </a>
+            <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>
+              <HandshakeIcon size={22} color="#E6A800" />
+              {t('nav_partnersAccess')}
+            </button>
             <button type="button" onClick={() => { setMenuOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center', width: '100%', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{t('nav_registerFree')}</button>
           </div>
         )}
@@ -377,14 +416,14 @@ export default function Landing() {
                   </div>
                 ))}
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 12, padding: 11, textAlign: 'center' }}>
-                  <div style={{ color: 'white', fontWeight: 800, fontSize: 12 }}>🛒 Ver carrito · 16,00€</div>
+                  <div style={{ color: 'white', fontWeight: 800, fontSize: 12 }}>🛒 {t('mockup_view_cart')}</div>
                 </div>
               </div>
             </div>
             {!mobile && (
               <div style={{ position: 'absolute', top: 50, right: -10, background: 'white', borderRadius: 14, padding: '10px 14px', boxShadow: '0 8px 30px rgba(0,0,0,0.15)', fontSize: 12, fontWeight: 700, color: '#0A2540' }}>
-                🔔 ¡Nuevo pedido!<br />
-                <span style={{ color: '#00B4D8', fontSize: 11 }}>Hamaca 14B · 16,00€</span>
+                🔔 {t('mockup_new_order')}<br />
+                <span style={{ color: '#00B4D8', fontSize: 11 }}>{t('mockup_hamaca_price')}</span>
               </div>
             )}
           </div>
@@ -401,9 +440,9 @@ export default function Landing() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr', gap: 20 }}>
             {[
-              { num: '01', icon: '📱', title: 'Escanea el QR', desc: 'Cada hamaca tiene su propio QR. El cliente lo escanea y accede al menú al instante desde el móvil.', color: '#E0F8FF' },
-              { num: '02', icon: '🛒', title: 'Pide y paga', desc: 'Elige, añade al carrito y paga con tarjeta directamente desde el móvil. Sin colas, sin camarero.', color: '#FFF5E0' },
-              { num: '03', icon: '🏖️', title: 'Tú lo llevas', desc: 'Recibes el pedido en tu panel en tiempo real con alerta de sonido. Lo preparas y lo llevas a la hamaca.', color: '#E8FFE8' },
+              { num: '01', icon: '📱', title: t('step1_title'), desc: t('step1_desc'), color: '#E0F8FF' },
+              { num: '02', icon: '🛒', title: t('step2_title'), desc: t('step2_desc'), color: '#FFF5E0' },
+              { num: '03', icon: '🏖️', title: t('step3_title'), desc: t('step3_desc'), color: '#E8FFE8' },
             ].map(s => (
               <div key={s.num} style={{ background: s.color, borderRadius: 22, padding: 28, position: 'relative', overflow: 'hidden' }}>
                 <div style={{ fontSize: 60, fontWeight: 900, color: 'rgba(0,0,0,0.05)', position: 'absolute', top: -8, right: 12, lineHeight: 1 }}>{s.num}</div>
@@ -425,10 +464,10 @@ export default function Landing() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
             {[
-              { icon: '💰', title: 'Aumenta tu ticket medio', desc: 'Los clientes piden más cuando ven el menú completo con precios. Sin vergüenza de llamar al camarero.' },
-              { icon: '⚡', title: 'Gestión en tiempo real', desc: 'Panel en directo con todos los pedidos, alerta de sonido y estadísticas de ventas.' },
-              { icon: '📊', title: 'Control total', desc: 'Productos, precios, hamacas... todo lo gestionas tú mismo desde el panel sin ayuda.' },
-              { icon: '💳', title: 'Cobros automáticos', desc: 'El cliente paga al pedir. Sin cambio, sin olvidarse. El dinero llega directo a tu cuenta.' },
+              { icon: '💰', title: t('benefit1_title'), desc: t('benefit1_desc') },
+              { icon: '⚡', title: t('benefit2_title'), desc: t('benefit2_desc') },
+              { icon: '📊', title: t('benefit3_title'), desc: t('benefit3_desc') },
+              { icon: '💳', title: t('benefit4_title'), desc: t('benefit4_desc') },
             ].map(b => (
               <div key={b.title} style={{ background: 'white', borderRadius: 18, padding: 22, display: 'flex', gap: 14, alignItems: 'flex-start', boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: 26, background: '#F0F8FF', borderRadius: 12, width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{b.icon}</div>
@@ -441,10 +480,10 @@ export default function Landing() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 14, marginTop: 24 }}>
             {[
-              { icon: '🪑', num: '∞', label: 'hamacas (las que necesites)' },
-              { icon: '📱', num: '2 min', label: 'para instalar' },
-              { icon: '💶', num: '15%', label: 'solo si vendes' },
-              { icon: '🔔', num: '24/7', label: 'soporte' },
+              { icon: '🪑', num: '∞', label: t('stat_hamacas') },
+              { icon: '📱', num: '2 min', label: t('stat_install') },
+              { icon: '💶', num: '15%', label: t('stat_sell') },
+              { icon: '🔔', num: '24/7', label: t('stat_support') },
             ].map(s => (
               <div key={s.label} style={{ background: 'white', borderRadius: 16, padding: 18, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: 26, marginBottom: 6 }}>{s.icon}</div>
@@ -493,11 +532,11 @@ export default function Landing() {
             <p style={{ fontSize: 15, color: '#666' }}>{t('section_pricesDesc')}</p>
           </div>
           <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', borderRadius: 24, padding: mobile ? 28 : 40, boxShadow: '0 20px 50px rgba(0,119,182,0.3)', textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>Precio único</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>{t('price_unique')}</div>
             <div style={{ fontSize: 64, fontWeight: 900, color: 'white', lineHeight: 1 }}>15%</div>
-            <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', marginBottom: 32, marginTop: 8 }}>por pedido procesado · sin cuota mensual</div>
+            <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', marginBottom: 32, marginTop: 8 }}>{t('price_per_order')}</div>
             <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 32, textAlign: 'left' }}>
-              {['Hamacas ilimitadas', 'Menú digital ilimitado', 'Panel en tiempo real', 'Estadísticas completas', 'Soporte prioritario 24/7', 'Sin permanencia'].map(f => (
+              {[t('price_f1'), t('price_f2'), t('price_f3'), t('price_f4'), t('price_f5'), t('price_f6')].map(f => (
                 <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                   <span style={{ color: '#7FDBFF', fontWeight: 800 }}>✓</span>
                   <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)' }}>{f}</span>
@@ -518,18 +557,18 @@ export default function Landing() {
       <div id="colabora" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Colabora con nosotros</div>
-            <h2 style={{ fontSize: mobile ? 30 : 42, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 14 }}>¿Conoces chiringuitos?<br />Gana comisión por cada uno.</h2>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('colabora_label')}</div>
+            <h2 style={{ fontSize: mobile ? 30 : 42, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 14 }}>{t('colabora_title')}<br />{t('colabora_title2')}</h2>
             <p style={{ fontSize: 15, color: '#666', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
-              Conviértete en Chiring Partner, consigue tu link único y gana el <strong>1% de cada pedido</strong> de los chiringuitos que traigas. Sin límite.
+              {t('colabora_desc')}
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr', gap: 24, marginBottom: 56 }}>
             {[
-              { icon: '🔗', title: 'Tu link único', desc: 'Recibes un link personalizado para compartir con chiringuitos. Cada registro con tu link se asocia automáticamente a ti.', color: '#E0F8FF' },
-              { icon: '💰', title: '1% de comisión', desc: 'Ganas el 1% de cada pedido procesado por los chiringuitos que hayas traído. Sin techo, sin caducidad.', color: '#FFF5E0' },
-              { icon: '📊', title: 'Panel de seguimiento', desc: 'Accede a tu panel personal para ver tus chiringuitos, pedidos generados y comisiones acumuladas en tiempo real.', color: '#E8FFE8' },
+              { icon: '🔗', title: t('partner_c1_title'), desc: t('partner_c1_desc'), color: '#E0F8FF' },
+              { icon: '💰', title: t('partner_c2_title'), desc: t('partner_c2_desc'), color: '#FFF5E0' },
+              { icon: '📊', title: t('partner_c3_title'), desc: t('partner_c3_desc'), color: '#E8FFE8' },
             ].map(c => (
               <div key={c.title} style={{ background: c.color, borderRadius: 22, padding: 28, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>{c.icon}</div>
@@ -542,20 +581,20 @@ export default function Landing() {
           <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', borderRadius: 24, padding: mobile ? 28 : 48, textAlign: 'center', boxShadow: '0 20px 50px rgba(0,119,182,0.2)' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🤝</div>
             <h3 style={{ fontSize: mobile ? 24 : 32, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>
-              ¿Listo para ser Chiring Partner?
+              {t('partner_cta_title')}
             </h3>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 32, lineHeight: 1.7, maxWidth: 480, margin: '0 auto 32px' }}>
-              Regístrate gratis, recibe tu link único y empieza a ganar comisiones desde el primer chiringuito.
+              {t('partner_cta_desc')}
             </p>
             <a href="/partner" style={{
               display: 'inline-block', background: 'white', color: '#0077B6',
               padding: '18px 44px', borderRadius: 50, textDecoration: 'none',
               fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
             }}>
-              🤝 Conviértete en Chiring Partner
+              🤝 {t('partner_cta_btn')}
             </a>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 16 }}>
-              Gratis · Sin permanencia · Comisiones de por vida
+              {t('partner_footer')}
             </div>
           </div>
         </div>
@@ -614,7 +653,7 @@ export default function Landing() {
             <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_contact')}</div>
             <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>{t('section_contactTitle')}</h2>
-            <p style={{ fontSize: 14, color: '#666' }}>Te respondemos en menos de 24 horas</p>
+            <p style={{ fontSize: 14, color: '#666' }}>{t('contact_24h')}</p>
           </div>
           {formEnviado ? (
             <div style={{ background: 'white', borderRadius: 22, padding: 40, textAlign: 'center', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>

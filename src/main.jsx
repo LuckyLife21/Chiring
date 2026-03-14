@@ -67,11 +67,12 @@ class ErrorBoundary extends React.Component {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      <LanguageProvider>
-        {Pagina}
-      </LanguageProvider>
-      {/* CookieBanner fuera de LanguageProvider para que no dependa del contexto y siempre se muestre si no hay preferencia guardada */}
-      <CookieBanner />
+      <>
+        <LanguageProvider>
+          {Pagina}
+        </LanguageProvider>
+        <CookieBanner />
+      </>
     </ErrorBoundary>
   </StrictMode>,
 )

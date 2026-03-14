@@ -3,16 +3,14 @@ import { useState, useEffect } from 'react'
 const STORAGE_KEY = 'chiring_cookies'
 
 export default function CookieBanner() {
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
+  // Inicializar visible según si ya hay preferencia guardada (así el banner aparece en el primer paint si hace falta)
+  const [visible, setVisible] = useState(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (!saved) setVisible(true)
-    } catch (_) {
-      setVisible(true)
+      return !localStorage.getItem(STORAGE_KEY)
+    } catch {
+      return true
     }
-  }, [])
+  })
 
   function choose(value) {
     try {
