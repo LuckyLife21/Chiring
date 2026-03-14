@@ -40,33 +40,48 @@ export default function Partner() {
           await supabase.auth.getSessionFromUrl({ storeSession: true })
           window.location.hash = ''
         }
+
         const { data: { session } } = await supabase.auth.getSession()
-        if (session?.user) {
-          const meta = session.user.user_metadata
-          const { data } = await supabase
-            .from('colaboradores')
-            .select('*')
-            .eq('email', session.user.email)
-            .single()
-          // Consideramos partner a cualquier usuario con sesión válida y fila en colaboradores
-          if (data) {
-            setUsuario(session.user)
-            setColaborador(data)
-            // Si el email ya está confirmado y aún no hemos marcado el colaborador como confirmado, lo actualizamos y enviamos email
-            if (session.user.email_confirmed_at && !data.confirmado) {
-              await supabase.from('colaboradores').update({ confirmado: true }).eq('email', session.user.email)
-              await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + ANON_KEY },
-                body: JSON.stringify({ email: data.email, nombre: data.nombre, codigo_ref: data.codigo_ref })
-              })
-            }
-            const { data: chirs } = await supabase
-              .from('chiringuitos')
-              .select('id, nombre, created_at')
-              .eq('ref_colaborador', data.codigo_ref)
-            setChiringuitos(chirs || [])
+        const user = session?.user
+        if (!user) return
+
+        const meta = user.user_metadata || {}
+
+        // Si el usuario tiene rol partner y un código de referido en metadata,
+        // lo consideramos partner aunque la tabla colaboradores no sea legible desde el front.
+        if (meta.rol === 'partner' && meta.codigo_ref) {
+          setUsuario(user)
+          setColaborador(prev => prev || {
+            nombre: meta.nombre || (user.email || '').split('@')[0],
+            codigo_ref: meta.codigo_ref,
+          })
+        }
+
+        // Intentamos completar datos desde colaboradores y cargar chiringuitos si hay permiso
+        const { data, error } = await supabase
+          .from('colaboradores')
+          .select('*')
+          .eq('email', user.email)
+          .single()
+
+        if (!error && data) {
+          setUsuario(user)
+          setColaborador(data)
+
+          if (user.email_confirmed_at && !data.confirmado) {
+            await supabase.from('colaboradores').update({ confirmado: true }).eq('email', user.email)
+            await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Authorization": "Bearer " + ANON_KEY },
+              body: JSON.stringify({ email: data.email, nombre: data.nombre, codigo_ref: data.codigo_ref })
+            })
           }
+
+          const { data: chirs } = await supabase
+            .from('chiringuitos')
+            .select('id, nombre, created_at')
+            .eq('ref_colaborador', data.codigo_ref)
+          setChiringuitos(chirs || [])
         }
       } finally {
         setCargandoPanel(false)
