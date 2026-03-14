@@ -250,7 +250,7 @@ function Manager({ chiringuito, onVolver }) {
 
   function descargarCSVHamacas() {
     const headers = ['Número', 'Activa', 'URL QR']
-    const rows = hamacas.map(h => [h.numero, h.activa ? 'Sí' : 'No', `${baseUrl}/hamaca/${h.numero}`])
+    const rows = hamacas.map(h => [h.numero, h.activa ? 'Sí' : 'No', `${baseUrl}/hamaca/${chiringuito.id}/${h.numero}`])
     const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${String(c)}"`).join(','))].join('\n')
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
@@ -649,7 +649,7 @@ function Manager({ chiringuito, onVolver }) {
             </div>
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:12}}>
               {hamacas.map(h => {
-                const url = `${baseUrl}/hamaca/${h.numero}`
+                const url = `${baseUrl}/hamaca/${chiringuito.id}/${h.numero}`
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(url)}`
                 return (
                   <div key={h.id} style={{background:h.activa?'white':'#FFF0F0',borderRadius:16,padding:16,textAlign:'center',boxShadow:'0 2px 10px rgba(0,0,0,0.07)',border:h.activa?'2px solid #E0F0FF':'2px solid #FFD0D0'}}>

@@ -1,0 +1,17 @@
+{
+  "name": "ChiringApp · Pedidos desde la hamaca",
+  "short_name": "ChiringApp",
+  "description": "La app para chiringuitos de playa. Pedidos y cobros desde el móvil.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0077B6",
+  "background_color": "#0A2540",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

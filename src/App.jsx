@@ -8,7 +8,7 @@ import '@fontsource/righteous/400.css'
 import { supabase } from './supabase'
 import Pago from './Pago'
 
-function Logo() {
+function Logo({ chiringuitoNombre }) {
   return (
     <div style={{display:'flex', alignItems:'center', gap:10}}>
       <div style={{width:46,height:46,borderRadius:16,background:'rgba(255,255,255,0.2)',backdropFilter:'blur(10px)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,border:'1.5px solid rgba(255,255,255,0.3)'}}>🌊</div>
@@ -17,7 +17,7 @@ function Logo() {
           Chiring
         </div>
         <div style={{fontSize:11,color:'rgba(255,255,255,0.8)',fontWeight:500,marginTop:2}}>
-          Chiringuito Playa Sol · Malvarrosa
+          {chiringuitoNombre || 'Chiringuito'}
         </div>
       </div>
     </div>
@@ -25,9 +25,12 @@ function Logo() {
 }
 
 export default function App() {
-  const hamacaUrl = window.location.pathname.split('/hamaca/')[1] || '14B'
-  const hamacaNum = decodeURIComponent(hamacaUrl)
+  const pathAfterHamaca = (window.location.pathname.match(/\/hamaca\/?(.*)/) || [])[1] || ''
+  const parts = pathAfterHamaca.split('/').filter(Boolean).map(p => decodeURIComponent(p))
+  const chiringuitoIdFromUrl = parts.length >= 2 ? parts[0] : null
+  const hamacaNum = parts.length >= 2 ? parts[1] : (parts[0] || '14B')
 
+  const [chiringuito, setChiringuito] = useState(null)
   const [cat, setCat] = useState(null)
   const [cart, setCart] = useState({})
   const [screen, setScreen] = useState('menu')
@@ -43,37 +46,47 @@ export default function App() {
 
   useEffect(() => {
     async function cargarDatos() {
+      let chir = null
+      if (chiringuitoIdFromUrl) {
+        const { data } = await supabase.from('chiringuitos').select('id, nombre').eq('id', chiringuitoIdFromUrl).maybeSingle()
+        chir = data
+      }
+      if (!chir) {
+        const { data } = await supabase.from('chiringuitos').select('id, nombre').eq('nombre', 'Chiringuito Playa Sol').maybeSingle()
+        chir = data
+      }
+      if (!chir) {
+        setLoading(false)
+        return
+      }
+      setChiringuito(chir)
+
       const { data: prods } = await supabase
         .from('productos')
         .select('*')
+        .eq('chiringuito_id', chir.id)
         .eq('disponible', true)
       if (prods) setItems(prods)
 
       const { data: cats } = await supabase
         .from('categorias')
         .select('*')
+        .eq('chiringuito_id', chir.id)
         .order('orden')
       if (cats) {
         setCategorias(cats)
         if (cats.length > 0) setCat(cats[0].nombre)
       }
 
-      const { data: chiringuito } = await supabase
-        .from('chiringuitos')
-        .select('id')
-        .eq('nombre', 'Chiringuito Playa Sol')
-        .maybeSingle()
-      if (chiringuito) {
-        try {
-          const { data: cod } = await supabase.from('codigos_descuento').select('*').eq('chiringuito_id', chiringuito.id).eq('activo', true)
-          setCodigosDisponibles(cod || [])
-        } catch (_) { setCodigosDisponibles([]) }
-      }
+      try {
+        const { data: cod } = await supabase.from('codigos_descuento').select('*').eq('chiringuito_id', chir.id).eq('activo', true)
+        setCodigosDisponibles(cod || [])
+      } catch (_) { setCodigosDisponibles([]) }
 
       setLoading(false)
     }
     cargarDatos()
-  }, [])
+  }, [chiringuitoIdFromUrl])
 
   const total = Object.entries(cart).reduce((s,[id,q]) => {
     const item = items.find(i=>i.id==id)
@@ -101,14 +114,9 @@ export default function App() {
   }
 
   async function crearPedido() {
+    if (!chiringuito) return
     setGuardando(true)
     try {
-      const { data: chiringuito } = await supabase
-        .from('chiringuitos')
-        .select('id')
-        .eq('nombre', 'Chiringuito Playa Sol')
-        .single()
-
       const { data: hamaca } = await supabase
         .from('hamacas')
         .select('id')
@@ -172,7 +180,7 @@ export default function App() {
       {screen === 'menu' && <>
         <div style={s.header}>
           <div style={s.headerRow}>
-            <Logo />
+            <Logo chiringuitoNombre={chiringuito?.nombre} />
             <div style={s.hamacaBadge}>🏖️ {hamacaNum}</div>
           </div>
           <div style={s.headerBottom}>
@@ -197,6 +205,10 @@ export default function App() {
           {loading ? (
             <div style={{textAlign:'center',padding:60,color:'#00B4D8',fontSize:15,fontWeight:600}}>
               Cargando carta... 🌊
+            </div>
+          ) : !chiringuito ? (
+            <div style={{textAlign:'center',padding:60,color:'#555',fontSize:15}}>
+              Chiringuito no encontrado. Comprueba el enlace del QR.
             </div>
           ) : (
             <div style={s.grid}>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A2540"/>
+      <stop offset="55%" style="stop-color:#0077B6"/>
+      <stop offset="100%" style="stop-color:#00B4D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <path d="M0 280 q150 -40 300 0 t300 0 300 0 300 0" stroke="rgba(255,255,255,0.25)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M0 340 q120 -30 240 0 t240 0 240 0 240 0 240 0" stroke="rgba(255,255,255,0.2)" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <text x="600" y="280" text-anchor="middle" font-family="system-ui, sans-serif" font-size="72" font-weight="800" fill="white">ChiringApp</text>
+  <text x="600" y="350" text-anchor="middle" font-family="system-ui, sans-serif" font-size="32" fill="rgba(255,255,255,0.9)">Pedidos desde la hamaca</text>
+  <text x="600" y="400" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="rgba(255,255,255,0.7)">Para chiringuitos de playa · Sin esperas, sin colas</text>
+</svg>

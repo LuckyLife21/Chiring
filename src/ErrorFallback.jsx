@@ -1,13 +1,22 @@
+const isNetworkError = (err) =>
+  !err ? false
+  : /fetch|network|Failed to fetch|NetworkError|connection|offline/i.test(err.message || err.toString())
+
 export default function ErrorFallback({ error, resetError }) {
+  const isNetwork = isNetworkError(error)
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       fontFamily: "'Poppins', sans-serif", padding: 24, background: 'linear-gradient(160deg, #F0F8FF, #E8F4FF)', boxSizing: 'border-box',
     }}>
-      <div style={{ fontSize: 56, marginBottom: 16 }}>⚠️</div>
-      <h1 style={{ fontSize: 24, fontWeight: 900, color: '#0A2540', marginBottom: 8 }}>Algo ha fallado</h1>
+      <div style={{ fontSize: 56, marginBottom: 16 }}>{isNetwork ? '📡' : '⚠️'}</div>
+      <h1 style={{ fontSize: 24, fontWeight: 900, color: '#0A2540', marginBottom: 8 }}>
+        {isNetwork ? 'Sin conexión' : 'Algo ha fallado'}
+      </h1>
       <p style={{ fontSize: 15, color: '#555', marginBottom: 24, textAlign: 'center', maxWidth: 360 }}>
-        Ha ocurrido un error inesperado. Puedes volver a intentar o ir al inicio.
+        {isNetwork
+          ? 'No hay conexión a internet o el servidor no responde. Inténtalo en unos minutos.'
+          : 'Ha ocurrido un error inesperado. Puedes volver a intentar o ir al inicio.'}
       </p>
       {resetError && (
         <button

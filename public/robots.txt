@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap (ajusta la URL si tu dominio es otro)
+Sitemap: https://chiringapp.com/sitemap.xml

@@ -221,7 +221,7 @@ export default function Landing() {
                 {t('modal_partner_noAccount')}{' '}
                 <a href="/partner" style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_registerLink')}</a>
                 <br />
-                <a href="/partner?reset=1" style={{ color: '#aaa', fontSize: 12, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
+                <a href="/partner?reset=1" style={{ color: '#0077B6', fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
               </div>
             </div>
           </div>

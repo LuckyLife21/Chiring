@@ -3,24 +3,27 @@ import '@fontsource/poppins/600.css'
 import '@fontsource/poppins/700.css'
 import '@fontsource/poppins/800.css'
 import '@fontsource/poppins/900.css'
-import React, { StrictMode } from 'react'
+import React, { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.jsx'
-import Panel from './Panel.jsx'
-import QRGenerator from './QRGenerator.jsx'
-import ComingSoon from './ComingSoon.jsx'
-import Registro from './Registro.jsx'
-import Bienvenida from './Bienvenida.jsx'
-import Partner from './Partner.jsx'
-import Privacidad from './Privacidad.jsx'
-import Terminos from './Terminos.jsx'
-import Cookies from './Cookies.jsx'
 import CookieBanner from './CookieBanner.jsx'
-import Landing from './Landing.jsx'
-import NotFound from './NotFound.jsx'
 import ErrorFallback from './ErrorFallback.jsx'
+import NetworkBanner from './NetworkBanner.jsx'
+import Analytics from './Analytics.jsx'
 import { LanguageProvider } from './LanguageContext.jsx'
+
+const App = lazy(() => import('./App.jsx'))
+const Panel = lazy(() => import('./Panel.jsx'))
+const QRGenerator = lazy(() => import('./QRGenerator.jsx'))
+const ComingSoon = lazy(() => import('./ComingSoon.jsx'))
+const Registro = lazy(() => import('./Registro.jsx'))
+const Bienvenida = lazy(() => import('./Bienvenida.jsx'))
+const Partner = lazy(() => import('./Partner.jsx'))
+const Privacidad = lazy(() => import('./Privacidad.jsx'))
+const Terminos = lazy(() => import('./Terminos.jsx'))
+const Cookies = lazy(() => import('./Cookies.jsx'))
+const Landing = lazy(() => import('./Landing.jsx'))
+const NotFound = lazy(() => import('./NotFound.jsx'))
 
 const path = window.location.pathname
 const hash = window.location.hash
@@ -55,10 +58,10 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false }
   }
   static getDerivedStateFromError() { return { hasError: true } }
-  componentDidCatch(err, info) { console.error(err, info) }
+  componentDidCatch(err, info) { this.setState({ error: err }); console.error(err, info) }
   render() {
     if (this.state.hasError) {
-      return <ErrorFallback resetError={() => this.setState({ hasError: false })} />
+      return <ErrorFallback error={this.state.error} resetError={() => this.setState({ hasError: false, error: null })} />
     }
     return this.props.children
   }
@@ -68,8 +71,16 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <>
+        <Analytics />
+        <NetworkBanner />
         <LanguageProvider>
-          {Pagina}
+          <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(160deg, #F0F8FF, #E8F4FF)', fontFamily: "'Poppins', sans-serif", fontSize: 16, fontWeight: 600, color: '#0077B6' }}>
+              Cargando… 🌊
+            </div>
+          }>
+            {Pagina}
+          </Suspense>
         </LanguageProvider>
         <CookieBanner />
       </>
