@@ -5,6 +5,16 @@ const isMobile = () => window.innerWidth < 768
 
 const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsZXpueWN2aGlmbnh2cWpmY2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NTQ3MDksImV4cCI6MjA1NzAzMDcwOX0.hfBLjGXbnWPMqA3xjkpNO853YBfSAYSVrCMDwwKFaAA"
 
+function dedupeChiringuitosPorNombre(lista) {
+  const porNombre = new Map()
+  for (const c of lista) {
+    const key = (c.nombre || '').trim().toLowerCase()
+    const existente = porNombre.get(key)
+    if (!existente || (c.id > existente.id)) porNombre.set(key, c)
+  }
+  return Array.from(porNombre.values()).sort((a, b) => (b.id || 0) - (a.id || 0))
+}
+
 export default function Partner() {
   const [mobile, setMobile] = useState(isMobile())
   const [paso, setPaso] = useState(1)
@@ -126,7 +136,8 @@ export default function Partner() {
             .from('chiringuitos')
             .select('id, nombre, created_at')
             .eq('ref_colaborador', codigoRef)
-          setChiringuitos(chirs || [])
+          const unicos = dedupeChiringuitosPorNombre(chirs || [])
+          setChiringuitos(unicos)
         }
       } finally {
         setCargandoPanel(false)
@@ -278,7 +289,7 @@ export default function Partner() {
       setUsuario(user)
       setColaborador(colabOk ? colab : { nombre: meta.nombre || (user.email || '').split('@')[0], codigo_ref: codigoRef })
       const { data: chirs } = await supabase.from('chiringuitos').select('id, nombre, created_at').eq('ref_colaborador', codigoRef)
-      setChiringuitos(chirs || [])
+      setChiringuitos(dedupeChiringuitosPorNombre(chirs || []))
       setIsRecovery(false)
       if (window.location.pathname !== '/partner') window.history.replaceState({}, '', '/partner')
     } else {

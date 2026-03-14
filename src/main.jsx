@@ -3,7 +3,7 @@ import '@fontsource/poppins/600.css'
 import '@fontsource/poppins/700.css'
 import '@fontsource/poppins/800.css'
 import '@fontsource/poppins/900.css'
-import { StrictMode } from 'react'
+import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
@@ -17,6 +17,9 @@ import Privacidad from './Privacidad.jsx'
 import Terminos from './Terminos.jsx'
 import Cookies from './Cookies.jsx'
 import CookieBanner from './CookieBanner.jsx'
+import Landing from './Landing.jsx'
+import NotFound from './NotFound.jsx'
+import ErrorFallback from './ErrorFallback.jsx'
 
 const path = window.location.pathname
 const hash = window.location.hash
@@ -30,6 +33,7 @@ const isRecoveryOnRoot = (path === '/' || path === '') && hash.includes('type=re
 const isPrivacidad = path === '/privacidad'
 const isTerminos = path === '/terminos'
 const isCookies = path === '/cookies'
+const isLanding = path === '/' || path === ''
 
 const Pagina = isPanel ? <Panel />
   : isQR ? <QRGenerator />
@@ -37,14 +41,32 @@ const Pagina = isPanel ? <Panel />
   : isRegistro ? <Registro />
   : isPartner || isRecoveryOnRoot ? <Partner />
   : isBienvenida ? <Bienvenida />
+  : isLanding ? <Landing />
   : isPrivacidad ? <Privacidad />
   : isTerminos ? <Terminos />
   : isCookies ? <Cookies />
-  : <ComingSoon />
+  : <NotFound />
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError() { return { hasError: true } }
+  componentDidCatch(err, info) { console.error(err, info) }
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback resetError={() => this.setState({ hasError: false })} />
+    }
+    return this.props.children
+  }
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {Pagina}
-    <CookieBanner />
+    <ErrorBoundary>
+      {Pagina}
+      <CookieBanner />
+    </ErrorBoundary>
   </StrictMode>,
 )

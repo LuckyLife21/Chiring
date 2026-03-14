@@ -27,8 +27,15 @@ export default function Landing() {
 
   const navBg = scrollY > 50 || menuOpen
 
+  const COOLDOWN_CONTACTO_MS = 60000 // 1 minuto entre envíos
+
   async function enviarContacto() {
     if (!formData.nombre || !formData.email || !formData.mensaje) return
+    const last = parseInt(sessionStorage.getItem('contact_last_sent') || '0', 10)
+    if (Date.now() - last < COOLDOWN_CONTACTO_MS) {
+      setFormError('Espera un minuto antes de enviar otro mensaje.')
+      return
+    }
     setFormCargando(true)
     setFormError('')
     try {
@@ -37,6 +44,7 @@ export default function Landing() {
       })
       if (error) throw error
       if (data?.error) throw new Error(data.error)
+      sessionStorage.setItem('contact_last_sent', String(Date.now()))
       setFormEnviado(true)
     } catch (e) {
       setFormError(e?.message || 'No se pudo enviar. Inténtalo de nuevo o escribe a appchiring@gmail.com')
@@ -159,7 +167,7 @@ export default function Landing() {
                 const [href, label] = item.split('|')
                 return <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{label}</a>
               })}
-              <button onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>Partners</button>
+              <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>Partners</button>
               <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>Iniciar sesión</a>
               <a href="/registro" style={{
                 background: navBg ? 'linear-gradient(135deg,#00B4D8,#0077B6)' : 'white',
@@ -170,7 +178,7 @@ export default function Landing() {
             </div>
           )}
           {mobile && (
-            <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0A2540' : 'white', fontSize: 24, padding: 4 }}>
+            <button type="button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0A2540' : 'white', fontSize: 24, padding: 4 }}>
               {menuOpen ? '✕' : '☰'}
             </button>
           )}
@@ -451,7 +459,7 @@ export default function Landing() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {faqs.map((faq, i) => (
               <div key={i} style={{ border: '1.5px solid #E0E8F0', borderRadius: 16, overflow: 'hidden', background: 'white' }}>
-                <button onClick={() => setFaqOpen(faqOpen === i ? null : i)} style={{
+                <button type="button" aria-expanded={faqOpen === i} aria-controls={`faq-answer-${i}`} id={`faq-q-${i}`} onClick={() => setFaqOpen(faqOpen === i ? null : i)} style={{
                   width: '100%', padding: '18px 20px', background: faqOpen === i ? '#F0F8FF' : 'white',
                   border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   fontFamily: 'Poppins, sans-serif', fontSize: 14, fontWeight: 700, color: '#0A2540', textAlign: 'left',
@@ -460,7 +468,7 @@ export default function Landing() {
                   <span style={{ fontSize: 20, color: '#00B4D8', marginLeft: 10, flexShrink: 0 }}>{faqOpen === i ? '−' : '+'}</span>
                 </button>
                 {faqOpen === i && (
-                  <div style={{ padding: '0 20px 18px', fontSize: 14, color: '#555', lineHeight: 1.7, background: '#F0F8FF' }}>
+                  <div id={`faq-answer-${i}`} role="region" aria-labelledby={`faq-q-${i}`} style={{ padding: '0 20px 18px', fontSize: 14, color: '#555', lineHeight: 1.7, background: '#F0F8FF' }}>
                     {faq.r}
                   </div>
                 )}
@@ -548,6 +556,15 @@ export default function Landing() {
               <div style={{ marginTop: 16, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
                 📧 <a href="mailto:appchiring@gmail.com" style={{ color: '#00B4D8', textDecoration: 'none' }}>appchiring@gmail.com</a>
               </div>
+              <div style={{ marginTop: 20 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>Síguenos</div>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <a href="https://instagram.com/chiringapp" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ChiringApp" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 20 }}>📷</a>
+                  <a href="https://facebook.com/chiringapp" target="_blank" rel="noopener noreferrer" aria-label="Facebook de ChiringApp" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 20 }}>📘</a>
+                  <a href="https://twitter.com/chiringapp" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X de ChiringApp" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 20 }}>𝕏</a>
+                </div>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 6 }}>Instagram · Facebook · X</p>
+              </div>
             </div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Producto</div>
@@ -577,6 +594,23 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Botón flotante CTA */}
+      {scrollY > 300 && (
+        <a
+          href="/registro"
+          aria-label="Ir a registrarse gratis"
+          style={{
+            position: 'fixed', bottom: 24, right: 24, zIndex: 99,
+            background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px 24px',
+            borderRadius: 50, fontSize: 14, fontWeight: 800, textDecoration: 'none',
+            boxShadow: '0 6px 24px rgba(0,180,216,0.45)',
+            fontFamily: 'Poppins, sans-serif',
+          }}
+        >
+          Probar gratis →
+        </a>
+      )}
     </div>
   )
 }

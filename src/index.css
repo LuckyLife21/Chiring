@@ -20,3 +20,13 @@ html, body, #root {
 .logo-text {
   font-family: 'Righteous', sans-serif;
 }
+
+/* Accesibilidad: foco visible al navegar con teclado */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #00B4D8;
+  outline-offset: 2px;
+}

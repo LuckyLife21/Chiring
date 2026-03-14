@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
+
 export default function Terminos() {
+  useEffect(() => { document.title = 'Términos de uso · ChiringApp' }, [])
   return (
     <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif", padding: '24px 20px 60px' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>

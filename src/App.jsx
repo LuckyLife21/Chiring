@@ -36,6 +36,10 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [guardando, setGuardando] = useState(false)
   const [pedidoId, setPedidoId] = useState(null)
+  const [codigosDisponibles, setCodigosDisponibles] = useState([])
+  const [codigoInput, setCodigoInput] = useState('')
+  const [codigoAplicado, setCodigoAplicado] = useState(null)
+  const [codigoError, setCodigoError] = useState('')
 
   useEffect(() => {
     async function cargarDatos() {
@@ -54,6 +58,18 @@ export default function App() {
         if (cats.length > 0) setCat(cats[0].nombre)
       }
 
+      const { data: chiringuito } = await supabase
+        .from('chiringuitos')
+        .select('id')
+        .eq('nombre', 'Chiringuito Playa Sol')
+        .maybeSingle()
+      if (chiringuito) {
+        try {
+          const { data: cod } = await supabase.from('codigos_descuento').select('*').eq('chiringuito_id', chiringuito.id).eq('activo', true)
+          setCodigosDisponibles(cod || [])
+        } catch (_) { setCodigosDisponibles([]) }
+      }
+
       setLoading(false)
     }
     cargarDatos()
@@ -66,6 +82,23 @@ export default function App() {
   const count = Object.values(cart).reduce((a,b) => a+b, 0)
   const add = (id) => setCart(c => ({...c, [id]:(c[id]||0)+1}))
   const chg = (id, d) => setCart(c => ({...c, [id]:Math.max(0,(c[id]||0)+d)}))
+
+  const descuento = codigoAplicado
+    ? (codigoAplicado.tipo === 'porcentaje'
+      ? total * Number(codigoAplicado.valor) / 100
+      : Math.min(Number(codigoAplicado.valor), total))
+    : 0
+  const totalConDescuento = Math.max(0, total - descuento)
+
+  function aplicarCodigo() {
+    setCodigoError('')
+    const cod = (codigoInput || '').trim().toUpperCase()
+    if (!cod) { setCodigoError('Escribe un código'); return }
+    const c = codigosDisponibles.find(x => (x.codigo || '').toUpperCase() === cod)
+    if (!c) { setCodigoError('Código no válido'); setCodigoAplicado(null); return }
+    setCodigoAplicado(c)
+    setCodigoError('')
+  }
 
   async function crearPedido() {
     setGuardando(true)
@@ -89,7 +122,7 @@ export default function App() {
           chiringuito_id: chiringuito.id,
           hamaca_id: hamaca.id,
           estado: 'pendiente_pago',
-          total: total
+          total: totalConDescuento
         })
         .select()
         .single()
@@ -131,7 +164,7 @@ export default function App() {
     <div style={s.phone}>
 
       {screen === 'pago' && (
-        <Pago total={total} pedidoId={pedidoId}
+        <Pago total={totalConDescuento} pedidoId={pedidoId}
           onVolver={() => setScreen('cart')}
           onExito={onPagoExito} />
       )}
@@ -233,11 +266,39 @@ export default function App() {
             })}
           </div>
 
+          {codigosDisponibles.length > 0 && (
+            <div style={{ padding: '0 16px', marginTop: 12 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  placeholder="Código promocional"
+                  value={codigoInput}
+                  onChange={e => { setCodigoInput(e.target.value); setCodigoError('') }}
+                  style={{ flex: 1, minWidth: 120, padding: '10px 14px', borderRadius: 12, border: '1.5px solid #E0E8F0', fontSize: 14, fontFamily: 'Poppins, sans-serif' }}
+                />
+                <button type="button" onClick={aplicarCodigo} style={{ padding: '10px 18px', background: '#0A2540', color: 'white', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>Aplicar</button>
+              </div>
+              {codigoError && <div style={{ fontSize: 12, color: '#dc3545', marginTop: 6 }}>{codigoError}</div>}
+              {codigoAplicado && (
+                <div style={{ fontSize: 13, color: '#28a745', marginTop: 6, fontWeight: 600 }}>
+                  ✓ {codigoAplicado.codigo}: −{descuento.toFixed(2).replace('.', ',')} €
+                </div>
+              )}
+            </div>
+          )}
+
           <div style={{padding:'0 16px', marginTop:8}}>
             <div style={s.totalBox}>
               <div>
                 <div style={{fontSize:13,color:'#aaa',fontWeight:600}}>Total a pagar</div>
-                <div style={{fontSize:32,fontWeight:900,color:'#0A2540'}}>{total.toFixed(2).replace('.',',')} €</div>
+                {codigoAplicado ? (
+                  <>
+                    <div style={{fontSize:14,color:'#888',textDecoration:'line-through'}}>{total.toFixed(2).replace('.',',')} €</div>
+                    <div style={{fontSize:32,fontWeight:900,color:'#0A2540'}}>{totalConDescuento.toFixed(2).replace('.',',')} €</div>
+                  </>
+                ) : (
+                  <div style={{fontSize:32,fontWeight:900,color:'#0A2540'}}>{total.toFixed(2).replace('.',',')} €</div>
+                )}
               </div>
               <div style={{fontSize:13,color:'#aaa',fontWeight:500,textAlign:'right'}}>
                 {count} {count===1?'producto':'productos'}
@@ -248,7 +309,7 @@ export default function App() {
           <div style={{padding:'16px'}}>
             <button style={{...s.payBtn, opacity: guardando ? 0.7 : 1}}
               onClick={crearPedido} disabled={guardando}>
-              {guardando ? '⏳ Preparando...' : `💳 Ir a pagar · ${total.toFixed(2).replace('.',',')} €`}
+              {guardando ? '⏳ Preparando...' : `💳 Ir a pagar · ${totalConDescuento.toFixed(2).replace('.',',')} €`}
             </button>
           </div>
         </div>

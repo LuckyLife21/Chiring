@@ -23,6 +23,8 @@ export default function Registro() {
 
   const [refColaborador, setRefColaborador] = useState('')
 
+  useEffect(() => { document.title = 'Registrarse · ChiringApp' }, [])
+
   useEffect(() => {
     const onResize = () => setMobile(isMobile())
     window.addEventListener('resize', onResize)
@@ -40,7 +42,14 @@ export default function Registro() {
     setError('')
   }
 
+  const COOLDOWN_REGISTRO_MS = 90000 // 1,5 min entre intentos de registro
+
   async function registrar() {
+    const last = parseInt(sessionStorage.getItem('registro_last_attempt') || '0', 10)
+    if (Date.now() - last < COOLDOWN_REGISTRO_MS) {
+      setError('Espera un minuto y medio antes de intentar de nuevo (límite anti-spam).')
+      return
+    }
     if (!form.nombre || !form.email || !form.email2 || !form.password || !form.telefono || !form.ciudad) {
       setError('Por favor rellena todos los campos obligatorios')
       return
@@ -73,6 +82,7 @@ export default function Registro() {
 
     setCargando(true)
     setError('')
+    sessionStorage.setItem('registro_last_attempt', String(Date.now()))
 
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({

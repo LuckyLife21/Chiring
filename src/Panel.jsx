@@ -177,6 +177,8 @@ function Manager({ chiringuito, onVolver }) {
   const [productos, setProductos] = useState([])
   const [categorias, setCategorias] = useState([])
   const [hamacas, setHamacas] = useState([])
+  const [codigosDescuento, setCodigosDescuento] = useState([])
+  const [nuevoCodigo, setNuevoCodigo] = useState({ codigo: '', tipo: 'porcentaje', valor: '' })
   const [loading, setLoading] = useState(true)
   const [vista, setVista] = useState('hoy')
   const [fechaDesde, setFechaDesde] = useState('')
@@ -216,10 +218,65 @@ function Manager({ chiringuito, onVolver }) {
     if (pr) setProductos(pr)
     if (c) setCategorias(c)
     if (h) setHamacas(h)
+    try {
+      const { data: cod } = await supabase.from('codigos_descuento').select('*').eq('chiringuito_id', chiringuito.id).order('codigo')
+      setCodigosDescuento(cod || [])
+    } catch (_) { setCodigosDescuento([]) }
     setLoading(false)
   }
 
   function mostrarMsg(m) { setMsg(m); setTimeout(() => setMsg(''), 4000) }
+
+  function descargarCSVProductos() {
+    const headers = ['Nombre', 'Descripción', 'Precio (€)', 'Categoría', 'Estado']
+    const rows = productos.map(p => [p.nombre, (p.descripcion || '').replace(/"/g, '""'), Number(p.precio).toFixed(2), p.categoria || '', p.disponible ? 'Activo' : 'Inactivo'])
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${String(c)}"`).join(','))].join('\n')
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `productos-${chiringuito.nombre.replace(/\s/g, '-')}-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  function descargarCSVHamacas() {
+    const headers = ['Número', 'Activa', 'URL QR']
+    const rows = hamacas.map(h => [h.numero, h.activa ? 'Sí' : 'No', `${baseUrl}/hamaca/${h.numero}`])
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${String(c)}"`).join(','))].join('\n')
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `hamacas-${chiringuito.nombre.replace(/\s/g, '-')}-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  async function añadirCodigoDescuento() {
+    const cod = (nuevoCodigo.codigo || '').trim().toUpperCase()
+    const valor = parseFloat(nuevoCodigo.valor)
+    if (!cod) { mostrarMsg('Escribe un código'); return }
+    if (isNaN(valor) || valor < 0) { mostrarMsg('Valor no válido'); return }
+    if (nuevoCodigo.tipo === 'porcentaje' && valor > 100) { mostrarMsg('El porcentaje no puede ser mayor que 100'); return }
+    setGuardando(true)
+    const { error } = await supabase.from('codigos_descuento').insert({
+      chiringuito_id: chiringuito.id,
+      codigo: cod,
+      tipo: nuevoCodigo.tipo,
+      valor,
+      activo: true,
+    })
+    if (error) { mostrarMsg(error.message || 'Error al crear'); setGuardando(false); return }
+    setNuevoCodigo({ codigo: '', tipo: 'porcentaje', valor: '' })
+    cargarTodo()
+    mostrarMsg('Código creado')
+    setGuardando(false)
+  }
+
+  async function eliminarCodigoDescuento(id) {
+    await supabase.from('codigos_descuento').delete().eq('id', id)
+    setCodigosDescuento(prev => prev.filter(c => c.id !== id))
+    mostrarMsg('Código eliminado')
+  }
 
   const ahora = new Date()
   function filtrarPorPeriodo(lista) {
@@ -353,7 +410,7 @@ function Manager({ chiringuito, onVolver }) {
     setGuardando(false)
   }
 
-  const tabs = [['stats','📊 Stats'],['productos','📦 Productos'],['categorias','🗂️ Categorías'],['hamacas','🪑 Hamacas'],['config','⚙️ Config']]
+  const tabs = [['stats','📊 Stats'],['productos','📦 Productos'],['categorias','🗂️ Categorías'],['hamacas','🪑 Hamacas'],['codigos','🏷️ Códigos'],['config','⚙️ Config']]
   const baseUrl = window.location.origin
   const periodos = [['hoy','Hoy'],['7d','7 días'],['30d','30 días'],['6m','6 meses'],['1a','1 año'],['custom','📅 Fechas']]
 
@@ -384,6 +441,15 @@ function Manager({ chiringuito, onVolver }) {
       </div>
 
       {msg && <div style={{background:'#D4EDDA', color:'#155724', padding:'12px 20px', textAlign:'center', fontWeight:700, fontSize:14}}>{msg}</div>}
+
+      {(productos.length === 0 || hamacas.length === 0) && (
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '12px 16px', background: 'linear-gradient(135deg,#E0F8FF,#F0F8FF)', borderBottom: '1px solid #00B4D8', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#0A2540' }}>Primeros pasos:</span>
+          <button type="button" onClick={() => setTab('productos')} style={{ fontSize: 13, padding: '6px 12px', borderRadius: 8, border: '1px solid #00B4D8', background: productos.length > 0 ? '#D4EDDA' : 'white', color: '#0A2540', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{productos.length > 0 ? '✓' : '1.'} Añade productos</button>
+          <button type="button" onClick={() => setTab('hamacas')} style={{ fontSize: 13, padding: '6px 12px', borderRadius: 8, border: '1px solid #00B4D8', background: hamacas.length > 0 ? '#D4EDDA' : 'white', color: '#0A2540', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{hamacas.length > 0 ? '✓' : '2.'} Crea hamacas</button>
+          <button type="button" onClick={() => setTab('hamacas')} style={{ fontSize: 13, padding: '6px 12px', borderRadius: 8, border: '1px solid #00B4D8', background: 'white', color: '#0A2540', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>3. Imprime los QR</button>
+        </div>
+      )}
 
       <div style={{maxWidth:1100, margin:'0 auto', padding:'20px 16px'}}>
 
@@ -502,7 +568,10 @@ function Manager({ chiringuito, onVolver }) {
             </button>
           </div>
           <div style={ms.section}>
-            <div style={ms.sectionTitle}>📦 Todos los productos ({productos.length})</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <div style={ms.sectionTitle}>📦 Todos los productos ({productos.length})</div>
+              <button type="button" aria-label="Descargar listado de productos en CSV" onClick={descargarCSVProductos} style={{ fontSize: 12, padding: '6px 12px', background: '#0A2540', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>Descargar CSV</button>
+            </div>
             {productos.map(prod => (
               <div key={prod.id} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderBottom:'1px solid #F0F0F0'}}>
                 {prod.imagen_url
@@ -565,7 +634,10 @@ function Manager({ chiringuito, onVolver }) {
             </div>
           </div>
           <div style={ms.section}>
-            <div style={ms.sectionTitle}>🪑 Hamacas ({hamacas.length}) — clic en el QR para imprimir</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <div style={ms.sectionTitle}>🪑 Hamacas ({hamacas.length}) — clic en el QR para imprimir</div>
+              <button type="button" aria-label="Descargar listado de hamacas en CSV" onClick={descargarCSVHamacas} style={{ fontSize: 12, padding: '6px 12px', background: '#0A2540', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>Descargar CSV</button>
+            </div>
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:12}}>
               {hamacas.map(h => {
                 const url = `${baseUrl}/hamaca/${h.numero}`
@@ -592,6 +664,43 @@ function Manager({ chiringuito, onVolver }) {
                 )
               })}
             </div>
+          </div>
+        </>}
+
+        {tab === 'codigos' && <>
+          <div style={ms.section}>
+            <div style={ms.sectionTitle}>🏷️ Añadir código promocional</div>
+            <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>Los clientes podrán introducir el código en el carrito para aplicar el descuento.</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'flex-end' }}>
+              <div style={{ flex: '1 1 120px' }}>
+                <div style={ms.label}>Código (ej: VERANO10)</div>
+                <input style={ms.input} placeholder="VERANO10" value={nuevoCodigo.codigo} onChange={e=>setNuevoCodigo(c=>({...c,codigo:e.target.value}))} />
+              </div>
+              <div style={{ flex: '1 1 100px' }}>
+                <div style={ms.label}>Tipo</div>
+                <select style={ms.input} value={nuevoCodigo.tipo} onChange={e=>setNuevoCodigo(c=>({...c,tipo:e.target.value}))}>
+                  <option value="porcentaje">Porcentaje</option>
+                  <option value="fijo">Descuento fijo (€)</option>
+                </select>
+              </div>
+              <div style={{ flex: '0 1 80px' }}>
+                <div style={ms.label}>{nuevoCodigo.tipo === 'porcentaje' ? '%' : '€'}</div>
+                <input style={ms.input} type="number" min="0" step={nuevoCodigo.tipo === 'porcentaje' ? 1 : 0.01} placeholder="10" value={nuevoCodigo.valor} onChange={e=>setNuevoCodigo(c=>({...c,valor:e.target.value}))} />
+              </div>
+              <button style={{...ms.btnAdd, marginTop: 0 }} onClick={añadirCodigoDescuento} disabled={guardando}>{guardando ? 'Guardando...' : '➕ Añadir código'}</button>
+            </div>
+          </div>
+          <div style={ms.section}>
+            <div style={ms.sectionTitle}>🏷️ Códigos activos ({codigosDescuento.length})</div>
+            {codigosDescuento.length === 0 ? <div style={{ color: '#aaa', fontSize: 13 }}>Aún no tienes códigos. Crea uno arriba.</div> : (
+              codigosDescuento.map(c => (
+                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid #F0F0F0' }}>
+                  <div style={{ fontWeight: 800, color: '#0A2540', fontSize: 15, fontFamily: 'monospace' }}>{c.codigo}</div>
+                  <div style={{ fontSize: 13, color: '#666' }}>{c.tipo === 'porcentaje' ? `${c.valor}%` : `${Number(c.valor).toFixed(2)} €`} descuento</div>
+                  <button type="button" onClick={() => eliminarCodigoDescuento(c.id)} style={{ ...ms.toggleBtn, background: '#dc3545', fontSize: 11, marginLeft: 'auto' }}>🗑️ Eliminar</button>
+                </div>
+              ))
+            )}
           </div>
         </>}
 
@@ -741,7 +850,14 @@ export default function Panel() {
     if (!error) {
       const nuevos = data.filter(p => p.estado === 'pendiente')
       const anteriores = pedidosAnteriores.current.filter(p => p.estado === 'pendiente')
-      if (nuevos.length > anteriores.length) sonar()
+      if (nuevos.length > anteriores.length) {
+        sonar()
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          try {
+            new Notification('ChiringApp · Nuevo pedido', { body: `${nuevos.length - anteriores.length} pedido(s) nuevo(s). Abre el panel para verlos.`, icon: '/vite.svg' })
+          } catch (e) {}
+        }
+      }
       pedidosAnteriores.current = data
       setPedidos(data)
     }
@@ -826,6 +942,9 @@ export default function Panel() {
             <div style={s.logoSub}>{chiringuito?.nombre || 'Panel del Chiringuito'}</div>
           </div>
           <div style={{display:'flex', alignItems:'center', gap:8}}>
+            {typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
+              <button type="button" style={{...s.logoutBtn, background: 'rgba(255,255,255,0.15)' }} onClick={() => Notification.requestPermission()}>🔔 Activar notificaciones</button>
+            )}
             <button style={s.managerBtn} onClick={() => setVistaManager(true)}>📊 Manager</button>
             <div style={s.live}>● EN VIVO</div>
             <button style={s.logoutBtn} onClick={logout}>Salir</button>
