@@ -26,6 +26,7 @@ const isHamaca = path.startsWith('/hamaca/')
 const isRegistro = path === '/registro'
 const isBienvenida = path === '/bienvenida' || hash.includes('access_token')
 const isPartner = path === '/partner'
+const isRecoveryOnRoot = (path === '/' || path === '') && hash.includes('type=recovery')
 const isPrivacidad = path === '/privacidad'
 const isTerminos = path === '/terminos'
 const isCookies = path === '/cookies'
@@ -34,7 +35,7 @@ const Pagina = isPanel ? <Panel />
   : isQR ? <QRGenerator />
   : isHamaca ? <App />
   : isRegistro ? <Registro />
-  : isPartner ? <Partner />
+  : isPartner || isRecoveryOnRoot ? <Partner />
   : isBienvenida ? <Bienvenida />
   : isPrivacidad ? <Privacidad />
   : isTerminos ? <Terminos />
