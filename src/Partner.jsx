@@ -14,6 +14,8 @@ export default function Partner() {
   const [usuario, setUsuario] = useState(null)
   const [colaborador, setColaborador] = useState(null)
   const [chiringuitos, setChiringuitos] = useState([])
+  const [pedidosEntregados, setPedidosEntregados] = useState([])
+  const [chiringuitoSeleccionado, setChiringuitoSeleccionado] = useState(null)
   const [cargandoPanel, setCargandoPanel] = useState(true)
   const [textoCargando, setTextoCargando] = useState('Cargando...')
 
@@ -103,6 +105,17 @@ export default function Partner() {
     }
     checkSession()
   }, [])
+
+  useEffect(() => {
+    if (chiringuitos.length === 0) return
+    const ids = chiringuitos.map(c => c.id)
+    supabase
+      .from('pedidos')
+      .select('id, chiringuito_id, total, created_at')
+      .in('chiringuito_id', ids)
+      .eq('estado', 'entregado')
+      .then(({ data }) => setPedidosEntregados(data || []))
+  }, [chiringuitos])
 
   function cambiar(campo, valor) {
     setForm(f => ({ ...f, [campo]: valor }))
@@ -221,6 +234,77 @@ export default function Partner() {
 
   if (usuario && colaborador) {
     const link = `https://chiringapp.com/registro?ref=${colaborador.codigo_ref}`
+    const totalPedidos = pedidosEntregados.length
+    const totalComision = pedidosEntregados.reduce((s, p) => s + Number(p.total || 0) * 0.01, 0)
+    const statsPorChiringuito = {}
+    chiringuitos.forEach(c => {
+      const pedidos = pedidosEntregados.filter(p => p.chiringuito_id === c.id)
+      statsPorChiringuito[c.id] = {
+        pedidos: pedidos.length,
+        comision: pedidos.reduce((s, p) => s + Number(p.total || 0) * 0.01, 0),
+        porDia: pedidos.reduce((acc, p) => {
+          const d = new Date(p.created_at).toLocaleDateString('es-ES')
+          if (!acc[d]) acc[d] = { pedidos: 0, total: 0, comision: 0 }
+          acc[d].pedidos += 1
+          acc[d].total += Number(p.total || 0)
+          acc[d].comision += Number(p.total || 0) * 0.01
+          return acc
+        }, {})
+      }
+    })
+
+    if (chiringuitoSeleccionado) {
+      const c = chiringuitoSeleccionado
+      const stats = statsPorChiringuito[c.id] || { pedidos: 0, comision: 0, porDia: {} }
+      const dias = Object.entries(stats.porDia).sort((a, b) => new Date(a[0].split('/').reverse().join('-')) - new Date(b[0].split('/').reverse().join('-')))
+      return (
+        <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
+          <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', padding: mobile ? '16px 20px' : '20px 40px' }}>
+            <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <a href="/" style={{ fontSize: 20, fontWeight: 900, color: 'white', textDecoration: 'none', letterSpacing: -1 }}>🌊 chiringapp</a>
+              <button onClick={() => setChiringuitoSeleccionado(null)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 50, padding: '8px 16px', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                ← Volver al panel
+              </button>
+            </div>
+          </div>
+          <div style={{ maxWidth: 900, margin: '0 auto', padding: mobile ? '24px 20px' : '40px 20px' }}>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: mobile ? 22 : 26, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>🏖️ {c.nombre}</h1>
+              <p style={{ fontSize: 13, color: '#888' }}>Alta: {new Date(c.created_at).toLocaleDateString('es-ES')}</p>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : '1fr 1fr', gap: 14, marginBottom: 28 }}>
+              <div style={{ background: 'white', borderRadius: 18, padding: 20, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>📊</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: '#0A2540' }}>{stats.pedidos}</div>
+                <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>Pedidos entregados</div>
+              </div>
+              <div style={{ background: 'white', borderRadius: 18, padding: 20, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>💰</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: '#00B4D8' }}>{stats.comision.toFixed(2)} €</div>
+                <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>Tu comisión (1%)</div>
+              </div>
+            </div>
+            <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 16 }}>📅 Comisiones por día</div>
+              {dias.length === 0 ? (
+                <p style={{ color: '#aaa', fontSize: 14 }}>Aún no hay pedidos entregados.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {dias.map(([fecha, d]) => (
+                    <div key={fecha} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#F8FAFF', borderRadius: 12 }}>
+                      <span style={{ fontWeight: 600, color: '#0A2540' }}>{fecha}</span>
+                      <span style={{ fontSize: 13, color: '#666' }}>{d.pedidos} pedidos · {d.total.toFixed(2)} € facturado</span>
+                      <span style={{ fontWeight: 800, color: '#00B4D8' }}>{d.comision.toFixed(2)} €</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
         <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', padding: mobile ? '16px 20px' : '20px 40px' }}>
@@ -242,8 +326,8 @@ export default function Partner() {
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: 14, marginBottom: 28 }}>
             {[
               { icon: '🏖️', num: chiringuitos.length, label: 'Chiringuitos referidos' },
-              { icon: '💰', num: '—', label: 'Comisiones acumuladas' },
-              { icon: '📊', num: '—', label: 'Pedidos generados' },
+              { icon: '💰', num: totalComision > 0 ? `${totalComision.toFixed(2)} €` : '—', label: 'Comisiones acumuladas' },
+              { icon: '📊', num: totalPedidos, label: 'Pedidos generados' },
             ].map(s => (
               <div key={s.label} style={{ background: 'white', borderRadius: 18, padding: 20, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>{s.icon}</div>
@@ -271,12 +355,22 @@ export default function Partner() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {chiringuitos.map(c => (
-                  <div key={c.id} style={{ background: '#F8FAFF', borderRadius: 12, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: '#0A2540' }}>🏖️ {c.nombre}</div>
-                    <div style={{ fontSize: 11, color: '#aaa' }}>{new Date(c.created_at).toLocaleDateString('es-ES')}</div>
-                  </div>
-                ))}
+                {chiringuitos.map(c => {
+                  const st = statsPorChiringuito[c.id] || { pedidos: 0, comision: 0 }
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => setChiringuitoSeleccionado(c)}
+                      style={{ background: '#F8FAFF', border: '2px solid #E0E8F0', borderRadius: 12, padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontFamily: "'Poppins', sans-serif", textAlign: 'left', width: '100%' }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: '#0A2540' }}>🏖️ {c.nombre}</div>
+                        <div style={{ fontSize: 12, color: '#00B4D8', marginTop: 2 }}>{st.pedidos} pedidos · {st.comision.toFixed(2)} € comisión</div>
+                      </div>
+                      <div style={{ fontSize: 11, color: '#aaa' }}>{new Date(c.created_at).toLocaleDateString('es-ES')} →</div>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>
