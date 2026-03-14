@@ -3,15 +3,6 @@ import { supabase } from './supabase'
 
 const isMobile = () => window.innerWidth < 768
 
-function IconoHamaca({ size = 28, color = '#0A2540' }) {
-  return (
-    <svg width={size} height={size * 0.6} viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '0 auto' }}>
-      <path d="M4 2v16M28 2v16" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M6 14.5 Q16 5 26 14.5" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
-
 export default function Landing() {
   const [scrollY, setScrollY] = useState(0)
   const [mobile, setMobile] = useState(isMobile())
@@ -319,13 +310,13 @@ export default function Landing() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 14, marginTop: 24 }}>
             {[
-              { icon: 'hamaca', num: '∞', label: 'hamacas (las que necesites)' },
+              { icon: '🪑', num: '∞', label: 'hamacas (las que necesites)' },
               { icon: '📱', num: '2 min', label: 'para instalar' },
               { icon: '💶', num: '15%', label: 'solo si vendes' },
               { icon: '🔔', num: '24/7', label: 'soporte' },
             ].map(s => (
               <div key={s.label} style={{ background: 'white', borderRadius: 16, padding: 18, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: 26, marginBottom: 6 }}>{s.icon === 'hamaca' ? <IconoHamaca size={32} /> : s.icon}</div>
+                <div style={{ fontSize: 26, marginBottom: 6 }}>{s.icon}</div>
                 <div style={{ fontSize: 26, fontWeight: 900, color: '#0A2540', letterSpacing: -1 }}>{s.num}</div>
                 <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>{s.label}</div>
               </div>
