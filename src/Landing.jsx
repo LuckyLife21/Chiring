@@ -248,7 +248,7 @@ export default function Landing() {
                 <span>{t('modal_register_partner')}</span>
               </a>
             </div>
-            <p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 16 }}>{t('modal_register_haveAccount')} <a href="/panel" style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('nav_chiringuitos')}</a> · <button type="button" onClick={() => { setRegistroModal(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', color: '#0077B6', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 12 }}>{t('nav_partners')}</button></p>
+            <p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 16 }}>{t('modal_register_haveAccount')} <button type="button" onClick={() => { setRegistroModal(false); setChiringuitoModal(true) }} style={{ background: 'none', border: 'none', color: '#0077B6', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 12 }}>{t('nav_chiringuitos')}</button> · <button type="button" onClick={() => { setRegistroModal(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', color: '#0077B6', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 12 }}>{t('nav_partners')}</button></p>
           </div>
         </div>
       )}
@@ -628,7 +628,7 @@ export default function Landing() {
             {t('cta_benefits')}
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
-            {t('modal_register_haveAccount')} <a href="/panel" style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700, textDecoration: 'none' }}>{t('nav_chiringuitos')}</a> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
+            {t('modal_register_haveAccount')} <button type="button" onClick={() => setChiringuitoModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_chiringuitos')}</button> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
           </div>
         </div>
       </div>
@@ -678,7 +678,7 @@ export default function Landing() {
               {t('partner_footer')}
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 20 }}>
-              {t('modal_register_haveAccount')} <a href="/partner" style={{ color: 'rgba(255,255,255,0.95)', fontWeight: 700, textDecoration: 'none' }}>{t('partner_cta_login')}</a>
+              {t('modal_register_haveAccount')} <button type="button" onClick={() => setChiringuitoModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.95)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_chiringuitos')}</button> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.95)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
             </div>
           </div>
         </div>
