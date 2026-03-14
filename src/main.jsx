@@ -13,6 +13,8 @@ import ComingSoon from './ComingSoon.jsx'
 import Registro from './Registro.jsx'
 import Bienvenida from './Bienvenida.jsx'
 import Partner from './Partner.jsx'
+import Privacidad from './Privacidad.jsx'
+import Terminos from './Terminos.jsx'
 
 const path = window.location.pathname
 const hash = window.location.hash
@@ -22,6 +24,8 @@ const isHamaca = path.startsWith('/hamaca/')
 const isRegistro = path === '/registro'
 const isBienvenida = path === '/bienvenida' || hash.includes('access_token')
 const isPartner = path === '/partner'
+const isPrivacidad = path === '/privacidad'
+const isTerminos = path === '/terminos'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -37,6 +41,10 @@ createRoot(document.getElementById('root')).render(
       ? <Partner />
       : isBienvenida
       ? <Bienvenida />
+      : isPrivacidad
+      ? <Privacidad />
+      : isTerminos
+      ? <Terminos />
       : <ComingSoon />}
   </StrictMode>,
 )

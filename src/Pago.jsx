@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
-const stripePromise = loadStripe('pk_test_51T8fgBGd5B1Ea4JBWRWKIcvm4C7qNSsHzHSbltBj6HcBfWldW9bbwd23ob8fsSWPYdohQHQ5qGzZ1eZ5Tl5pzbFI00sewLGnd6')
+// Si no hay .env, se usa este valor para no romper la app
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51T8fgBGd5B1Ea4JBWRWKIcvm4C7qNSsHzHSbltBj6HcBfWldW9bbwd23ob8fsSWPYdohQHQ5qGzZ1eZ5Tl5pzbFI00sewLGnd6'
+const stripePromise = loadStripe(stripeKey)
 
 function FormularioPago({ total, onExito }) {
   const stripe = useStripe()
@@ -59,22 +61,22 @@ export default function Pago({ total, pedidoId, onExito, onVolver }) {
   useEffect(() => {
     async function crearPago() {
       try {
-        const res = await fetch(
-          'https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/crear-pago',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': 'sb_publishable_GKqQQB9plG-DH9EwC7yOeA_2-oXbQG8',
-            },
-            body: JSON.stringify({ amount: total, pedidoId })
-          }
-        )
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://rleznycvhifnxvqjfcex.supabase.co'
+        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_GKqQQB9plG-DH9EwC7yOeA_2-oXbQG8'
+        const url = `${supabaseUrl}/functions/v1/crear-pago`
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseKey,
+          },
+          body: JSON.stringify({ amount: total, pedidoId })
+        })
         const data = await res.json()
         if (data.clientSecret) {
           setClientSecret(data.clientSecret)
         } else {
-          setError('Error: ' + JSON.stringify(data))
+          setError(data.error || 'No se pudo iniciar el pago. Inténtalo de nuevo.')
         }
       } catch (err) {
         setError('Error de conexión: ' + err.message)

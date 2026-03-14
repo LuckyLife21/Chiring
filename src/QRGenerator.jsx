@@ -1,6 +1,6 @@
 import { QRCodeSVG } from 'qrcode.react'
 
-const BASE_URL = 'https://chiring-yfrt.vercel.app'
+const BASE_URL = import.meta.env.VITE_APP_URL || window.location.origin
 
 const hamacas = [
   '1A','1B','2A','2B','3A','3B','4A','4B','5A','5B',

@@ -28,7 +28,7 @@ function Login({ onLogin }) {
     if (!emailReset) return
     setResetLoading(true)
     await supabase.auth.resetPasswordForEmail(emailReset, {
-      redirectTo: 'https://chiringapp.com/panel',
+      redirectTo: `${window.location.origin}/panel`,
     })
     setResetEnviado(true)
     setResetLoading(false)

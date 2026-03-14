@@ -1,16 +1,49 @@
-# React + Vite
+# ChiringApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+App de pedidos para chiringuitos de playa. Los clientes escanean el QR de su hamaca, piden y pagan desde el móvil. El chiringuito recibe los pedidos en tiempo real en su panel.
 
-Currently, two official plugins are available:
+- **Landing** (/) – Presentación, precios, FAQ, contacto  
+- **Registro** (/registro) – Alta de chiringuitos  
+- **Panel** (/panel) – Login y gestión de pedidos para chiringuitos  
+- **Partner** (/partner) – Panel de partners (comisiones por referidos)  
+- **Hamaca** (/hamaca/:numero) – Carta y pedido para el cliente  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Cómo ejecutar
 
-## React Compiler
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+La app estará en `http://localhost:5173` (o el puerto que indique Vite).
 
-## Expanding the ESLint configuration
+## Variables de entorno
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Copia `.env.example` a `.env` y rellena los valores. Sin ellas la app no podrá conectar con Supabase ni Stripe.
+
+| Variable | Descripción |
+|----------|-------------|
+| `VITE_SUPABASE_URL` | URL del proyecto Supabase (ej. `https://xxx.supabase.co`) |
+| `VITE_SUPABASE_ANON_KEY` | Clave anónima (pública) de Supabase |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Clave pública de Stripe (pk_test_... o pk_live_...) |
+| `VITE_APP_URL` | (Opcional) URL pública de la app; si no se define, los QRs usan la URL actual |
+
+En **Vercel** (o tu hosting), configura las mismas variables en el panel de proyecto para que el build y la app en producción funcionen.
+
+## Build y despliegue
+
+```bash
+npm run build
+```
+
+La carpeta `dist` se puede desplegar en Vercel, Netlify, etc. El `vercel.json` ya incluye el rewrite para SPA (todas las rutas a `index.html`).
+
+## Supabase
+
+- Tablas: `chiringuitos`, `colaboradores`, `pedidos`, `pedido_items`, `productos`, `categorias`, `hamacas`, etc.
+- Edge Functions usadas: `enviar-bienvenida`, `enviar-confirmacion`, `stripe-connect-onboarding`, `crear-pago` (para pagos con Stripe).
+- RLS: ver `partner-rls-pedidos.sql` para que los partners lean pedidos de sus referidos.
+
+## Licencia
+
+Proyecto privado. Todos los derechos reservados.

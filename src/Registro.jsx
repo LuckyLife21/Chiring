@@ -331,7 +331,7 @@ export default function Registro() {
             </button>
 
             <div style={{ textAlign: 'center', fontSize: 12, color: '#aaa', lineHeight: 1.6 }}>
-              Al registrarte aceptas nuestros <a href="#" style={{ color: '#00B4D8' }}>Términos de uso</a> y <a href="#" style={{ color: '#00B4D8' }}>Política de privacidad</a>.<br />
+              Al registrarte aceptas nuestros <a href="/terminos" style={{ color: '#00B4D8' }}>Términos de uso</a> y <a href="/privacidad" style={{ color: '#00B4D8' }}>Política de privacidad</a>.<br />
               Solo pagas cuando vendes — 15% por pedido procesado.
             </div>
           </div>

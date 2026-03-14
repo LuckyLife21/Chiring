@@ -539,7 +539,7 @@ export default function Landing() {
             </div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Legal</div>
-              {['#|Política de privacidad', '#|Términos de uso', '#|Cookies'].map(item => {
+              {['/privacidad|Política de privacidad', '/terminos|Términos de uso', '#|Cookies'].map(item => {
                 const [href, label] = item.split('|')
                 return <div key={label} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{label}</a></div>
               })}
