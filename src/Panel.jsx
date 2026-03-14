@@ -792,6 +792,7 @@ export default function Panel() {
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState(null)
   const [chiringuito, setChiringuito] = useState(null)
+  const [chiringuitoCargado, setChiringuitoCargado] = useState(false)
   const [vistaManager, setVistaManager] = useState(false)
   const [pinVerificado, setPinVerificado] = useState(false)
   const [isRecovery, setIsRecovery] = useState(false)
@@ -833,9 +834,11 @@ export default function Panel() {
 
   useEffect(() => {
     if (!session) return
+    setChiringuitoCargado(false)
     async function cargarChiringuito() {
-      const { data } = await supabase.from('chiringuitos').select('*').eq('email', session.user.email).single()
-      if (data) setChiringuito(data)
+      const { data } = await supabase.from('chiringuitos').select('*').eq('email', session.user.email).order('created_at', { ascending: false }).limit(1)
+      setChiringuito(Array.isArray(data) && data.length > 0 ? data[0] : data || null)
+      setChiringuitoCargado(true)
     }
     cargarChiringuito()
   }, [session])
@@ -936,9 +939,17 @@ export default function Panel() {
     return <Manager chiringuito={chiringuito} onVolver={() => { setVistaManager(false); setPinVerificado(false) }} />
   if (vistaManager && pinVerificado && !chiringuito)
     return (
-      <div style={s.bg}>
-        <div style={{ padding: 40, textAlign: 'center', color: '#0A2540' }}>Cargando Manager...</div>
-        <button style={s.logoutBtn} onClick={() => { setVistaManager(false); setPinVerificado(false) }}>← Volver</button>
+      <div style={{ ...s.bg, flexDirection: 'column', padding: 24 }}>
+        <div style={{ background: 'white', borderRadius: 20, padding: 40, maxWidth: 400, width: '100%', boxShadow: '0 4px 24px rgba(0,0,0,0.08)', textAlign: 'center' }}>
+          <div style={{ fontSize: 15, color: '#555', marginBottom: 24 }}>No se pudo cargar el Manager. ¿Completaste el registro y entraste por la página de bienvenida? Tu cuenta debe estar vinculada a un chiringuito.</div>
+          <button
+            type="button"
+            onClick={() => { setVistaManager(false); setPinVerificado(false) }}
+            style={{ width: '100%', padding: '14px 24px', background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+          >
+            ← Volver al panel
+          </button>
+        </div>
       </div>
     )
 
@@ -961,7 +972,11 @@ export default function Panel() {
             {typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
               <button type="button" style={{...s.logoutBtn, background: 'rgba(255,255,255,0.15)' }} onClick={() => Notification.requestPermission()}>🔔 Activar notificaciones</button>
             )}
-            <button style={s.managerBtn} onClick={() => setVistaManager(true)}>📊 Manager</button>
+            {!chiringuitoCargado ? (
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Cargando...</span>
+            ) : chiringuito ? (
+              <button style={s.managerBtn} onClick={() => setVistaManager(true)}>📊 Manager</button>
+            ) : null}
             <div style={s.live}>● EN VIVO</div>
             <button style={s.logoutBtn} onClick={logout}>Salir</button>
           </div>
@@ -969,6 +984,12 @@ export default function Panel() {
       </div>
 
       <div style={s.body}>
+
+        {chiringuitoCargado && !chiringuito && (
+          <div style={{ background: '#FFF3CD', color: '#856404', padding: 16, borderRadius: 12, marginBottom: 16, fontSize: 14 }}>
+            No hay un chiringuito vinculado a tu email. ¿Completaste el <strong>registro</strong> y entraste en el enlace de la <strong>bienvenida</strong>? Sin eso no podrás usar el Manager ni recibir pedidos.
+          </div>
+        )}
 
         {chiringuito && !chiringuito.stripe_completado && (
           <BannerStripe chiringuito={chiringuito} />

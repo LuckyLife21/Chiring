@@ -21,12 +21,13 @@ html, body, #root {
   font-family: 'Righteous', sans-serif;
 }
 
-/* Accesibilidad: foco visible al navegar con teclado */
+/* Accesibilidad: foco visible al navegar con teclado (Tab) — borde amarillo bien visible */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #00B4D8;
+  outline: 3px solid #E6A800 !important;
   outline-offset: 2px;
+  box-shadow: 0 0 0 3px #E6A800;
 }
