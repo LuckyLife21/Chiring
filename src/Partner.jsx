@@ -258,8 +258,8 @@ export default function Partner() {
     setRecoveryLoading(false)
     if (error) setRecoveryMsg(error.message || 'Error al cambiar la contraseña')
     else {
-      setRecoveryMsg('✅ Contraseña actualizada. Redirigiendo...')
-      setTimeout(() => window.location.reload(), 1500)
+      setRecoveryMsg('✅ Contraseña actualizada. Redirigiendo a tu panel...')
+      setTimeout(() => { window.location.href = '/partner' }, 1500)
     }
   }
 
