@@ -612,20 +612,25 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* CTA — Registro chiringuito (antes que Partner en el scroll) */}
-      <div style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 60%, #00B4D8 100%)', position: 'relative', overflow: 'hidden', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
-        <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', top: -100, right: -100 }} />
-        <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative' }}>
-          <div style={{ fontSize: 44, marginBottom: 12 }}>🏖️</div>
-          <h2 style={{ fontSize: mobile ? 28 : 40, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>{t('cta_ready')}</h2>
-          <p style={{ fontSize: mobile ? 14 : 16, color: 'rgba(255,255,255,0.75)', marginBottom: 36, lineHeight: 1.7 }}>
-            {t('cta_desc')}
-          </p>
-          <button type="button" onClick={() => setRegistroModal(true)} style={{ display: 'inline-block', background: 'white', color: '#0077B6', padding: '18px 40px', borderRadius: 50, border: 'none', fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-            🚀 {t('cta_createAccount')}
-          </button>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
-            {t('modal_register_haveAccount')} <a href="/panel" style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>{t('nav_chiringuitos')}</a> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
+      {/* CTA — Registro chiringuito (tarjeta, mismo nivel que Partners) */}
+      <div style={{ padding: mobile ? '60px 24px' : '100px 40px', background: '#F0F8FF', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: 640, margin: '0 auto', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 55%, #00B4D8 100%)', borderRadius: 24, padding: mobile ? 32 : 48, textAlign: 'center', boxShadow: '0 20px 50px rgba(0,119,182,0.25)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', width: 320, height: 320, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', top: -80, right: -80 }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🏖️</div>
+            <h2 style={{ fontSize: mobile ? 26 : 36, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 14, lineHeight: 1.2 }}>{t('cta_ready')}</h2>
+            <p style={{ fontSize: mobile ? 14 : 16, color: 'rgba(255,255,255,0.85)', marginBottom: 28, lineHeight: 1.7, maxWidth: 480, margin: '0 auto 28px' }}>
+              {t('cta_desc')}
+            </p>
+            <button type="button" onClick={() => setRegistroModal(true)} style={{ display: 'inline-block', background: 'white', color: '#0077B6', padding: '18px 40px', borderRadius: 50, border: 'none', fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+              🚀 {t('cta_createAccount')}
+            </button>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 20 }}>
+              {t('cta_benefits')}
+            </div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 20 }}>
+              {t('modal_register_haveAccount')} <a href="/panel" style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700 }}>{t('nav_chiringuitos')}</a> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
+            </div>
           </div>
         </div>
       </div>
@@ -655,22 +660,23 @@ export default function Landing() {
             ))}
           </div>
 
-          <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', borderRadius: 24, padding: mobile ? 28 : 48, textAlign: 'center', boxShadow: '0 20px 50px rgba(0,119,182,0.2)' }}>
+          <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', borderRadius: 24, padding: mobile ? 28 : 48, textAlign: 'center', boxShadow: '0 20px 50px rgba(0,119,182,0.2)', border: '2px solid rgba(230,168,0,0.4)' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🤝</div>
             <h3 style={{ fontSize: mobile ? 24 : 32, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>
               {t('partner_cta_title')}
             </h3>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 32, lineHeight: 1.7, maxWidth: 480, margin: '0 auto 32px' }}>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginBottom: 32, lineHeight: 1.7, maxWidth: 480, margin: '0 auto 32px' }}>
               {t('partner_cta_desc')}
             </p>
             <a href="/partner" style={{
               display: 'inline-block', background: 'white', color: '#0077B6',
               padding: '18px 44px', borderRadius: 50, textDecoration: 'none',
               fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+              border: '2px solid rgba(230,168,0,0.6)',
             }}>
               🤝 {t('partner_cta_btn')}
             </a>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 16 }}>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
               {t('partner_footer')}
             </div>
           </div>
