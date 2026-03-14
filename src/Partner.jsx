@@ -15,6 +15,7 @@ export default function Partner() {
   const [colaborador, setColaborador] = useState(null)
   const [chiringuitos, setChiringuitos] = useState([])
   const [cargandoPanel, setCargandoPanel] = useState(true)
+  const [textoCargando, setTextoCargando] = useState('Cargando...')
 
   const [form, setForm] = useState({
     nombre: '',
@@ -36,11 +37,18 @@ export default function Partner() {
   useEffect(() => {
     async function checkSession() {
       try {
-        if (window.location.hash.includes('access_token')) {
-          await supabase.auth.getSessionFromUrl({ storeSession: true })
-          window.location.hash = ''
-          // Tras confirmar email, el token a veces no trae user_metadata; refrescamos el usuario desde el servidor
-          await supabase.auth.getUser()
+        const hash = window.location.hash || ''
+        const search = window.location.search || ''
+        const pareceEnlaceConfirmacion = hash.includes('access_token') || hash.includes('type=') || search.includes('code=') || search.includes('access_token')
+
+        if (pareceEnlaceConfirmacion) {
+          setTextoCargando('Comprobando enlace de confirmación...')
+          await new Promise(r => setTimeout(r, 400))
+          try {
+            await supabase.auth.getSessionFromUrl({ storeSession: true })
+            await supabase.auth.getUser()
+          } catch (_) {}
+          window.history.replaceState({}, '', window.location.pathname)
         }
 
         const { data: { session } } = await supabase.auth.getSession()
@@ -199,8 +207,11 @@ export default function Partner() {
 
   if (cargandoPanel) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFF', fontFamily: 'Poppins, sans-serif' }}>
-        <div style={{ fontSize: 14, color: '#888' }}>Cargando...</div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 14, color: '#555', fontWeight: 600 }}>{textoCargando}</div>
+          <div style={{ fontSize: 12, color: '#aaa', marginTop: 8 }}>Un momento...</div>
+        </div>
       </div>
     )
   }
