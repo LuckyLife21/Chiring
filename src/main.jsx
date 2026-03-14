@@ -15,6 +15,8 @@ import Bienvenida from './Bienvenida.jsx'
 import Partner from './Partner.jsx'
 import Privacidad from './Privacidad.jsx'
 import Terminos from './Terminos.jsx'
+import Cookies from './Cookies.jsx'
+import CookieBanner from './CookieBanner.jsx'
 
 const path = window.location.pathname
 const hash = window.location.hash
@@ -26,25 +28,22 @@ const isBienvenida = path === '/bienvenida' || hash.includes('access_token')
 const isPartner = path === '/partner'
 const isPrivacidad = path === '/privacidad'
 const isTerminos = path === '/terminos'
+const isCookies = path === '/cookies'
+
+const Pagina = isPanel ? <Panel />
+  : isQR ? <QRGenerator />
+  : isHamaca ? <App />
+  : isRegistro ? <Registro />
+  : isPartner ? <Partner />
+  : isBienvenida ? <Bienvenida />
+  : isPrivacidad ? <Privacidad />
+  : isTerminos ? <Terminos />
+  : isCookies ? <Cookies />
+  : <ComingSoon />
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {isPanel
-      ? <Panel />
-      : isQR
-      ? <QRGenerator />
-      : isHamaca
-      ? <App />
-      : isRegistro
-      ? <Registro />
-      : isPartner
-      ? <Partner />
-      : isBienvenida
-      ? <Bienvenida />
-      : isPrivacidad
-      ? <Privacidad />
-      : isTerminos
-      ? <Terminos />
-      : <ComingSoon />}
+    {Pagina}
+    <CookieBanner />
   </StrictMode>,
 )

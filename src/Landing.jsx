@@ -11,6 +11,7 @@ export default function Landing() {
   const [formData, setFormData] = useState({ nombre: '', email: '', mensaje: '' })
   const [formEnviado, setFormEnviado] = useState(false)
   const [formCargando, setFormCargando] = useState(false)
+  const [formError, setFormError] = useState('')
   const [partnerModal, setPartnerModal] = useState(false)
   const [partnerLogin, setPartnerLogin] = useState({ email: '', password: '' })
   const [partnerError, setPartnerError] = useState('')
@@ -29,9 +30,18 @@ export default function Landing() {
   async function enviarContacto() {
     if (!formData.nombre || !formData.email || !formData.mensaje) return
     setFormCargando(true)
-    await new Promise(r => setTimeout(r, 1000))
+    setFormError('')
+    try {
+      const { data, error } = await supabase.functions.invoke('enviar-contacto', {
+        body: { nombre: formData.nombre, email: formData.email, mensaje: formData.mensaje }
+      })
+      if (error) throw error
+      if (data?.error) throw new Error(data.error)
+      setFormEnviado(true)
+    } catch (e) {
+      setFormError(e?.message || 'No se pudo enviar. Inténtalo de nuevo o escribe a appchiring@gmail.com')
+    }
     setFormCargando(false)
-    setFormEnviado(true)
   }
 
   async function loginPartner() {
@@ -498,6 +508,11 @@ export default function Landing() {
                   <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>Mensaje *</label>
                   <textarea style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540', resize: 'vertical', minHeight: 120 }} placeholder="¿En qué podemos ayudarte?" value={formData.mensaje} onChange={e => setFormData(f => ({ ...f, mensaje: e.target.value }))} />
                 </div>
+                {formError && (
+                  <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>
+                    ⚠️ {formError}
+                  </div>
+                )}
                 <button onClick={enviarContacto} disabled={formCargando || !formData.nombre || !formData.email || !formData.mensaje} style={{ padding: '14px', background: (!formData.nombre || !formData.email || !formData.mensaje) ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: (!formData.nombre || !formData.email || !formData.mensaje) ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
                   {formCargando ? 'Enviando...' : '📧 Enviar mensaje'}
                 </button>
@@ -539,7 +554,7 @@ export default function Landing() {
             </div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Legal</div>
-              {['/privacidad|Política de privacidad', '/terminos|Términos de uso', '#|Cookies'].map(item => {
+              {['/privacidad|Política de privacidad', '/terminos|Términos de uso', '/cookies|Cookies'].map(item => {
                 const [href, label] = item.split('|')
                 return <div key={label} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{label}</a></div>
               })}

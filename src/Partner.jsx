@@ -25,6 +25,14 @@ export default function Partner() {
   const [avisoComisionesVisto, setAvisoComisionesVisto] = useState(false)
   const [cargandoPanel, setCargandoPanel] = useState(true)
   const [textoCargando, setTextoCargando] = useState('Cargando...')
+  const [resetPasswordMode, setResetPasswordMode] = useState('none')
+  const [emailReset, setEmailReset] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
+  const [isRecovery, setIsRecovery] = useState(false)
+  const [nuevaPass, setNuevaPass] = useState('')
+  const [nuevaPass2, setNuevaPass2] = useState('')
+  const [recoveryLoading, setRecoveryLoading] = useState(false)
+  const [recoveryMsg, setRecoveryMsg] = useState('')
 
   const [form, setForm] = useState({
     nombre: '',
@@ -44,6 +52,18 @@ export default function Partner() {
   }, [])
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('reset') === '1') setResetPasswordMode('request')
+  }, [])
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') setIsRecovery(true)
+    })
+    return () => subscription?.unsubscribe()
+  }, [])
+
+  useEffect(() => {
     async function checkSession() {
       try {
         const hash = window.location.hash || ''
@@ -56,6 +76,7 @@ export default function Partner() {
           try {
             await supabase.auth.getSessionFromUrl({ storeSession: true })
             await supabase.auth.getUser()
+            if (hash.includes('type=recovery')) setIsRecovery(true)
           } catch (_) {}
           window.history.replaceState({}, '', window.location.pathname)
         }
@@ -164,7 +185,7 @@ export default function Partner() {
         password: form.password,
         options: {
           data: { nombre: form.nombre, rol: 'partner', codigo_ref },
-          emailRedirectTo: 'https://chiringapp.com/partner'
+          emailRedirectTo: `${window.location.origin}/partner`
         }
       })
 
@@ -217,6 +238,31 @@ export default function Partner() {
     window.location.reload()
   }
 
+  async function handleResetPartner() {
+    if (!emailReset.trim()) return
+    setResetLoading(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(emailReset.trim(), {
+      redirectTo: `${window.location.origin}/partner`,
+    })
+    setResetLoading(false)
+    if (!error) setResetPasswordMode('sent')
+    else setError(error.message || 'No se pudo enviar el enlace. Comprueba el email.')
+  }
+
+  async function guardarNuevaPassPartner() {
+    if (nuevaPass.length < 6) { setRecoveryMsg('La contraseña debe tener al menos 6 caracteres'); return }
+    if (nuevaPass !== nuevaPass2) { setRecoveryMsg('Las contraseñas no coinciden'); return }
+    setRecoveryLoading(true)
+    setRecoveryMsg('')
+    const { error } = await supabase.auth.updateUser({ password: nuevaPass })
+    setRecoveryLoading(false)
+    if (error) setRecoveryMsg(error.message || 'Error al cambiar la contraseña')
+    else {
+      setRecoveryMsg('✅ Contraseña actualizada. Redirigiendo...')
+      setTimeout(() => window.location.href = '/partner', 1500)
+    }
+  }
+
   const inputStyle = {
     width: '100%', padding: '14px 16px', borderRadius: 12,
     border: '1.5px solid #E0E8F0', background: '#F8FAFF',
@@ -234,6 +280,65 @@ export default function Partner() {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 14, color: '#555', fontWeight: 600 }}>{textoCargando}</div>
           <div style={{ fontSize: 12, color: '#aaa', marginTop: 8 }}>Un momento...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (isRecovery) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 55%, #00B4D8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Poppins', sans-serif", padding: 20 }}>
+        <div style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 400, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>🔐</div>
+            <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Nueva contraseña</h2>
+            <p style={{ fontSize: 13, color: '#888' }}>Introduce y repite tu nueva contraseña de Partner</p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <input style={inputStyle} type="password" placeholder="Nueva contraseña (mín. 6 caracteres)" value={nuevaPass} onChange={e => setNuevaPass(e.target.value)} />
+            <input style={inputStyle} type="password" placeholder="Repetir contraseña" value={nuevaPass2} onChange={e => setNuevaPass2(e.target.value)} onKeyDown={e => e.key === 'Enter' && guardarNuevaPassPartner()} />
+            {recoveryMsg && <div style={{ fontSize: 13, fontWeight: 600, color: recoveryMsg.includes('✅') ? '#28a745' : '#cc0000' }}>{recoveryMsg}</div>}
+            <button onClick={guardarNuevaPassPartner} disabled={recoveryLoading} style={{ padding: '14px', background: recoveryLoading ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: recoveryLoading ? 'default' : 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+              {recoveryLoading ? 'Guardando...' : '💾 Guardar contraseña'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (resetPasswordMode === 'sent') {
+    return (
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 55%, #00B4D8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Poppins', sans-serif", padding: 20 }}>
+        <div style={{ textAlign: 'center', maxWidth: 420, color: 'white' }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>📧</div>
+          <h1 style={{ fontSize: 26, fontWeight: 900, marginBottom: 12 }}>Revisa tu email</h1>
+          <p style={{ fontSize: 15, opacity: 0.9, lineHeight: 1.7, marginBottom: 24 }}>
+            Te hemos enviado un enlace para restablecer tu contraseña de Partner a <strong>{emailReset}</strong>. Haz clic en el enlace y podrás crear una nueva contraseña.
+          </p>
+          <a href="/partner" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 700 }}>← Volver al login de Partner</a>
+        </div>
+      </div>
+    )
+  }
+
+  if (resetPasswordMode === 'request') {
+    return (
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 55%, #00B4D8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Poppins', sans-serif", padding: 20 }}>
+        <div style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 400, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>🔐</div>
+            <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Recuperar contraseña</h2>
+            <p style={{ fontSize: 13, color: '#888' }}>Introduce el email de tu cuenta Partner y te enviamos un enlace para restablecerla</p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <input style={inputStyle} type="email" placeholder="tu@email.com" value={emailReset} onChange={e => setEmailReset(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleResetPartner()} />
+            {error && <div style={{ fontSize: 13, color: '#cc0000', fontWeight: 600 }}>{error}</div>}
+            <button onClick={handleResetPartner} disabled={resetLoading} style={{ padding: '14px', background: resetLoading ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: resetLoading ? 'default' : 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+              {resetLoading ? 'Enviando...' : 'Enviar enlace de recuperación'}
+            </button>
+            <a href="/partner" style={{ textAlign: 'center', fontSize: 13, color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>← Volver al login</a>
+          </div>
         </div>
       </div>
     )
