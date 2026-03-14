@@ -43,29 +43,29 @@ export default function Partner() {
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
           const meta = session.user.user_metadata
-          if (meta?.rol === 'partner' && session.user.email_confirmed_at) {
+          const { data } = await supabase
+            .from('colaboradores')
+            .select('*')
+            .eq('email', session.user.email)
+            .single()
+          // Consideramos partner a cualquier usuario con sesión válida y fila en colaboradores
+          if (data) {
             setUsuario(session.user)
-            const { data } = await supabase
-              .from('colaboradores')
-              .select('*')
-              .eq('email', session.user.email)
-              .single()
-            if (data) {
-              setColaborador(data)
-              if (!data.confirmado) {
-                await supabase.from('colaboradores').update({ confirmado: true }).eq('email', session.user.email)
-                await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json", "Authorization": "Bearer " + ANON_KEY },
-                  body: JSON.stringify({ email: data.email, nombre: data.nombre, codigo_ref: data.codigo_ref })
-                })
-              }
-              const { data: chirs } = await supabase
-                .from('chiringuitos')
-                .select('id, nombre, created_at')
-                .eq('ref_colaborador', data.codigo_ref)
-              setChiringuitos(chirs || [])
+            setColaborador(data)
+            // Si el email ya está confirmado y aún no hemos marcado el colaborador como confirmado, lo actualizamos y enviamos email
+            if (session.user.email_confirmed_at && !data.confirmado) {
+              await supabase.from('colaboradores').update({ confirmado: true }).eq('email', session.user.email)
+              await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + ANON_KEY },
+                body: JSON.stringify({ email: data.email, nombre: data.nombre, codigo_ref: data.codigo_ref })
+              })
             }
+            const { data: chirs } = await supabase
+              .from('chiringuitos')
+              .select('id, nombre, created_at')
+              .eq('ref_colaborador', data.codigo_ref)
+            setChiringuitos(chirs || [])
           }
         }
       } finally {
