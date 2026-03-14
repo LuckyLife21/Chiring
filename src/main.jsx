@@ -25,6 +25,18 @@ const isPartner = path === '/partner'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {isPanel ? <Panel /> : isQR ? <QRGenerator /> : isHamaca ? <App /> : isRegistro ? <Registro /> : isBienvenida ? <Bienvenida /> : isPartner ? <Partner /> : <ComingSoon />}
+    {isPanel
+      ? <Panel />
+      : isQR
+      ? <QRGenerator />
+      : isHamaca
+      ? <App />
+      : isRegistro
+      ? <Registro />
+      : isPartner
+      ? <Partner />
+      : isBienvenida
+      ? <Bienvenida />
+      : <ComingSoon />}
   </StrictMode>,
 )

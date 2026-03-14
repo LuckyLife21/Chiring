@@ -15,7 +15,6 @@ export default function Partner() {
   const [colaborador, setColaborador] = useState(null)
   const [chiringuitos, setChiringuitos] = useState([])
   const [cargandoPanel, setCargandoPanel] = useState(true)
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' })
 
   const [form, setForm] = useState({
     nombre: '',
@@ -39,7 +38,7 @@ export default function Partner() {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         const meta = session.user.user_metadata
-        if (meta?.rol === 'partner') {
+        if (meta?.rol === 'partner' && session.user.email_confirmed_at) {
           setUsuario(session.user)
           const { data } = await supabase
             .from('colaboradores')
@@ -62,64 +61,12 @@ export default function Partner() {
               .eq('ref_colaborador', data.codigo_ref)
             setChiringuitos(chirs || [])
           }
-        } else if (meta?.rol === 'partner' && !session.user.email_confirmed_at) {
-          setPaso(3)
-        }
-      } else {
-        const params = new URLSearchParams(window.location.search)
-        if (window.location.hash.includes('access_token') || params.get('type') === 'signup') {
-          setPaso(3)
         }
       }
       setCargandoPanel(false)
     }
     checkSession()
   }, [])
-
-  async function iniciarSesion() {
-    if (!loginForm.email || !loginForm.password) {
-      setError('Rellena email y contraseña')
-      return
-    }
-    setCargando(true)
-    setError('')
-    const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      email: loginForm.email,
-      password: loginForm.password,
-    })
-    if (loginError) {
-      setError('Email o contraseña incorrectos')
-      setCargando(false)
-      return
-    }
-    const session = data.session
-    const meta = session.user.user_metadata
-    if (meta?.rol === 'partner' && session.user.email_confirmed_at) {
-      setUsuario(session.user)
-      const { data: colData } = await supabase
-        .from('colaboradores')
-        .select('*')
-        .eq('email', session.user.email)
-        .single()
-      if (colData) {
-        setColaborador(colData)
-        if (!colData.confirmado) {
-          await supabase.from('colaboradores').update({ confirmado: true }).eq('email', session.user.email)
-          await fetch("https://rleznycvhifnxvqjfcex.supabase.co/functions/v1/enviar-partner", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + ANON_KEY },
-            body: JSON.stringify({ email: colData.email, nombre: colData.nombre, codigo_ref: colData.codigo_ref })
-          })
-        }
-        const { data: chirs } = await supabase
-          .from('chiringuitos')
-          .select('id, nombre, created_at')
-          .eq('ref_colaborador', colData.codigo_ref)
-        setChiringuitos(chirs || [])
-      }
-    }
-    setCargando(false)
-  }
 
   function cambiar(campo, valor) {
     setForm(f => ({ ...f, [campo]: valor }))
@@ -293,38 +240,6 @@ export default function Partner() {
                 ))}
               </div>
             )}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (paso === 3) {
-    return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 55%, #00B4D8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Poppins', sans-serif", padding: 20 }}>
-        <div style={{ background: 'white', borderRadius: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', padding: mobile ? 28 : 40, width: '100%', maxWidth: 440 }}>
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
-            <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 6 }}>¡Email confirmado!</h2>
-            <p style={{ fontSize: 14, color: '#888' }}>Inicia sesión para acceder a tu panel de partner</p>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div>
-              <label style={labelStyle}>📧 Email</label>
-              <input style={inputStyle} type="email" placeholder="tu@email.com" value={loginForm.email} onChange={e => { setLoginForm(f => ({ ...f, email: e.target.value })); setError('') }} />
-            </div>
-            <div>
-              <label style={labelStyle}>🔒 Contraseña</label>
-              <input style={inputStyle} type="password" placeholder="Tu contraseña" value={loginForm.password} onChange={e => { setLoginForm(f => ({ ...f, password: e.target.value })); setError('') }} />
-            </div>
-            {error && (
-              <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>
-                ⚠️ {error}
-              </div>
-            )}
-            <button onClick={iniciarSesion} disabled={cargando} style={{ padding: '16px', background: cargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 16, fontWeight: 800, cursor: cargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-              {cargando ? 'Entrando...' : '🚀 Acceder a mi panel'}
-            </button>
           </div>
         </div>
       </div>
