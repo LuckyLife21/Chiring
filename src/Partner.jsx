@@ -39,6 +39,8 @@ export default function Partner() {
         if (window.location.hash.includes('access_token')) {
           await supabase.auth.getSessionFromUrl({ storeSession: true })
           window.location.hash = ''
+          // Tras confirmar email, el token a veces no trae user_metadata; refrescamos el usuario desde el servidor
+          await supabase.auth.getUser()
         }
 
         const { data: { session } } = await supabase.auth.getSession()
@@ -57,7 +59,8 @@ export default function Partner() {
           })
         }
 
-        // Intentamos completar datos desde colaboradores y cargar chiringuitos si hay permiso
+        // Intentamos completar datos desde colaboradores y cargar chiringuitos si hay permiso.
+        // Si venimos del enlace de confirmación y el metadata no llegó, tener fila en colaboradores basta para mostrar el panel.
         const { data, error } = await supabase
           .from('colaboradores')
           .select('*')

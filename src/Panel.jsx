@@ -800,6 +800,11 @@ export default function Panel() {
   )
 
   if (!session) return <Login onLogin={() => {}} />
+  // Usuarios que son partners van a su panel, no al de chiringuitos
+  if (session.user?.user_metadata?.rol === 'partner') {
+    window.location.href = '/partner'
+    return null
+  }
   if (vistaManager && !pinVerificado)
     return <PinManager pinCorrecto={chiringuito?.pin_manager || '1234'} onAcceso={() => setPinVerificado(true)} />
   if (vistaManager && pinVerificado)
