@@ -261,33 +261,29 @@ export default function Partner() {
       return
     }
     setRecoveryMsg('✅ Contraseña actualizada. Entrando a tu panel...')
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user
+    await new Promise(r => setTimeout(r, 400))
+    const { data: { user: userFromSession } } = await supabase.auth.getUser()
+    const user = userFromSession
     if (!user) {
       setRecoveryLoading(false)
-      setTimeout(() => { window.location.href = '/partner' }, 1500)
+      setRecoveryMsg('Sesión actualizada. Redirigiendo… Inicia sesión en la web si ves el formulario.')
+      setTimeout(() => { window.location.href = '/partner' }, 2000)
       return
     }
-    const { data: colab } = await supabase.from('colaboradores').select('*').eq('email', user.email).single()
-    if (colab) {
+    const { data: colab, error: errColab } = await supabase.from('colaboradores').select('*').eq('email', user.email).maybeSingle()
+    const colabOk = colab && !errColab
+    const meta = user.user_metadata || {}
+    const codigoRef = colabOk ? colab.codigo_ref : (meta.codigo_ref || null)
+    if (colabOk || (meta.rol === 'partner' && codigoRef)) {
       setUsuario(user)
-      setColaborador(colab)
-      const { data: chirs } = await supabase.from('chiringuitos').select('id, nombre, created_at').eq('ref_colaborador', colab.codigo_ref)
+      setColaborador(colabOk ? colab : { nombre: meta.nombre || (user.email || '').split('@')[0], codigo_ref: codigoRef })
+      const { data: chirs } = await supabase.from('chiringuitos').select('id, nombre, created_at').eq('ref_colaborador', codigoRef)
       setChiringuitos(chirs || [])
       setIsRecovery(false)
       if (window.location.pathname !== '/partner') window.history.replaceState({}, '', '/partner')
     } else {
-      const meta = user.user_metadata || {}
-      if (meta.rol === 'partner' && meta.codigo_ref) {
-        setUsuario(user)
-        setColaborador({ nombre: meta.nombre || (user.email || '').split('@')[0], codigo_ref: meta.codigo_ref })
-        const { data: chirs } = await supabase.from('chiringuitos').select('id, nombre, created_at').eq('ref_colaborador', meta.codigo_ref)
-        setChiringuitos(chirs || [])
-        setIsRecovery(false)
-        if (window.location.pathname !== '/partner') window.history.replaceState({}, '', '/partner')
-      } else {
-        setTimeout(() => { window.location.href = '/partner' }, 1500)
-      }
+      setRecoveryMsg('Redirigiendo… Si ves el formulario, usa «Iniciar sesión» desde la web con tu nueva contraseña.')
+      setTimeout(() => { window.location.href = '/partner' }, 2000)
     }
     setRecoveryLoading(false)
   }
