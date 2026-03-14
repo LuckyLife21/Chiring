@@ -33,6 +33,7 @@ export default function Partner() {
   const [nuevaPass2, setNuevaPass2] = useState('')
   const [recoveryLoading, setRecoveryLoading] = useState(false)
   const [recoveryMsg, setRecoveryMsg] = useState('')
+  const [recoveryListoIrALogin, setRecoveryListoIrALogin] = useState(false)
 
   const [form, setForm] = useState({
     nombre: '',
@@ -266,8 +267,7 @@ export default function Partner() {
     const user = userFromSession
     if (!user) {
       setRecoveryLoading(false)
-      setRecoveryMsg('Sesión actualizada. Redirigiendo… Inicia sesión en la web si ves el formulario.')
-      setTimeout(() => { window.location.href = '/partner' }, 2000)
+      setRecoveryListoIrALogin(true)
       return
     }
     const { data: colab, error: errColab } = await supabase.from('colaboradores').select('*').eq('email', user.email).maybeSingle()
@@ -282,8 +282,7 @@ export default function Partner() {
       setIsRecovery(false)
       if (window.location.pathname !== '/partner') window.history.replaceState({}, '', '/partner')
     } else {
-      setRecoveryMsg('Redirigiendo… Si ves el formulario, usa «Iniciar sesión» desde la web con tu nueva contraseña.')
-      setTimeout(() => { window.location.href = '/partner' }, 2000)
+      setRecoveryListoIrALogin(true)
     }
     setRecoveryLoading(false)
   }
@@ -305,6 +304,23 @@ export default function Partner() {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 14, color: '#555', fontWeight: 600 }}>{textoCargando}</div>
           <div style={{ fontSize: 12, color: '#aaa', marginTop: 8 }}>Un momento...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (recoveryListoIrALogin) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 55%, #00B4D8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Poppins', sans-serif", padding: 20 }}>
+        <div style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)', textAlign: 'center' }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 12 }}>Contraseña cambiada</h2>
+          <p style={{ fontSize: 15, color: '#555', lineHeight: 1.6, marginBottom: 24 }}>
+            Ya puedes entrar con tu nueva contraseña. Ve a la <strong>página principal</strong>, haz clic en <strong>Partners</strong> e inicia sesión con tu email y la contraseña que acabas de poner.
+          </p>
+          <a href="/" style={{ display: 'inline-block', padding: '14px 28px', background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, textDecoration: 'none', fontFamily: "'Poppins', sans-serif" }}>
+            Ir a la web e iniciar sesión
+          </a>
         </div>
       </div>
     )
