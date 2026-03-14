@@ -70,6 +70,17 @@ export default function Landing() {
     { q: '¿Cuántas hamacas puedo tener?', r: 'Las que necesites. Puedes añadir tantas hamacas como tenga tu chiringuito, sin límite.' },
     { q: '¿Puedo cambiar el menú cuando quiera?', r: 'Sí, desde el panel puedes añadir, editar o desactivar productos en cualquier momento, al instante.' },
     { q: '¿Hay permanencia o contrato?', r: 'No. Sin permanencia, sin cuota mensual. Solo pagas el 15% cuando procesas un pedido.' },
+    { q: '¿Cuándo puedo empezar a recibir pedidos?', r: 'En cuanto te registres: creas tu menú, añades las hamacas y generas los QR. En minutos puedes tener todo listo. Si tienes dudas, nuestro soporte te ayuda.' },
+    { q: '¿Cómo pongo los QR en cada hamaca?', r: 'Desde el panel generas e imprimes un QR por hamaca. Puedes plastificarlo o engancharlo en la hamaca para que el cliente lo escanee con la cámara del móvil.' },
+    { q: '¿Tengo varios chiringuitos o ubicaciones?', r: 'Cada chiringuito se configura con su propio menú y hamacas. Si tienes más de uno, regístrate con un email por ubicación o contáctanos para ver opciones.' },
+    { q: '¿Qué pasa si hay un problema con un pedido o un reembolso?', r: 'Los pagos se gestionan con Stripe. Para reembolsos o incidencias, puedes hacerlo desde tu panel o desde el dashboard de Stripe; si necesitas ayuda, nuestro soporte te orienta.' },
+    { q: '¿Funciona con mala cobertura o sin internet en la playa?', r: 'El cliente necesita datos para hacer el pedido y pagar. En la mayoría de playas hay 4G suficiente. Tú recibes los pedidos en el panel; si en tu bar tienes WiFi o buena cobertura, no hay problema. Si la zona es muy mala, el cliente puede pedir en el momento en que tenga señal.' },
+    { q: '¿Mis datos y los de los clientes están seguros?', r: 'Sí. Cumplimos con la normativa de protección de datos (RGPD). Los pagos los procesa Stripe, con los máximos estándares de seguridad. No vendemos ni compartimos datos con terceros para marketing.' },
+    { q: '¿Puedo dejar de usar Chiring cuando quiera?', r: 'Sí. No hay permanencia. Si un año no abres o prefieres no seguir, puedes dejar de usarlo; no te cobramos nada si no procesas pedidos.' },
+    { q: '¿El 15% se aplica sobre qué?', r: 'Solo sobre el importe de los pedidos que se cobran con éxito. Si no vendes, no pagas. No hay cuota fija ni costes ocultos.' },
+    { q: '¿Hay periodo de prueba?', r: 'El registro es gratis y solo pagas cuando procesas pedidos (15%). Puedes configurar tu menú y hamacas, probar el panel y, cuando estés listo, empezar a recibir pedidos sin compromiso.' },
+    { q: '¿Hay límite de productos en el menú?', r: 'No. Puedes añadir tantos productos y categorías como necesites para tu carta. Los editas cuando quieras desde el panel.' },
+    { q: '¿Puedo poner descuentos u ofertas?', r: 'Puedes crear productos con precios promocionales o editar precios en cualquier momento. Si quieres ofertas tipo "2x1" o códigos descuento, contáctanos y te contamos las opciones.' },
   ]
 
   const testimonios = [
