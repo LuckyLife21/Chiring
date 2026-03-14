@@ -87,11 +87,14 @@ export default function Partner() {
               body: JSON.stringify({ email: data.email, nombre: data.nombre, codigo_ref: data.codigo_ref })
             })
           }
+        }
 
+        const codigoRef = (data?.codigo_ref) || meta.codigo_ref
+        if (codigoRef) {
           const { data: chirs } = await supabase
             .from('chiringuitos')
             .select('id, nombre, created_at')
-            .eq('ref_colaborador', data.codigo_ref)
+            .eq('ref_colaborador', codigoRef)
           setChiringuitos(chirs || [])
         }
       } finally {
