@@ -16,6 +16,13 @@ export default function Partner() {
   const [chiringuitos, setChiringuitos] = useState([])
   const [pedidosEntregados, setPedidosEntregados] = useState([])
   const [chiringuitoSeleccionado, setChiringuitoSeleccionado] = useState(null)
+  const [periodoPrincipal, setPeriodoPrincipal] = useState('todo')
+  const [periodoDetalle, setPeriodoDetalle] = useState('todo')
+  const [fechaDesde, setFechaDesde] = useState('')
+  const [fechaHasta, setFechaHasta] = useState('')
+  const [metaMensual, setMetaMensual] = useState(() => Number(localStorage.getItem('partner_meta_mensual')) || 100)
+  const [editandoMeta, setEditandoMeta] = useState(false)
+  const [avisoComisionesVisto, setAvisoComisionesVisto] = useState(false)
   const [cargandoPanel, setCargandoPanel] = useState(true)
   const [textoCargando, setTextoCargando] = useState('Cargando...')
 
@@ -232,10 +239,36 @@ export default function Partner() {
     )
   }
 
+  function filtrarPorPeriodo(pedidos, periodo, desde, hasta) {
+    if (!pedidos.length) return []
+    if (periodo === 'custom' && desde && hasta) {
+      const d = new Date(desde); d.setHours(0, 0, 0, 0)
+      const h = new Date(hasta); h.setHours(23, 59, 59, 999)
+      return pedidos.filter(p => {
+        const f = new Date(p.created_at)
+        return f >= d && f <= h
+      })
+    }
+    if (periodo === 'todo') return pedidos
+    const now = new Date()
+    const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    return pedidos.filter(p => {
+      const f = new Date(p.created_at)
+      if (periodo === '7d') return (hoy - f) / 86400000 <= 7
+      if (periodo === '30d') return (hoy - f) / 86400000 <= 30
+      if (periodo === 'mes') return f.getMonth() === now.getMonth() && f.getFullYear() === now.getFullYear()
+      if (periodo === 'año') return f.getFullYear() === now.getFullYear()
+      return true
+    })
+  }
+
   if (usuario && colaborador) {
     const link = `https://chiringapp.com/registro?ref=${colaborador.codigo_ref}`
-    const totalPedidos = pedidosEntregados.length
-    const totalComision = pedidosEntregados.reduce((s, p) => s + Number(p.total || 0) * 0.01, 0)
+    const pedidosFiltradosPrincipal = periodoPrincipal === 'custom'
+      ? filtrarPorPeriodo(pedidosEntregados, 'custom', fechaDesde, fechaHasta)
+      : filtrarPorPeriodo(pedidosEntregados, periodoPrincipal)
+    const totalPedidos = pedidosFiltradosPrincipal.length
+    const totalComision = pedidosFiltradosPrincipal.reduce((s, p) => s + Number(p.total || 0) * 0.01, 0)
     const statsPorChiringuito = {}
     chiringuitos.forEach(c => {
       const pedidos = pedidosEntregados.filter(p => p.chiringuito_id === c.id)
@@ -252,11 +285,49 @@ export default function Partner() {
         }, {})
       }
     })
+    const historialComisiones = []
+    chiringuitos.forEach(c => {
+      const porDia = (statsPorChiringuito[c.id] || {}).porDia || {}
+      Object.entries(porDia).forEach(([fecha, d]) => {
+        if (d.comision > 0) historialComisiones.push({ fecha, nombre: c.nombre, comision: d.comision })
+      })
+    })
+    historialComisiones.sort((a, b) => new Date(b.fecha.split('/').reverse().join('-')) - new Date(a.fecha.split('/').reverse().join('-')))
+    const topChiringuito = chiringuitos.length && Object.keys(statsPorChiringuito).length
+      ? chiringuitos.reduce((best, c) => {
+          const st = statsPorChiringuito[c.id] || { comision: 0 }
+          return !best || st.comision > (statsPorChiringuito[best.id] || {}).comision ? c : best
+        }, null)
+      : null
 
     if (chiringuitoSeleccionado) {
       const c = chiringuitoSeleccionado
-      const stats = statsPorChiringuito[c.id] || { pedidos: 0, comision: 0, porDia: {} }
-      const dias = Object.entries(stats.porDia).sort((a, b) => new Date(a[0].split('/').reverse().join('-')) - new Date(b[0].split('/').reverse().join('-')))
+      const pedidosC = pedidosEntregados.filter(p => p.chiringuito_id === c.id)
+      const pedidosCFiltrados = periodoDetalle === 'custom'
+        ? filtrarPorPeriodo(pedidosC, 'custom', fechaDesde, fechaHasta)
+        : filtrarPorPeriodo(pedidosC, periodoDetalle)
+      const statsFiltrado = {
+        pedidos: pedidosCFiltrados.length,
+        comision: pedidosCFiltrados.reduce((s, p) => s + Number(p.total || 0) * 0.01, 0),
+        porDia: pedidosCFiltrados.reduce((acc, p) => {
+          const d = new Date(p.created_at).toLocaleDateString('es-ES')
+          if (!acc[d]) acc[d] = { pedidos: 0, total: 0, comision: 0 }
+          acc[d].pedidos += 1
+          acc[d].total += Number(p.total || 0)
+          acc[d].comision += Number(p.total || 0) * 0.01
+          return acc
+        }, {})
+      }
+      const dias = Object.entries(statsFiltrado.porDia).sort((a, b) => new Date(a[0].split('/').reverse().join('-')) - new Date(b[0].split('/').reverse().join('-')))
+      const maxComisionDia = Math.max(...dias.map(([, d]) => d.comision), 0.01)
+      const periodosDetalle = [
+        { v: 'todo', l: 'Todo' },
+        { v: '7d', l: '7 días' },
+        { v: '30d', l: '30 días' },
+        { v: 'mes', l: 'Este mes' },
+        { v: 'año', l: 'Este año' },
+        { v: 'custom', l: 'Rango' }
+      ]
       return (
         <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
           <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', padding: mobile ? '16px 20px' : '20px 40px' }}>
@@ -272,17 +343,46 @@ export default function Partner() {
               <h1 style={{ fontSize: mobile ? 22 : 26, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>🏖️ {c.nombre}</h1>
               <p style={{ fontSize: 13, color: '#888' }}>Alta: {new Date(c.created_at).toLocaleDateString('es-ES')}</p>
             </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              {periodosDetalle.map(({ v, l }) => (
+                <button key={v} onClick={() => setPeriodoDetalle(v)} style={{ padding: '8px 14px', borderRadius: 20, border: periodoDetalle === v ? '2px solid #00B4D8' : '1px solid #E0E8F0', background: periodoDetalle === v ? '#E0F8FF' : 'white', color: periodoDetalle === v ? '#0077B6' : '#666', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>{l}</button>
+              ))}
+            </div>
+            {periodoDetalle === 'custom' && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', marginBottom: 20 }}>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>Desde</label>
+                <input type="date" value={fechaDesde} onChange={e => setFechaDesde(e.target.value)} style={{ padding: '8px 12px', borderRadius: 10, border: '1.5px solid #E0E8F0', fontSize: 14, fontFamily: "'Poppins', sans-serif" }} />
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>Hasta</label>
+                <input type="date" value={fechaHasta} onChange={e => setFechaHasta(e.target.value)} style={{ padding: '8px 12px', borderRadius: 10, border: '1.5px solid #E0E8F0', fontSize: 14, fontFamily: "'Poppins', sans-serif" }} />
+              </div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : '1fr 1fr', gap: 14, marginBottom: 28 }}>
               <div style={{ background: 'white', borderRadius: 18, padding: 20, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>📊</div>
-                <div style={{ fontSize: 26, fontWeight: 900, color: '#0A2540' }}>{stats.pedidos}</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: '#0A2540' }}>{statsFiltrado.pedidos}</div>
                 <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>Pedidos entregados</div>
               </div>
               <div style={{ background: 'white', borderRadius: 18, padding: 20, textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>💰</div>
-                <div style={{ fontSize: 26, fontWeight: 900, color: '#00B4D8' }}>{stats.comision.toFixed(2)} €</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: '#00B4D8' }}>{statsFiltrado.comision.toFixed(2)} €</div>
                 <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>Tu comisión (1%)</div>
               </div>
+            </div>
+            <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 16 }}>📊 Gráfico comisiones por día</div>
+              {dias.length === 0 ? (
+                <p style={{ color: '#aaa', fontSize: 14 }}>Aún no hay pedidos entregados en este periodo.</p>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 120 }}>
+                  {dias.map(([fecha, d]) => (
+                    <div key={fecha} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#00B4D8' }}>{d.comision.toFixed(2)} €</div>
+                      <div style={{ width: '100%', background: 'linear-gradient(180deg, #00B4D8, #0077B6)', borderRadius: '8px 8px 0 0', height: `${Math.max(12, (d.comision / maxComisionDia) * 70)}px`, minHeight: 8 }} />
+                      <div style={{ fontSize: 10, color: '#888' }}>{fecha.split('/').slice(0, 2).join('/')}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 16 }}>📅 Comisiones por día</div>
@@ -305,6 +405,51 @@ export default function Partner() {
       )
     }
 
+    const periodosPrincipal = [
+      { v: 'todo', l: 'Todo' },
+      { v: '7d', l: '7 días' },
+      { v: '30d', l: '30 días' },
+      { v: 'mes', l: 'Este mes' },
+      { v: 'año', l: 'Este año' },
+      { v: 'custom', l: 'Rango' }
+    ]
+    const ultimaVisita = typeof localStorage !== 'undefined' ? localStorage.getItem('partner_ultima_visita') : null
+    const comisionesNuevas = ultimaVisita ? pedidosEntregados.filter(p => new Date(p.created_at) > new Date(ultimaVisita)).length : 0
+    const comisionEsteMes = filtrarPorPeriodo(pedidosEntregados, 'mes').reduce((s, p) => s + Number(p.total || 0) * 0.01, 0)
+    const progresoMeta = metaMensual > 0 ? Math.min(100, (comisionEsteMes / metaMensual) * 100) : 0
+    function guardarMeta(v) { const n = Number(v); if (!isNaN(n) && n >= 0) { setMetaMensual(n); localStorage.setItem('partner_meta_mensual', String(n)); setEditandoMeta(false) } }
+    function marcarVisto() { localStorage.setItem('partner_ultima_visita', new Date().toISOString()); setAvisoComisionesVisto(true) }
+    function descargarCSV() {
+      const cabecera = 'Fecha;Chiringuito;Pedidos;Facturado (€);Comisión (€)\n'
+      const nombreChiringuito = id => chiringuitos.find(c => c.id === id)?.nombre || '—'
+      const lineas = pedidosFiltradosPrincipal.map(p => {
+        const fecha = new Date(p.created_at).toLocaleDateString('es-ES')
+        const nom = nombreChiringuito(p.chiringuito_id)
+        const total = Number(p.total || 0)
+        const com = total * 0.01
+        return `${fecha};${nom};1;${total.toFixed(2)};${com.toFixed(2)}`
+      })
+      const csv = '\uFEFF' + cabecera + lineas.join('\n')
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `resumen-partner-${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(a.href)
+    }
+    function imprimirResumen() {
+      const ventana = window.open('', '_blank')
+      const nom = c => chiringuitos.find(x => x.id === c)?.nombre || '—'
+      ventana.document.write(`
+        <!DOCTYPE html><html><head><meta charset="utf-8"><title>Resumen Partner</title><style>body{font-family:sans-serif;padding:24px;max-width:800px;margin:0 auto}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#0A2540;color:#fff}</style></head><body>
+        <h1>Resumen Partner · ${new Date().toLocaleDateString('es-ES')}</h1>
+        <p><strong>Periodo:</strong> ${periodoPrincipal === 'custom' ? `${fechaDesde} a ${fechaHasta}` : periodosPrincipal.find(x=>x.v===periodoPrincipal)?.l || periodoPrincipal}</p>
+        <p><strong>Pedidos:</strong> ${totalPedidos} · <strong>Comisiones:</strong> ${totalComision.toFixed(2)} €</p>
+        <table><thead><tr><th>Fecha</th><th>Chiringuito</th><th>Total (€)</th><th>Comisión (€)</th></tr></thead><tbody>
+        ${pedidosFiltradosPrincipal.map(p => `<tr><td>${new Date(p.created_at).toLocaleDateString('es-ES')}</td><td>${nom(p.chiringuito_id)}</td><td>${Number(p.total||0).toFixed(2)}</td><td>${(Number(p.total||0)*0.01).toFixed(2)}</td></tr>`).join('')}
+        </tbody></table>
+        <p style="margin-top:24px;font-size:12px;color:#888">Chiringapp Partner · Generado el ${new Date().toLocaleString('es-ES')}</p>
+        </body></html>`)
+      ventana.document.close()
+      ventana.focus()
+      setTimeout(() => { ventana.print(); ventana.close() }, 500)
+    }
     return (
       <div style={{ minHeight: '100vh', background: '#F8FAFF', fontFamily: "'Poppins', sans-serif" }}>
         <div style={{ background: 'linear-gradient(135deg, #0A2540, #0077B6)', padding: mobile ? '16px 20px' : '20px 40px' }}>
@@ -323,6 +468,25 @@ export default function Partner() {
             <h1 style={{ fontSize: mobile ? 22 : 28, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Tu panel de Partner 🤝</h1>
             <p style={{ fontSize: 14, color: '#888' }}>Comparte tu link y gana el 1% de cada pedido de tus chiringuitos</p>
           </div>
+          {comisionesNuevas > 0 && !avisoComisionesVisto && (
+            <div style={{ background: 'linear-gradient(135deg, #00B4D8, #0077B6)', borderRadius: 16, padding: '14px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+              <span style={{ color: 'white', fontWeight: 700, fontSize: 14 }}>🔔 Tienes {comisionesNuevas} pedido{comisionesNuevas !== 1 ? 's' : ''} nuevo{comisionesNuevas !== 1 ? 's' : ''} desde tu última visita</span>
+              <button onClick={marcarVisto} style={{ background: 'rgba(255,255,255,0.25)', border: 'none', borderRadius: 20, padding: '8px 16px', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Visto</button>
+            </div>
+          )}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+            {periodosPrincipal.map(({ v, l }) => (
+              <button key={v} onClick={() => setPeriodoPrincipal(v)} style={{ padding: '8px 14px', borderRadius: 20, border: periodoPrincipal === v ? '2px solid #00B4D8' : '1px solid #E0E8F0', background: periodoPrincipal === v ? '#E0F8FF' : 'white', color: periodoPrincipal === v ? '#0077B6' : '#666', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>{l}</button>
+            ))}
+          </div>
+          {periodoPrincipal === 'custom' && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', marginBottom: 16 }}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>Desde</label>
+              <input type="date" value={fechaDesde} onChange={e => setFechaDesde(e.target.value)} style={{ padding: '8px 12px', borderRadius: 10, border: '1.5px solid #E0E8F0', fontSize: 14, fontFamily: "'Poppins', sans-serif" }} />
+              <label style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>Hasta</label>
+              <input type="date" value={fechaHasta} onChange={e => setFechaHasta(e.target.value)} style={{ padding: '8px 12px', borderRadius: 10, border: '1.5px solid #E0E8F0', fontSize: 14, fontFamily: "'Poppins', sans-serif" }} />
+            </div>
+          )}
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: 14, marginBottom: 28 }}>
             {[
               { icon: '🏖️', num: chiringuitos.length, label: 'Chiringuitos referidos' },
@@ -337,6 +501,32 @@ export default function Partner() {
             ))}
           </div>
           <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540' }}>🎯 Objetivo mensual</div>
+              {!editandoMeta ? (
+                <button onClick={() => setEditandoMeta(true)} style={{ background: '#F0F8FF', border: '1px solid #00B4D8', borderRadius: 20, padding: '6px 12px', color: '#0077B6', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Editar meta</button>
+              ) : (
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input type="number" min="0" step="10" value={metaMensual} onChange={e => setMetaMensual(Number(e.target.value) || 0)} style={{ width: 80, padding: '6px 10px', borderRadius: 10, border: '1.5px solid #E0E8F0', fontSize: 14, fontFamily: "'Poppins', sans-serif" }} />
+                  <span style={{ fontSize: 13, color: '#666' }}>€</span>
+                  <button onClick={() => guardarMeta(metaMensual)} style={{ background: '#00B4D8', border: 'none', borderRadius: 20, padding: '6px 14px', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Guardar</button>
+                  <button onClick={() => setEditandoMeta(false)} style={{ background: '#eee', border: 'none', borderRadius: 20, padding: '6px 12px', color: '#666', fontSize: 12, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Cancelar</button>
+                </div>
+              )}
+            </div>
+            <div style={{ fontSize: 13, color: '#666', marginBottom: 8 }}>Este mes: {comisionEsteMes.toFixed(2)} € de {metaMensual} €</div>
+            <div style={{ height: 10, background: '#E0E8F0', borderRadius: 5, overflow: 'hidden' }}>
+              <div style={{ width: `${progresoMeta}%`, height: '100%', background: progresoMeta >= 100 ? 'linear-gradient(90deg, #28a745, #20c997)' : 'linear-gradient(90deg, #00B4D8, #0077B6)', borderRadius: 5, transition: 'width 0.3s ease' }} />
+            </div>
+          </div>
+          {topChiringuito && (statsPorChiringuito[topChiringuito.id] || {}).comision > 0 && (
+            <div style={{ background: 'linear-gradient(135deg, #E0F8FF, #F0F8FF)', borderRadius: 20, padding: 16, marginBottom: 20, border: '2px solid #00B4D8' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#0077B6', marginBottom: 4 }}>🏆 Top referido</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#0A2540' }}>{topChiringuito.nombre}</div>
+              <div style={{ fontSize: 13, color: '#666', marginTop: 2 }}>{(statsPorChiringuito[topChiringuito.id] || {}).comision.toFixed(2)} € en comisiones</div>
+            </div>
+          )}
+          <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: 20 }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 12 }}>🔗 Tu link único de referido</div>
             <div style={{ background: '#F0F8FF', border: '2px solid #00B4D8', borderRadius: 12, padding: '14px 16px', fontSize: mobile ? 12 : 14, fontWeight: 700, color: '#0077B6', wordBreak: 'break-all', marginBottom: 12 }}>
               {link}
@@ -345,7 +535,15 @@ export default function Partner() {
               📋 Copiar link
             </button>
           </div>
-          <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+          <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: 20 }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 12 }}>📥 Descargar resumen</div>
+            <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>Exporta los datos del periodo seleccionado (arriba).</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              <button onClick={descargarCSV} style={{ background: '#0A2540', color: 'white', border: 'none', borderRadius: 12, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>📄 Descargar CSV</button>
+              <button onClick={imprimirResumen} style={{ background: '#555', color: 'white', border: 'none', borderRadius: 12, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>🖨️ Imprimir / Guardar PDF</button>
+            </div>
+          </div>
+          <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: 20 }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 16 }}>🏖️ Chiringuitos que has traído</div>
             {chiringuitos.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '30px 0', color: '#aaa', fontSize: 14 }}>
@@ -371,6 +569,23 @@ export default function Partner() {
                     </button>
                   )
                 })}
+              </div>
+            )}
+          </div>
+          <div style={{ background: 'white', borderRadius: 20, padding: mobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#0A2540', marginBottom: 16 }}>📋 Historial de comisiones</div>
+            {historialComisiones.length === 0 ? (
+              <p style={{ color: '#aaa', fontSize: 14 }}>Aún no hay comisiones. Los pedidos entregados de tus chiringuitos generan tu 1%.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {historialComisiones.slice(0, 30).map((h, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#F8FAFF', borderRadius: 10 }}>
+                    <span style={{ fontWeight: 600, color: '#0A2540' }}>{h.fecha}</span>
+                    <span style={{ fontSize: 13, color: '#666' }}>{h.nombre}</span>
+                    <span style={{ fontWeight: 800, color: '#00B4D8' }}>{h.comision.toFixed(2)} €</span>
+                  </div>
+                ))}
+                {historialComisiones.length > 30 && <p style={{ fontSize: 12, color: '#888', marginTop: 8 }}>Mostrando últimos 30 · Total: {historialComisiones.length} líneas</p>}
               </div>
             )}
           </div>
