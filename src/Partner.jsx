@@ -255,12 +255,41 @@ export default function Partner() {
     setRecoveryLoading(true)
     setRecoveryMsg('')
     const { error } = await supabase.auth.updateUser({ password: nuevaPass })
-    setRecoveryLoading(false)
-    if (error) setRecoveryMsg(error.message || 'Error al cambiar la contraseña')
-    else {
-      setRecoveryMsg('✅ Contraseña actualizada. Redirigiendo a tu panel...')
-      setTimeout(() => { window.location.href = '/partner' }, 1500)
+    if (error) {
+      setRecoveryLoading(false)
+      setRecoveryMsg(error.message || 'Error al cambiar la contraseña')
+      return
     }
+    setRecoveryMsg('✅ Contraseña actualizada. Entrando a tu panel...')
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user
+    if (!user) {
+      setRecoveryLoading(false)
+      setTimeout(() => { window.location.href = '/partner' }, 1500)
+      return
+    }
+    const { data: colab } = await supabase.from('colaboradores').select('*').eq('email', user.email).single()
+    if (colab) {
+      setUsuario(user)
+      setColaborador(colab)
+      const { data: chirs } = await supabase.from('chiringuitos').select('id, nombre, created_at').eq('ref_colaborador', colab.codigo_ref)
+      setChiringuitos(chirs || [])
+      setIsRecovery(false)
+      if (window.location.pathname !== '/partner') window.history.replaceState({}, '', '/partner')
+    } else {
+      const meta = user.user_metadata || {}
+      if (meta.rol === 'partner' && meta.codigo_ref) {
+        setUsuario(user)
+        setColaborador({ nombre: meta.nombre || (user.email || '').split('@')[0], codigo_ref: meta.codigo_ref })
+        const { data: chirs } = await supabase.from('chiringuitos').select('id, nombre, created_at').eq('ref_colaborador', meta.codigo_ref)
+        setChiringuitos(chirs || [])
+        setIsRecovery(false)
+        if (window.location.pathname !== '/partner') window.history.replaceState({}, '', '/partner')
+      } else {
+        setTimeout(() => { window.location.href = '/partner' }, 1500)
+      }
+    }
+    setRecoveryLoading(false)
   }
 
   const inputStyle = {
