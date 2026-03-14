@@ -259,7 +259,7 @@ export default function Partner() {
     if (error) setRecoveryMsg(error.message || 'Error al cambiar la contraseña')
     else {
       setRecoveryMsg('✅ Contraseña actualizada. Redirigiendo...')
-      setTimeout(() => window.location.href = '/partner', 1500)
+      setTimeout(() => window.location.reload(), 1500)
     }
   }
 
@@ -337,7 +337,7 @@ export default function Partner() {
             <button onClick={handleResetPartner} disabled={resetLoading} style={{ padding: '14px', background: resetLoading ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: resetLoading ? 'default' : 'pointer', fontFamily: "'Poppins', sans-serif" }}>
               {resetLoading ? 'Enviando...' : 'Enviar enlace de recuperación'}
             </button>
-            <a href="/partner" style={{ textAlign: 'center', fontSize: 13, color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>← Volver al login</a>
+            <button type="button" onClick={() => { setResetPasswordMode('none'); setError('') }} style={{ background: 'none', border: 'none', fontSize: 13, color: '#0077B6', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>← Volver al login</button>
           </div>
         </div>
       </div>
@@ -828,6 +828,9 @@ export default function Partner() {
               {cargando ? 'Registrando...' : '🤝 Quiero ser Chiring Partner'}
             </button>
             <div style={{ textAlign: 'center', fontSize: 12, color: '#aaa', lineHeight: 1.6 }}>Gratis · Sin permanencia · Comisiones de por vida</div>
+            <div style={{ textAlign: 'center', marginTop: 16, paddingTop: 16, borderTop: '1px solid #eee' }}>
+              <a href="/" style={{ fontSize: 14, color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>¿Ya tienes cuenta? Iniciar sesión (desde la web)</a>
+            </div>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginTop: 20 }}>
