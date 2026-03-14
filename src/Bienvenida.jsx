@@ -10,23 +10,28 @@ export default function Bienvenida() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) { setEstado('error'); return }
 
-        const meta = user.user_metadata
+        const meta = user.user_metadata || {}
+        const baseRow = {
+          email: user.email,
+          email_notificaciones: user.email,
+          nombre: meta.nombre,
+          telefono: meta.telefono,
+          ciudad: meta.ciudad,
+          pin_manager: meta.pin_manager || Math.floor(1000 + Math.random() * 9000).toString(),
+          verificado: false,
+        }
+        if (meta.ref_colaborador) baseRow.ref_colaborador = meta.ref_colaborador
 
-        const { error: dbError } = await supabase
-          .from('chiringuitos')
-          .insert({
-            email: user.email,
-            email_notificaciones: user.email,
-            nombre: meta.nombre,
-            telefono: meta.telefono,
-            ciudad: meta.ciudad,
-            pin_manager: meta.pin_manager || Math.floor(1000 + Math.random() * 9000).toString(),
-            verificado: false,
-            ref_colaborador: meta.ref_colaborador || null,
-          })
+        let dbError = (await supabase.from('chiringuitos').insert(baseRow)).error
 
         if (dbError && !dbError.message.includes('duplicate')) {
-          setEstado('error'); return
+          const sinRef = { ...baseRow }
+          delete sinRef.ref_colaborador
+          const retry = (await supabase.from('chiringuitos').insert(sinRef)).error
+          if (retry && !retry.message.includes('duplicate')) {
+            setEstado('error')
+            return
+          }
         }
 
         await supabase.functions.invoke('enviar-bienvenida', {
