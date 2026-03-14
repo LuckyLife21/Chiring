@@ -1,12 +1,37 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
+import { useLanguage } from './LanguageContext.jsx'
 
 const isMobile = () => window.innerWidth < 768
 
+// Icono tipo Just Eat: usuario/cuenta (login)
+function LogoLoginIcon({ size = 48, color = '#0077B6' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="24" cy="18" r="8" stroke={color} strokeWidth="2.5" fill="none" />
+      <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" fill="none" opacity="0.4" />
+    </svg>
+  )
+}
+
+// Icono manos dándose la mano (Partners)
+function HandshakeIcon({ size = 48, color = '#E6A800' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M14 28v-6c0-2.2 1.8-4 4-4h2l2 4 4-4h4c2.2 0 4 1.8 4 4v6l-4 6-4 4-4-2-4 2-4-4-4-6z" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round" />
+      <path d="M18 24l2 2 4-4 4 4 2-2" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" fill="none" opacity="0.3" />
+    </svg>
+  )
+}
+
 export default function Landing() {
+  const { lang, setLang, t } = useLanguage()
   const [scrollY, setScrollY] = useState(0)
   const [mobile, setMobile] = useState(isMobile())
   const [menuOpen, setMenuOpen] = useState(false)
+  const [panelOpen, setPanelOpen] = useState(false)
   const [faqOpen, setFaqOpen] = useState(null)
   const [formData, setFormData] = useState({ nombre: '', email: '', mensaje: '' })
   const [formEnviado, setFormEnviado] = useState(false)
@@ -113,18 +138,18 @@ export default function Landing() {
         <div onClick={() => setPartnerModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ fontSize: 36, marginBottom: 8 }}>🤝</div>
-              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Chiring Partners</h2>
-              <p style={{ fontSize: 13, color: '#888' }}>Inicia sesión en tu panel de partner</p>
+              <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><HandshakeIcon size={56} color="#E6A800" /></div>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>{t('modal_partner_title')}</h2>
+              <p style={{ fontSize: 13, color: '#888' }}>{t('modal_partner_subtitle')}</p>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 Email</label>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 {t('modal_partner_email')}</label>
                 <input style={inputStyle} type="email" placeholder="tu@email.com" value={partnerLogin.email} onChange={e => { setPartnerLogin(f => ({ ...f, email: e.target.value })); setPartnerError('') }} />
               </div>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 Contraseña</label>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 {t('modal_partner_password')}</label>
                 <input style={inputStyle} type="password" placeholder="••••••••" value={partnerLogin.password} onChange={e => { setPartnerLogin(f => ({ ...f, password: e.target.value })); setPartnerError('') }} onKeyDown={e => e.key === 'Enter' && loginPartner()} />
               </div>
 
@@ -135,14 +160,14 @@ export default function Landing() {
               )}
 
               <button onClick={loginPartner} disabled={partnerCargando} style={{ padding: '14px', background: partnerCargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: partnerCargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-                {partnerCargando ? 'Entrando...' : 'Entrar al panel'}
+                {partnerCargando ? t('modal_partner_entering') : t('modal_partner_enter')}
               </button>
 
               <div style={{ textAlign: 'center', fontSize: 13, color: '#888', lineHeight: 1.8 }}>
-                ¿No tienes cuenta?{' '}
-                <a href="/partner" style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>Regístrate como partner</a>
+                {t('modal_partner_noAccount')}{' '}
+                <a href="/partner" style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_registerLink')}</a>
                 <br />
-                <a href="/partner?reset=1" style={{ color: '#aaa', fontSize: 12, textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
+                <a href="/partner?reset=1" style={{ color: '#aaa', fontSize: 12, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
               </div>
             </div>
           </div>
@@ -154,21 +179,59 @@ export default function Landing() {
         <div onClick={() => setRegistroModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div onClick={e => e.stopPropagation()} style={{ position: 'relative', background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
             <button type="button" onClick={() => setRegistroModal(false)} aria-label="Cerrar" style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', fontSize: 24, color: '#888', cursor: 'pointer', padding: 4, lineHeight: 1 }}>×</button>
-            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#0A2540', marginBottom: 8, textAlign: 'center', paddingRight: 24 }}>¿Quieres registrarte como chiringuito o como partner?</h2>
-            <p style={{ fontSize: 13, color: '#666', textAlign: 'center', marginBottom: 24 }}>Elige el tipo de cuenta que necesitas</p>
+            <div style={{ textAlign: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={44} color="#0077B6" /></div>
+            </div>
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#0A2540', marginBottom: 8, textAlign: 'center', paddingRight: 24 }}>{t('modal_register_title')}</h2>
+            <p style={{ fontSize: 13, color: '#666', textAlign: 'center', marginBottom: 24 }}>{t('modal_register_subtitle')}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <a href="/registro" onClick={() => setRegistroModal(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', background: '#F0F8FF', border: '2px solid #00B4D8', borderRadius: 16, textDecoration: 'none', color: '#0A2540', fontWeight: 800, fontSize: 15, fontFamily: 'Poppins, sans-serif' }}>
                 <span style={{ fontSize: 28 }}>🏖️</span>
-                <span>Chiringuito — crea tu carta, hamacas y recibe pedidos</span>
+                <span>{t('modal_register_chiringuito')}</span>
               </a>
               <a href="/partner" onClick={() => setRegistroModal(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', background: '#FFF8F0', border: '2px solid #E6A800', borderRadius: 16, textDecoration: 'none', color: '#0A2540', fontWeight: 800, fontSize: 15, fontFamily: 'Poppins, sans-serif' }}>
-                <span style={{ fontSize: 28 }}>🤝</span>
-                <span>Partner — recomienda chiringuitos y gana comisiones</span>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><HandshakeIcon size={28} color="#E6A800" /></span>
+                <span>{t('modal_register_partner')}</span>
               </a>
             </div>
-            <p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 16 }}>¿Ya tienes cuenta? <a href="/panel" style={{ color: '#0077B6', fontWeight: 700 }}>Chiringuitos</a> · <button type="button" onClick={() => { setRegistroModal(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', color: '#0077B6', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 12 }}>Partners</button></p>
+            <p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 16 }}>{t('modal_register_haveAccount')} <a href="/panel" style={{ color: '#0077B6', fontWeight: 700 }}>{t('nav_chiringuitos')}</a> · <button type="button" onClick={() => { setRegistroModal(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', color: '#0077B6', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 12 }}>{t('nav_partners')}</button></p>
           </div>
         </div>
+      )}
+
+      {/* Panel lateral tipo Just Eat: Únete y consigue más ventajas (desktop) */}
+      {!mobile && panelOpen && (
+        <>
+          <div role="presentation" onClick={() => setPanelOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 198 }} />
+          <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(360px, 90vw)', background: 'white', zIndex: 199, boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', padding: '80px 24px 24px', overflowY: 'auto' }}>
+            <button type="button" aria-label="Cerrar" onClick={() => setPanelOpen(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', fontSize: 24, color: '#888', cursor: 'pointer' }}>×</button>
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0A2540', marginBottom: 16 }}>{t('menu_joinBenefits')}</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[t('menu_benefit1'), t('menu_benefit2'), t('menu_benefit3'), t('menu_benefit4')].map((text, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12, fontSize: 14, color: '#555' }}>
+                    <span style={{ color: '#00B4D8', fontWeight: 800 }}>✓</span>
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>{t('footer_account')}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <a href="/panel" onClick={() => setPanelOpen(false)} style={{ color: '#0077B6', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>{t('nav_chiringuitos')}</a>
+              <button type="button" onClick={() => { setPanelOpen(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontWeight: 700, fontSize: 15, textAlign: 'left', padding: 0, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
+              <button type="button" onClick={() => { setPanelOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins, sans-serif', marginTop: 8 }}>{t('nav_registerFree')}</button>
+            </div>
+            <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #eee' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>{t('lang_label')}</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {['es', 'en', 'it', 'fr'].map(l => (
+                  <button key={l} type="button" onClick={() => setLang(l)} style={{ padding: '8px 14px', borderRadius: 20, border: lang === l ? '2px solid #0077B6' : '1px solid #ddd', background: lang === l ? '#F0F8FF' : 'white', color: lang === l ? '#0077B6' : '#555', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{t(`lang_${l}`)}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {/* NAV */}
@@ -186,35 +249,61 @@ export default function Landing() {
           </a>
           {!mobile && (
             <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-              {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#faq|FAQ', '#contacto|Contacto'].map(item => {
-                const [href, label] = item.split('|')
-                return <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{label}</a>
-              })}
-              <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>Partners</button>
-              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>Chiringuitos</a>
+              {[['#como-funciona', 'nav_howItWorks'], ['#precios', 'nav_prices'], ['#testimonios', 'nav_reviews'], ['#faq', 'nav_faq'], ['#contacto', 'nav_contact']].map(([href, key]) => (
+                <a key={href} href={href} style={{ color: navBg ? '#555' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>{t(key)}</a>
+              ))}
+              <button type="button" aria-label="Ver información para Partners" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#555' : 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600, fontFamily: 'Poppins, sans-serif', padding: 0 }}>{t('nav_partners')}</button>
+              <a href="/panel" style={{ color: navBg ? '#0077B6' : 'rgba(255,255,255,0.85)', textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>{t('nav_chiringuitos')}</a>
+              <select value={lang} onChange={e => setLang(e.target.value)} aria-label="Idioma" style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid ' + (navBg ? '#ddd' : 'rgba(255,255,255,0.5)'), background: navBg ? '#fff' : 'rgba(255,255,255,0.2)', color: navBg ? '#333' : 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                <option value="es">{t('lang_es')}</option>
+                <option value="en">{t('lang_en')}</option>
+                <option value="it">{t('lang_it')}</option>
+                <option value="fr">{t('lang_fr')}</option>
+              </select>
+              <button type="button" aria-label="Menú" onClick={() => setPanelOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0A2540' : 'white', padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+              </button>
               <button type="button" onClick={() => setRegistroModal(true)} style={{
                 background: navBg ? 'linear-gradient(135deg,#00B4D8,#0077B6)' : 'white',
                 color: navBg ? 'white' : '#0077B6',
                 padding: '10px 22px', borderRadius: 50, border: 'none', fontSize: 13, fontWeight: 700,
                 boxShadow: navBg ? 'none' : '0 4px 15px rgba(0,0,0,0.15)', cursor: 'pointer', fontFamily: 'Poppins, sans-serif',
-              }}>Registrarse gratis</button>
+              }}>{t('nav_registerFree')}</button>
             </div>
           )}
           {mobile && (
-            <button type="button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0A2540' : 'white', fontSize: 24, padding: 4 }}>
-              {menuOpen ? '✕' : '☰'}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <select value={lang} onChange={e => setLang(e.target.value)} aria-label="Idioma" style={{ padding: '6px 8px', borderRadius: 8, border: '1px solid ' + (navBg ? '#ddd' : 'rgba(255,255,255,0.5)'), background: navBg ? '#fff' : 'rgba(255,255,255,0.2)', color: navBg ? '#333' : 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                <option value="es">{t('lang_es')}</option>
+                <option value="en">{t('lang_en')}</option>
+                <option value="it">{t('lang_it')}</option>
+                <option value="fr">{t('lang_fr')}</option>
+              </select>
+              <button type="button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: navBg ? '#0A2540' : 'white', fontSize: 24, padding: 4 }}>
+                {menuOpen ? '✕' : '☰'}
+              </button>
+            </div>
           )}
         </div>
         {mobile && menuOpen && (
           <div style={{ background: 'white', padding: '16px 20px 24px', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {['#como-funciona|Cómo funciona', '#precios|Precios', '#testimonios|Opiniones', '#colabora|Partners', '#faq|FAQ', '#contacto|Contacto'].map(item => {
-              const [href, label] = item.split('|')
-              return <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{label}</a>
-            })}
-            <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>Acceso Partners</button>
-            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>Chiringuitos</a>
-            <button type="button" onClick={() => { setMenuOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center', width: '100%', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>Registrarse gratis</button>
+            <div style={{ background: 'linear-gradient(135deg,#F0F8FF,#E8F4FF)', borderRadius: 16, padding: 20, marginBottom: 8 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0A2540', marginBottom: 12 }}>{t('menu_joinBenefits')}</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 13, color: '#555' }}>
+                {[t('menu_benefit1'), t('menu_benefit2'), t('menu_benefit3'), t('menu_benefit4')].map((text, i) => (
+                  <li key={i} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <span style={{ color: '#00B4D8', fontWeight: 800 }}>✓</span>
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {[['#como-funciona', 'nav_howItWorks'], ['#precios', 'nav_prices'], ['#testimonios', 'nav_reviews'], ['#colabora', 'nav_partners'], ['#faq', 'nav_faq'], ['#contacto', 'nav_contact']].map(([href, key]) => (
+              <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ color: '#333', textDecoration: 'none', fontSize: 16, fontWeight: 600 }}>{t(key)}</a>
+            ))}
+            <button onClick={() => { setMenuOpen(false); setPartnerModal(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0077B6', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif', textAlign: 'left', padding: 0 }}>{t('nav_partnersAccess')}</button>
+            <a href="/panel" onClick={() => setMenuOpen(false)} style={{ color: '#0077B6', textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>{t('nav_chiringuitos')}</a>
+            <button type="button" onClick={() => { setMenuOpen(false); setRegistroModal(true) }} style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px', borderRadius: 50, border: 'none', fontSize: 15, fontWeight: 700, textAlign: 'center', width: '100%', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>{t('nav_registerFree')}</button>
           </div>
         )}
       </nav>
@@ -237,26 +326,26 @@ export default function Landing() {
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 40 : 60, alignItems: 'center' }}>
           <div style={{ textAlign: mobile ? 'center' : 'left' }}>
             <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 50, padding: '6px 16px', fontSize: 12, fontWeight: 700, color: 'white', marginBottom: 20 }}>
-              🏖️ La app para chiringuitos de playa
+              🏖️ {t('hero_badge')}
             </div>
             <h1 style={{ fontSize: mobile ? 40 : 58, fontWeight: 900, color: 'white', lineHeight: 1.1, marginBottom: 20, letterSpacing: -2 }}>
-              Pedidos desde<br />
-              <span style={{ color: '#7FDBFF' }}>la hamaca.</span><br />
-              Sin esperas.
+              {t('hero_title1')}<br />
+              <span style={{ color: '#7FDBFF' }}>{t('hero_title2')}</span><br />
+              {t('hero_title3')}
             </h1>
             <p style={{ fontSize: mobile ? 15 : 17, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 32 }}>
-              Tus clientes escanean el QR de su hamaca, piden y pagan desde el móvil. Tú recibes el pedido al instante.
+              {t('hero_subtitle')}
             </p>
             <div style={{ display: 'flex', flexDirection: mobile ? 'column' : 'row', gap: 12 }}>
               <a href="/registro" style={{ background: 'white', color: '#0077B6', padding: '15px 28px', borderRadius: 50, textDecoration: 'none', fontSize: 15, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)', textAlign: 'center' }}>
-                🚀 Quiero Chiring en mi chiringuito
+                🚀 {t('hero_cta1')}
               </a>
               <a href="#como-funciona" style={{ background: 'transparent', color: 'white', padding: '15px 28px', borderRadius: 50, textDecoration: 'none', fontSize: 15, fontWeight: 700, border: '2px solid rgba(255,255,255,0.5)', textAlign: 'center' }}>
-                Ver cómo funciona
+                {t('hero_cta2')}
               </a>
             </div>
             <div style={{ display: 'flex', gap: mobile ? 20 : 32, marginTop: 40, justifyContent: mobile ? 'center' : 'flex-start' }}>
-              {[['🏖️', '+50', 'Chiringuitos'], ['📱', '+2.000', 'Pedidos/mes'], ['⭐', '4.9', 'Valoración']].map(([icon, num, label]) => (
+              {[['🏖️', '+50', t('hero_stat1')], ['📱', '+2.000', t('hero_stat2')], ['⭐', '4.9', t('hero_stat3')]].map(([icon, num, label]) => (
                 <div key={label} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: mobile ? 18 : 20, fontWeight: 900, color: 'white' }}>{icon} {num}</div>
                   <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{label}</div>
@@ -306,9 +395,9 @@ export default function Landing() {
       <div id="como-funciona" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Así de simple</div>
-            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>Cómo funciona Chiring</h2>
-            <p style={{ fontSize: 15, color: '#666', maxWidth: 480, margin: '0 auto' }}>En 3 pasos tu chiringuito empieza a recibir pedidos sin que nadie se levante</p>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_howSimple')}</div>
+            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>{t('section_howItWorks')}</h2>
+            <p style={{ fontSize: 15, color: '#666', maxWidth: 480, margin: '0 auto' }}>{t('section_howDesc')}</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr', gap: 20 }}>
             {[
@@ -331,8 +420,8 @@ export default function Landing() {
       <div style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'linear-gradient(160deg,#F0F8FF,#E8F4FF)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>¿Por qué Chiring?</div>
-            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1 }}>Más ventas. Menos trabajo.</h2>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_whyChiring')}</div>
+            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1 }}>{t('section_moreSales')}</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
             {[
@@ -371,9 +460,9 @@ export default function Landing() {
       <div id="testimonios" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Opiniones</div>
-            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>Lo que dicen nuestros clientes</h2>
-            <p style={{ fontSize: 15, color: '#666' }}>Chiringuitos que ya usan Chiring cada día</p>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_reviews')}</div>
+            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>{t('section_reviewsTitle')}</h2>
+            <p style={{ fontSize: 15, color: '#666' }}>{t('section_reviewsSub')}</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr 1fr', gap: 18 }}>
             {testimonios.map((t, i) => (
@@ -399,9 +488,9 @@ export default function Landing() {
       <div id="precios" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'linear-gradient(160deg,#F0F8FF,#E8F4FF)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Sin sorpresas</div>
-            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>Solo pagas cuando vendes</h2>
-            <p style={{ fontSize: 15, color: '#666' }}>15% por pedido procesado. Sin cuotas fijas. Sin letras pequeñas.</p>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_noSurprises')}</div>
+            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>{t('section_prices')}</h2>
+            <p style={{ fontSize: 15, color: '#666' }}>{t('section_pricesDesc')}</p>
           </div>
           <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', borderRadius: 24, padding: mobile ? 28 : 40, boxShadow: '0 20px 50px rgba(0,119,182,0.3)', textAlign: 'center' }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>Precio único</div>
@@ -416,11 +505,11 @@ export default function Landing() {
               ))}
             </div>
             <a href="/registro" style={{ display: 'inline-block', background: 'white', color: '#0077B6', padding: '16px 40px', borderRadius: 50, textDecoration: 'none', fontSize: 16, fontWeight: 800 }}>
-              Empezar gratis →
+              {t('btn_empezarGratis')} →
             </a>
           </div>
           <div style={{ textAlign: 'center', marginTop: 22, fontSize: 13, color: '#aaa' }}>
-            ¿Tienes varios chiringuitos? <a href="#contacto" style={{ color: '#00B4D8', fontWeight: 700 }}>Contacta para precio especial</a>
+            {t('footer_haveSeveral')} <a href="#contacto" style={{ color: '#00B4D8', fontWeight: 700 }}>{t('footer_contactSpecial')}</a>
           </div>
         </div>
       </div>
@@ -476,8 +565,8 @@ export default function Landing() {
       <div id="faq" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'linear-gradient(160deg,#F0F8FF,#E8F4FF)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>FAQ</div>
-            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>Preguntas frecuentes</h2>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('nav_faq')}</div>
+            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>{t('section_faq')}</h2>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {faqs.map((faq, i) => (
@@ -506,15 +595,15 @@ export default function Landing() {
         <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', top: -100, right: -100 }} />
         <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative' }}>
           <div style={{ fontSize: 44, marginBottom: 12 }}>🏖️</div>
-          <h2 style={{ fontSize: mobile ? 28 : 40, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>¿Listo para empezar?</h2>
+          <h2 style={{ fontSize: mobile ? 28 : 40, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>{t('cta_ready')}</h2>
           <p style={{ fontSize: mobile ? 14 : 16, color: 'rgba(255,255,255,0.75)', marginBottom: 36, lineHeight: 1.7 }}>
-            Configura tu chiringuito en 2 minutos. Solo pagas cuando vendes.
+            {t('cta_desc')}
           </p>
           <button type="button" onClick={() => setRegistroModal(true)} style={{ display: 'inline-block', background: 'white', color: '#0077B6', padding: '18px 40px', borderRadius: 50, border: 'none', fontSize: 16, fontWeight: 800, boxShadow: '0 8px 30px rgba(0,0,0,0.2)', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-            🚀 Crear mi cuenta gratis
+            🚀 {t('cta_createAccount')}
           </button>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
-            ¿Ya tienes cuenta? <a href="/panel" style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>Chiringuitos</a> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>Partners</button>
+            {t('modal_register_haveAccount')} <a href="/panel" style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>{t('nav_chiringuitos')}</a> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
           </div>
         </div>
       </div>
@@ -522,33 +611,33 @@ export default function Landing() {
       {/* CONTACTO */}
       <div id="contacto" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: '#F8FAFF', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Contacto</div>
-            <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>¿Tienes preguntas?</h2>
+            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_contact')}</div>
+            <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 10 }}>{t('section_contactTitle')}</h2>
             <p style={{ fontSize: 14, color: '#666' }}>Te respondemos en menos de 24 horas</p>
           </div>
           {formEnviado ? (
             <div style={{ background: 'white', borderRadius: 22, padding: 40, textAlign: 'center', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>
               <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
-              <h3 style={{ fontSize: 22, fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>¡Mensaje enviado!</h3>
-              <p style={{ fontSize: 14, color: '#666' }}>Te responderemos en menos de 24 horas en <strong>{formData.email}</strong></p>
+              <h3 style={{ fontSize: 22, fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>{t('contact_success')}</h3>
+              <p style={{ fontSize: 14, color: '#666' }}>{t('contact_successDesc')} <strong>{formData.email}</strong></p>
             </div>
           ) : (
             <div style={{ background: 'white', borderRadius: 22, padding: mobile ? 24 : 40, boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>Nombre *</label>
-                    <input style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }} placeholder="Tu nombre" value={formData.nombre} onChange={e => setFormData(f => ({ ...f, nombre: e.target.value }))} />
+                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>{t('contact_name')} *</label>
+                    <input style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }} placeholder={t('contact_placeholder_name')} value={formData.nombre} onChange={e => setFormData(f => ({ ...f, nombre: e.target.value }))} />
                   </div>
                   <div>
-                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>Email *</label>
-                    <input style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }} type="email" placeholder="tu@email.com" value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} />
+                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>{t('contact_email')} *</label>
+                    <input style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }} type="email" placeholder={t('contact_placeholder_email')} value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} />
                   </div>
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>Mensaje *</label>
-                  <textarea style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540', resize: 'vertical', minHeight: 120 }} placeholder="¿En qué podemos ayudarte?" value={formData.mensaje} onChange={e => setFormData(f => ({ ...f, mensaje: e.target.value }))} />
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>{t('contact_message')} *</label>
+                  <textarea style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540', resize: 'vertical', minHeight: 120 }} placeholder={t('contact_placeholder_msg')} value={formData.mensaje} onChange={e => setFormData(f => ({ ...f, mensaje: e.target.value }))} />
                 </div>
                 {formError && (
                   <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>
@@ -556,10 +645,10 @@ export default function Landing() {
                   </div>
                 )}
                 <button onClick={enviarContacto} disabled={formCargando || !formData.nombre || !formData.email || !formData.mensaje} style={{ padding: '14px', background: (!formData.nombre || !formData.email || !formData.mensaje) ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: (!formData.nombre || !formData.email || !formData.mensaje) ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-                  {formCargando ? 'Enviando...' : '📧 Enviar mensaje'}
+                  {formCargando ? t('contact_sending') : '📧 ' + t('contact_send')}
                 </button>
                 <div style={{ textAlign: 'center', fontSize: 13, color: '#aaa' }}>
-                  O escríbenos directamente a <a href="mailto:appchiring@gmail.com" style={{ color: '#00B4D8', fontWeight: 700 }}>appchiring@gmail.com</a>
+                  {t('contact_orEmail')} <a href="mailto:appchiring@gmail.com" style={{ color: '#00B4D8', fontWeight: 700 }}>appchiring@gmail.com</a>
                 </div>
               </div>
             </div>
@@ -574,13 +663,13 @@ export default function Landing() {
             <div>
               <div style={{ fontSize: 20, fontWeight: 900, color: 'white', marginBottom: 12 }}>🌊 chiringapp</div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: 260 }}>
-                La app de pedidos para chiringuitos de playa. Sin esperas, sin colas, sin camareros.
+                {t('footer_tagline')}
               </p>
               <div style={{ marginTop: 16, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
                 📧 <a href="mailto:appchiring@gmail.com" style={{ color: '#00B4D8', textDecoration: 'none' }}>appchiring@gmail.com</a>
               </div>
               <div style={{ marginTop: 20 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>Síguenos</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>{t('footer_follow')}</div>
                 <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                   <a href="https://instagram.com/chiringapp" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ChiringApp" style={{ display: 'inline-flex', color: 'rgba(255,255,255,0.85)' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -602,30 +691,27 @@ export default function Landing() {
               </div>
             </div>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Producto</div>
-              {['#como-funciona|Cómo funciona', '#precios|Precios', '#faq|FAQ', '/registro|Registrarse gratis'].map(item => {
-                const [href, label] = item.split('|')
-                return <div key={href} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{label}</a></div>
-              })}
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>{t('footer_product')}</div>
+              {[['#como-funciona', 'nav_howItWorks'], ['#precios', 'nav_prices'], ['#faq', 'nav_faq'], ['/registro', 'nav_registerFree']].map(([href, key]) => (
+                <div key={href} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{t(key)}</a></div>
+              ))}
             </div>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Cuenta</div>
-              {['/panel|Chiringuitos', '/registro|Crear cuenta', '#contacto|Soporte', '/partner|Ser Partner'].map(item => {
-                const [href, label] = item.split('|')
-                return <div key={href} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{label}</a></div>
-              })}
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>{t('footer_account')}</div>
+              {[['/panel', 'nav_chiringuitos'], ['/registro', 'footer_createAccount'], ['#contacto', 'footer_support'], ['/partner', 'footer_bePartner']].map(([href, key]) => (
+                <div key={href} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{t(key)}</a></div>
+              ))}
             </div>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Legal</div>
-              {['/privacidad|Política de privacidad', '/terminos|Términos de uso', '/cookies|Cookies'].map(item => {
-                const [href, label] = item.split('|')
-                return <div key={label} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{label}</a></div>
-              })}
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>{t('footer_legal')}</div>
+              {[['/privacidad', 'footer_privacy'], ['/terminos', 'footer_terms'], ['/cookies', 'footer_cookies']].map(([href, key]) => (
+                <div key={key} style={{ marginBottom: 8 }}><a href={href} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: 13 }}>{t(key)}</a></div>
+              ))}
             </div>
           </div>
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24, display: 'flex', flexDirection: mobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: mobile ? 'flex-start' : 'center', gap: 10 }}>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>© 2026 ChiringApp · Todos los derechos reservados</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Hecho con ❤️ para los chiringuitos de España</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>© 2026 ChiringApp · {t('footer_rights')}</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>{t('footer_made')}</div>
           </div>
         </div>
       </footer>
@@ -635,7 +721,7 @@ export default function Landing() {
         <button
           type="button"
           onClick={() => setRegistroModal(true)}
-          aria-label="Registrarse gratis"
+          aria-label={t('nav_registerFree')}
           style={{
             position: 'fixed', bottom: 24, right: 24, zIndex: 99,
             background: 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', padding: '14px 24px',
@@ -644,7 +730,7 @@ export default function Landing() {
             fontFamily: 'Poppins, sans-serif',
           }}
         >
-          Probar gratis →
+          {t('btn_probarGratis')} →
         </button>
       )}
     </div>

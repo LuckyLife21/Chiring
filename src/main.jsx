@@ -20,6 +20,7 @@ import CookieBanner from './CookieBanner.jsx'
 import Landing from './Landing.jsx'
 import NotFound from './NotFound.jsx'
 import ErrorFallback from './ErrorFallback.jsx'
+import { LanguageProvider } from './LanguageContext.jsx'
 
 const path = window.location.pathname
 const hash = window.location.hash
@@ -35,13 +36,14 @@ const isTerminos = path === '/terminos'
 const isCookies = path === '/cookies'
 const isLanding = path === '/' || path === ''
 
+// Al entrar en la raíz (chiringapp.com) se muestra primero ComingSoon (código de acceso); tras introducir el código se ve la Landing.
 const Pagina = isPanel ? <Panel />
   : isQR ? <QRGenerator />
   : isHamaca ? <App />
   : isRegistro ? <Registro />
   : isPartner || isRecoveryOnRoot ? <Partner />
   : isBienvenida ? <Bienvenida />
-  : isLanding ? <Landing />
+  : isLanding ? <ComingSoon />
   : isPrivacidad ? <Privacidad />
   : isTerminos ? <Terminos />
   : isCookies ? <Cookies />
@@ -65,7 +67,10 @@ class ErrorBoundary extends React.Component {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      {Pagina}
+      <LanguageProvider>
+        {Pagina}
+      </LanguageProvider>
+      {/* CookieBanner fuera de LanguageProvider para que no dependa del contexto y siempre se muestre si no hay preferencia guardada */}
       <CookieBanner />
     </ErrorBoundary>
   </StrictMode>,
