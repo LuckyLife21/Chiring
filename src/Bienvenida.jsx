@@ -22,6 +22,7 @@ export default function Bienvenida() {
             ciudad: meta.ciudad,
             pin_manager: meta.pin_manager || Math.floor(1000 + Math.random() * 9000).toString(),
             verificado: false,
+            ref_colaborador: meta.ref_colaborador || null,
           })
 
         if (dbError && !dbError.message.includes('duplicate')) {

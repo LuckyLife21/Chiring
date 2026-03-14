@@ -21,10 +21,18 @@ export default function Registro() {
     pin2: '',
   })
 
+  const [refColaborador, setRefColaborador] = useState('')
+
   useEffect(() => {
     const onResize = () => setMobile(isMobile())
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get('ref') || ''
+    if (ref) setRefColaborador(ref.trim())
   }, [])
 
   function cambiar(campo, valor) {
@@ -71,6 +79,7 @@ export default function Registro() {
             telefono: form.telefono,
             ciudad: form.ciudad,
             pin_manager: form.pin,
+            ref_colaborador: refColaborador || null,
           }
         }
       })
