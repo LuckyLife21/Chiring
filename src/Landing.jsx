@@ -453,29 +453,31 @@ export default function Landing() {
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', order: mobile ? 1 : 0 }}>
-            <div style={{ width: mobile ? 210 : 265, background: '#0A2540', borderRadius: 36, border: '7px solid rgba(255,255,255,0.15)', boxShadow: '0 30px 70px rgba(0,0,0,0.4)', overflow: 'hidden', flexShrink: 0 }}>
-              <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 16 }}>
+            <div style={{ width: mobile ? 210 : 265, height: mobile ? 460 : 530, background: '#0A2540', borderRadius: 36, border: '7px solid rgba(255,255,255,0.15)', boxShadow: '0 30px 70px rgba(0,0,0,0.4)', overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 16, flexShrink: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 900, color: 'white' }}>🌊 Chiring</div>
                 <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>Chiringuito Playa Sol · 🪑 14B</div>
               </div>
-              <div style={{ background: '#F0F8FF', padding: 12 }}>
-                {[
-                  { icon: '🍺', name: 'Cerveza Estrella', desc: 'Bien fresquita', price: '3,50€' },
-                  { icon: '🥪', name: 'Bocadillo Calamares', desc: 'Con alioli', price: '5,50€' },
-                  { icon: '🥤', name: 'Mojito', desc: 'Con hierbabuena', price: '7,00€' },
-                ].map(p => (
-                  <div key={p.name} style={{ background: 'white', borderRadius: 12, padding: 10, marginBottom: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <div style={{ fontSize: 22 }}>{p.icon}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 700, fontSize: 11, color: '#0A2540' }}>{p.name}</div>
-                        <div style={{ fontSize: 10, color: '#aaa' }}>{p.desc}</div>
+              <div style={{ background: '#F0F8FF', padding: 12, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  {[
+                    { icon: '🍺', name: 'Cerveza Estrella', desc: 'Bien fresquita', price: '3,50€' },
+                    { icon: '🥪', name: 'Bocadillo Calamares', desc: 'Con alioli', price: '5,50€' },
+                    { icon: '🥤', name: 'Mojito', desc: 'Con hierbabuena', price: '7,00€' },
+                  ].map(p => (
+                    <div key={p.name} style={{ background: 'white', borderRadius: 12, padding: 10, marginBottom: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <div style={{ fontSize: 22 }}>{p.icon}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: 11, color: '#0A2540' }}>{p.name}</div>
+                          <div style={{ fontSize: 10, color: '#aaa' }}>{p.desc}</div>
+                        </div>
+                        <div style={{ fontWeight: 900, color: '#00B4D8', fontSize: 11 }}>{p.price}</div>
                       </div>
-                      <div style={{ fontWeight: 900, color: '#00B4D8', fontSize: 11 }}>{p.price}</div>
                     </div>
-                  </div>
-                ))}
-                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 12, padding: 11, textAlign: 'center' }}>
+                  ))}
+                </div>
+                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 12, padding: 11, textAlign: 'center', flexShrink: 0 }}>
                   <div style={{ color: 'white', fontWeight: 800, fontSize: 12 }}>🛒 {t('mockup_view_cart')}</div>
                 </div>
               </div>
