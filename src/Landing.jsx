@@ -453,7 +453,7 @@ export default function Landing() {
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', order: mobile ? 1 : 0 }}>
-            <div style={{ width: mobile ? 210 : 265, height: mobile ? 460 : 530, background: '#0A2540', borderRadius: 36, border: '7px solid rgba(255,255,255,0.15)', boxShadow: '0 30px 70px rgba(0,0,0,0.4)', overflow: 'hidden', flexShrink: 0 }}>
+            <div style={{ width: mobile ? 210 : 265, background: '#0A2540', borderRadius: 36, border: '7px solid rgba(255,255,255,0.15)', boxShadow: '0 30px 70px rgba(0,0,0,0.4)', overflow: 'hidden', flexShrink: 0 }}>
               <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 16 }}>
                 <div style={{ fontSize: 15, fontWeight: 900, color: 'white' }}>🌊 Chiring</div>
                 <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>Chiringuito Playa Sol · 🪑 14B</div>
