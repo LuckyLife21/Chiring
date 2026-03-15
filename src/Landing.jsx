@@ -911,6 +911,40 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* ANTES Y DESPUÉS */}
+      <div id="antes-despues" style={{ padding: mobile ? '60px 24px' : '80px 40px', background: 'linear-gradient(180deg,#FAFCFF 0%,#fff 100%)', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: mobile ? 32 : 48 }}>
+            <h2 style={{ fontSize: mobile ? 26 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 8 }}>{t('beforeAfter_title')}</h2>
+            <p style={{ fontSize: 15, color: '#666' }}>{t('beforeAfter_sub')}</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 20 : 28, alignItems: 'stretch' }}>
+            <div style={{ background: '#F8F8F8', borderRadius: 20, padding: mobile ? 24 : 32, border: '1px solid #eee' }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#888', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>{t('beforeAfter_before')}</div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[t('beforeAfter_before_1'), t('beforeAfter_before_2'), t('beforeAfter_before_3')].map((text, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 14, fontSize: 15, color: '#555', lineHeight: 1.5 }}>
+                    <span style={{ color: '#ccc', flexShrink: 0, marginTop: 4 }}>✕</span>
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div style={{ background: 'linear-gradient(160deg,#E8F8FF,#F0FCFF)', borderRadius: 20, padding: mobile ? 24 : 32, border: '1px solid rgba(0,180,216,0.2)', boxShadow: '0 4px 20px rgba(0,180,216,0.08)' }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#00B4D8', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>{t('beforeAfter_after')}</div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[t('beforeAfter_after_1'), t('beforeAfter_after_2'), t('beforeAfter_after_3')].map((text, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 14, fontSize: 15, color: '#0A2540', lineHeight: 1.5, fontWeight: 500 }}>
+                    <span style={{ color: '#28a745', flexShrink: 0, marginTop: 4 }}>✓</span>
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* TESTIMONIOS */}
       <div id="testimonios" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -1041,40 +1075,6 @@ export default function Landing() {
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 20 }}>
               {t('modal_register_haveAccount')} <button type="button" onClick={() => setChiringuitoModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.95)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_chiringuitos')}</button> · <button type="button" onClick={() => setPartnerModal(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.95)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 13, fontFamily: 'Poppins, sans-serif' }}>{t('nav_partners')}</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ANTES Y DESPUÉS */}
-      <div id="antes-despues" style={{ padding: mobile ? '60px 24px' : '80px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: mobile ? 32 : 48 }}>
-            <h2 style={{ fontSize: mobile ? 26 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 8 }}>{t('beforeAfter_title')}</h2>
-            <p style={{ fontSize: 15, color: '#666' }}>{t('beforeAfter_sub')}</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 20 : 28, alignItems: 'stretch' }}>
-            <div style={{ background: '#F8F8F8', borderRadius: 20, padding: mobile ? 24 : 32, border: '1px solid #eee' }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#888', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>{t('beforeAfter_before')}</div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {[t('beforeAfter_before_1'), t('beforeAfter_before_2'), t('beforeAfter_before_3')].map((text, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 14, fontSize: 15, color: '#555', lineHeight: 1.5 }}>
-                    <span style={{ color: '#ccc', flexShrink: 0, marginTop: 4 }}>✕</span>
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div style={{ background: 'linear-gradient(160deg,#E8F8FF,#F0FCFF)', borderRadius: 20, padding: mobile ? 24 : 32, border: '1px solid rgba(0,180,216,0.2)', boxShadow: '0 4px 20px rgba(0,180,216,0.08)' }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#00B4D8', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>{t('beforeAfter_after')}</div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {[t('beforeAfter_after_1'), t('beforeAfter_after_2'), t('beforeAfter_after_3')].map((text, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 14, fontSize: 15, color: '#0A2540', lineHeight: 1.5, fontWeight: 500 }}>
-                    <span style={{ color: '#28a745', flexShrink: 0, marginTop: 4 }}>✓</span>
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>
