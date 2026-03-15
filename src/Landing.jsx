@@ -150,7 +150,7 @@ export default function Landing() {
   const inputStyle = { width: '100%', padding: '12px 16px', borderRadius: 12, border: '1.5px solid #E0E8F0', background: '#F8FAFF', fontSize: 14, fontFamily: 'Poppins, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#0A2540' }
 
   return (
-    <div style={{ fontFamily: "'Poppins', sans-serif", overflowX: 'hidden', background: '#fff', margin: 0, padding: 0, width: '100%' }}>
+    <div style={{ fontFamily: "'Poppins', sans-serif", background: '#fff', margin: 0, padding: 0, width: '100%' }}>
 
       {/* MODAL CHIRINGUITOS LOGIN (misma página, como Partners) */}
       {chiringuitoModal && (
@@ -411,7 +411,7 @@ export default function Landing() {
       <div style={{
         minHeight: mobile ? 'auto' : '100vh', width: '100%',
         background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 55%, #00B4D8 100%)',
-        position: 'relative', display: 'flex', alignItems: mobile ? 'flex-start' : 'center', overflow: 'hidden',
+        position: 'relative', display: 'flex', alignItems: mobile ? 'flex-start' : 'center', overflow: 'visible',
         padding: mobile ? '100px 24px 120px' : '0 40px',
         boxSizing: 'border-box',
       }}>
