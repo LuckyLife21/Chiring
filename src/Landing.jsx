@@ -822,15 +822,15 @@ export default function Landing() {
             </div>
             {/* Fila 2: Manager y Estadísticas */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 12 : 14, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
-            {/* Móvil 5: Manager — estilo Stats como en la app (tabs, KPIs, secciones) */}
-            <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {/* Móvil 5: Manager — mismo ancho que Stats, cabecera igual, datos de ejemplo como en Stats */}
+            <div style={{ flexShrink: 0, minWidth: mobile ? 200 : 235, maxWidth: mobile ? 200 : 235 }}>
+              <div style={{ width: '100%', minWidth: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>Manager</span>
                     <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>Playa Luna</div>
                   </div>
-                  <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
                 </div>
                 <div style={{ background: 'white', padding: '4px 6px', flexShrink: 0, display: 'flex', gap: 2, overflowX: 'auto' }}>
                   {['Stats', 'Productos', 'Categorías', 'Hamacas', 'Códigos', 'Config'].map((tab, i) => (
@@ -850,7 +850,7 @@ export default function Landing() {
                     ))}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 4 }}>
-                    {[{ icon: '💰', label: 'Ingresos', val: '0€' }, { icon: '📋', label: 'Pedidos', val: '0' }, { icon: '🎯', label: 'Ticket', val: '0€' }, { icon: '🪑', label: 'Hamacas', val: '0' }].map((k, i) => (
+                    {[{ icon: '💰', label: 'Ingresos', val: '312,50 €' }, { icon: '📋', label: 'Pedidos', val: '24' }, { icon: '🎯', label: 'Ticket', val: '13,02 €' }, { icon: '🪑', label: 'Hamacas', val: '8' }].map((k, i) => (
                       <div key={i} style={{ background: 'white', borderRadius: 6, padding: 6, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', textAlign: 'center' }}>
                         <div style={{ fontSize: 10, marginBottom: 2 }}>{k.icon}</div>
                         <div style={{ fontWeight: 800, color: '#0A2540', fontSize: 9 }}>{k.val}</div>
@@ -869,10 +869,10 @@ export default function Landing() {
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_manager')}</div>
             </div>
 
-            {/* Móvil 6: Estadísticas del Manager — header mismo color que Manager */}
-            <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {/* Móvil 6: Estadísticas — mismo ancho que Manager, cabecera igual de ancha */}
+            <div style={{ flexShrink: 0, minWidth: mobile ? 200 : 235, maxWidth: mobile ? 200 : 235 }}>
+              <div style={{ width: '100%', minWidth: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Stats</span>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
                 </div>
