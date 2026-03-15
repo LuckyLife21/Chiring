@@ -39,6 +39,10 @@ export default function Landing() {
   const [chiringuitoLogin, setChiringuitoLogin] = useState({ email: '', password: '' })
   const [chiringuitoError, setChiringuitoError] = useState('')
   const [chiringuitoCargando, setChiringuitoCargando] = useState(false)
+  const [chiringuitoRecoveryMode, setChiringuitoRecoveryMode] = useState(false) // false | 'form' | 'sent'
+  const [chiringuitoResetEmail, setChiringuitoResetEmail] = useState('')
+  const [chiringuitoResetLoading, setChiringuitoResetLoading] = useState(false)
+  const [chiringuitoResetError, setChiringuitoResetError] = useState('')
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
@@ -139,6 +143,25 @@ export default function Landing() {
     }
   }
 
+  async function handleChiringuitoReset() {
+    const email = (chiringuitoResetEmail || '').trim()
+    if (!email) {
+      setChiringuitoResetError(lang === 'es' ? 'Escribe tu email' : lang === 'en' ? 'Enter your email' : lang === 'it' ? 'Inserisci la tua email' : 'Entrez votre email')
+      return
+    }
+    setChiringuitoResetLoading(true)
+    setChiringuitoResetError('')
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/panel`,
+    })
+    setChiringuitoResetLoading(false)
+    if (error) {
+      setChiringuitoResetError(error.message || (lang === 'es' ? 'No se pudo enviar. Comprueba el email.' : 'Could not send. Check the email.'))
+    } else {
+      setChiringuitoRecoveryMode('sent')
+    }
+  }
+
   const faqs = [
     { q: t('faq_0_q'), r: t('faq_0_r') },
     { q: t('faq_1_q'), r: t('faq_1_r') },
@@ -177,35 +200,72 @@ export default function Landing() {
 
       {/* MODAL CHIRINGUITOS LOGIN (misma página, como Partners) */}
       {chiringuitoModal && (
-        <div onClick={() => setChiringuitoModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+        <div onClick={() => { setChiringuitoModal(false); setChiringuitoRecoveryMode(false); setChiringuitoResetError('') }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
-            <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={56} color="#0077B6" /></div>
-              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Chiring</h2>
-              <p style={{ fontSize: 13, color: '#888' }}>{t('panel_subtitle')}</p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 {t('modal_partner_email')}</label>
-                <input style={inputStyle} type="email" placeholder="tu@email.com" value={chiringuitoLogin.email} onChange={e => { setChiringuitoLogin(c => ({ ...c, email: e.target.value })); setChiringuitoError('') }} />
-              </div>
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 {t('modal_partner_password')}</label>
-                <input style={inputStyle} type="password" placeholder="••••••••" value={chiringuitoLogin.password} onChange={e => { setChiringuitoLogin(c => ({ ...c, password: e.target.value })); setChiringuitoError('') }} onKeyDown={e => e.key === 'Enter' && loginChiringuito()} />
-              </div>
-              {chiringuitoError && (
-                <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>⚠️ {chiringuitoError}</div>
-              )}
-              <button onClick={loginChiringuito} disabled={chiringuitoCargando} style={{ padding: '14px', background: chiringuitoCargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: chiringuitoCargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-                {chiringuitoCargando ? t('modal_partner_entering') : t('panel_enter')}
-              </button>
-              <div style={{ textAlign: 'center', fontSize: 13, color: '#888' }}>
-                <a href="/panel?recuperar=1" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
-                <br />
-                {t('modal_partner_noAccount')}{' '}
-                <a href="/registro" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('nav_registerFree')}</a>
-              </div>
-            </div>
+            {chiringuitoRecoveryMode === 'sent' ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                  <div style={{ fontSize: 36, marginBottom: 8 }}>✉️</div>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 8 }}>{t('modal_partner_recover_title')}</h2>
+                  <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>{t('modal_partner_recover_sent')}</p>
+                </div>
+                <button type="button" onClick={() => { setChiringuitoRecoveryMode(false); setChiringuitoResetEmail('') }} style={{ width: '100%', padding: '14px', background: 'none', border: 'none', fontSize: 14, color: '#0077B6', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+                  {t('modal_partner_recover_back')}
+                </button>
+              </>
+            ) : chiringuitoRecoveryMode === 'form' ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                  <div style={{ fontSize: 36, marginBottom: 8 }}>🔐</div>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>{t('modal_partner_recover_title')}</h2>
+                  <p style={{ fontSize: 13, color: '#888' }}>{t('modal_partner_recover_desc')}</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <input style={inputStyle} type="email" placeholder="tu@email.com" value={chiringuitoResetEmail} onChange={e => { setChiringuitoResetEmail(e.target.value); setChiringuitoResetError('') }} onKeyDown={e => e.key === 'Enter' && handleChiringuitoReset()} />
+                  {chiringuitoResetError && (
+                    <div style={{ fontSize: 13, color: '#cc0000', fontWeight: 600 }}>{chiringuitoResetError}</div>
+                  )}
+                  <button onClick={handleChiringuitoReset} disabled={chiringuitoResetLoading} style={{ padding: '14px', background: chiringuitoResetLoading ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: chiringuitoResetLoading ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                    {chiringuitoResetLoading ? (lang === 'es' ? 'Enviando...' : lang === 'en' ? 'Sending...' : lang === 'it' ? 'Invio...' : 'Envoi...') : t('modal_partner_recover_btn')}
+                  </button>
+                  <button type="button" onClick={() => { setChiringuitoRecoveryMode(false); setChiringuitoResetError('') }} style={{ background: 'none', border: 'none', fontSize: 13, color: '#0077B6', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+                    {t('modal_partner_recover_back')}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: 28 }}>
+                  <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={56} color="#0077B6" /></div>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>chiringapp</h2>
+                  <p style={{ fontSize: 13, color: '#888' }}>{t('panel_subtitle')}</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 {t('modal_partner_email')}</label>
+                    <input style={inputStyle} type="email" placeholder="tu@email.com" value={chiringuitoLogin.email} onChange={e => { setChiringuitoLogin(c => ({ ...c, email: e.target.value })); setChiringuitoError('') }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 {t('modal_partner_password')}</label>
+                    <input style={inputStyle} type="password" placeholder="••••••••" value={chiringuitoLogin.password} onChange={e => { setChiringuitoLogin(c => ({ ...c, password: e.target.value })); setChiringuitoError('') }} onKeyDown={e => e.key === 'Enter' && loginChiringuito()} />
+                  </div>
+                  {chiringuitoError && (
+                    <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>⚠️ {chiringuitoError}</div>
+                  )}
+                  <button onClick={loginChiringuito} disabled={chiringuitoCargando} style={{ padding: '14px', background: chiringuitoCargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: chiringuitoCargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                    {chiringuitoCargando ? t('modal_partner_entering') : t('panel_enter')}
+                  </button>
+                  <div style={{ textAlign: 'center', fontSize: 13, color: '#888' }}>
+                    <button type="button" onClick={() => setChiringuitoRecoveryMode('form')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 13, color: '#0077B6', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", textDecoration: 'none' }}>
+                      {t('modal_partner_forgot')}
+                    </button>
+                    <br />
+                    {t('modal_partner_noAccount')}{' '}
+                    <a href="/registro" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('nav_registerFree')}</a>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
