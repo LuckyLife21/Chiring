@@ -27,8 +27,10 @@ function Logo({ chiringuitoNombre }) {
 export default function App() {
   const pathAfterHamaca = (window.location.pathname.match(/\/hamaca\/?(.*)/) || [])[1] || ''
   const parts = pathAfterHamaca.split('/').filter(Boolean).map(p => decodeURIComponent(p))
-  const chiringuitoIdFromUrl = parts.length >= 2 ? parts[0] : null
-  const hamacaNum = parts.length >= 2 ? parts[1] : (parts[0] || '14B')
+  // Solo son válidas las URLs con formato /hamaca/{id-chiringuito}/{número-hamaca}. Sin ID no cargamos ningún chiringuito.
+  const validLinkFormat = parts.length >= 2
+  const chiringuitoIdFromUrl = validLinkFormat ? parts[0] : null
+  const hamacaNum = validLinkFormat ? parts[1] : (parts[0] || '')
 
   const [chiringuito, setChiringuito] = useState(null)
   const [cat, setCat] = useState(null)
@@ -51,10 +53,7 @@ export default function App() {
         const { data } = await supabase.from('chiringuitos').select('id, nombre').eq('id', chiringuitoIdFromUrl).maybeSingle()
         chir = data
       }
-      if (!chir) {
-        const { data } = await supabase.from('chiringuitos').select('id, nombre').eq('nombre', 'Chiringuito Playa Sol').maybeSingle()
-        chir = data
-      }
+      // Sin ID en la URL no cargamos ningún chiringuito (evita el enlace genérico /hamaca/14B).
       if (!chir) {
         setLoading(false)
         return
@@ -167,6 +166,19 @@ export default function App() {
   }
 
   const filteredItems = cat === null ? items : items.filter(i => i.categoria === cat.toLowerCase())
+
+  // Enlace sin ID de chiringuito (ej. /hamaca/14B): no es un QR válido; mostrar aviso y no permitir pedir.
+  if (!validLinkFormat && !loading) {
+    return (
+      <div style={s.phone}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, background: 'linear-gradient(160deg,#F0F8FF,#E8F4FF)', textAlign: 'center' }}>
+          <img src="/favicon.svg" alt="" width={56} height={56} style={{ display: 'block', marginBottom: 16 }} />
+          <h1 style={{ fontSize: 18, fontWeight: 900, color: '#0A2540', marginBottom: 8 }}>Enlace no válido</h1>
+          <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>Usa el QR de tu hamaca para hacer tu pedido.</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={s.phone}>

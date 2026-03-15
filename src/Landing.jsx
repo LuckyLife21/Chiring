@@ -716,9 +716,13 @@ export default function Landing() {
                 </div>
                 <div style={{ background: '#F5F5F5', padding: 8, flex: 1, minHeight: 0, overflow: 'auto' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                    {[{ title: 'Patatas Bravas', desc: 'Con alioli y brava', price: '5,50 €', color: '#E8D5C4' }, { title: 'Bocadillo Calamares', desc: 'Estilo Madrid', price: '6,00 €', color: '#D4E4C4' }].map((p, i) => (
+                    {[
+                      { title: 'Patatas Bravas', desc: 'Con alioli y brava', price: '5,50 €', img: 'https://images.unsplash.com/photo-1573089892698-02317947a2f3?w=200&h=150&fit=crop' },
+                      { title: 'Bocadillo Calamares', desc: 'Estilo Madrid', price: '6,00 €', img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=200&h=150&fit=crop' },
+                    ].map((p, i) => (
                       <div key={i} style={{ background: 'white', borderRadius: 10, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', position: 'relative' }}>
-                        <div style={{ height: 52, background: p.color, position: 'relative' }}>
+                        <div style={{ height: 52, position: 'relative', overflow: 'hidden' }}>
+                          <img src={p.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                           <div style={{ position: 'absolute', bottom: 4, right: 4, width: 20, height: 20, borderRadius: '50%', background: '#00B4D8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 800 }}>+</div>
                         </div>
                         <div style={{ padding: 6 }}>
