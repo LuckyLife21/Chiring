@@ -692,12 +692,15 @@ export default function Landing() {
             <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1 }}>{t('section_gallery_title')}</h2>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 14 : 18, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: mobile ? 'nowrap' : 'wrap' }}>
-            {/* Móvil 1: Menú */}
+            {/* Móvil 1: Menú (2+2+2 cervezas/bocadillos/mojitos + jarra + pizza = 62€) */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <img src="/favicon.svg" alt="" width={22} height={22} style={{ display: 'block' }} />
-                  <div style={{ fontSize: 12, fontWeight: 900, color: 'white' }}>chiringapp</div>
+                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <img src="/favicon.svg" alt="" width={22} height={22} style={{ display: 'block' }} />
+                    <span style={{ fontSize: 12, fontWeight: 900, color: 'white' }}>chiringapp</span>
+                  </div>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>● EN VIVO</span>
                 </div>
                 <div style={{ background: '#F0F8FF', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ fontSize: 10 }}>
@@ -711,24 +714,24 @@ export default function Landing() {
                       )
                     })}
                   </div>
-                  <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: 10, textAlign: 'center', color: 'white', fontWeight: 800, flexShrink: 0 }}>🛒 Ver carrito · 46,00€</div>
+                  <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: '6px 8px', textAlign: 'center', color: 'white', fontWeight: 700, fontSize: 10, flexShrink: 0 }}>🛒 Ver carrito · 62,00€</div>
                 </div>
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_menu')}</div>
             </div>
-            {/* Móvil 2: Carrito (mismos items que menú, total 46€) */}
+            {/* Móvil 2: Carrito (2 cervezas, 2 bocadillos, 2 mojitos, 1 jarra, 1 pizza = 62€) */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'white', padding: 10, flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#0A2540', borderBottom: '1px solid #eee' }}>← Tu pedido</div>
                 <div style={{ background: '#F7F7F7', padding: 8, flex: 1, fontSize: 10 }}>
-                  {[{ n: 'Cerveza', q: 1, p: '3,50€' }, { n: 'Bocadillo', q: 1, p: '5,50€' }, { n: 'Mojito', q: 1, p: '7,00€' }, { n: 'Jarra sangría', q: 1, p: '16,00€' }, { n: 'Pizza grande', q: 1, p: '14,00€' }].map((item, i) => (
+                  {[{ n: 'Cerveza', q: 2, p: '3,50€', line: '7,00€' }, { n: 'Bocadillo', q: 2, p: '5,50€', line: '11,00€' }, { n: 'Mojito', q: 2, p: '7,00€', line: '14,00€' }, { n: 'Jarra sangría', q: 1, p: '16,00€', line: '16,00€' }, { n: 'Pizza grande', q: 1, p: '14,00€', line: '14,00€' }].map((item, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 0', borderBottom: '1px solid #eee' }}>
                       <span style={{ color: '#0A2540' }}>{item.n} x{item.q}</span>
-                      <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.p}</span>
+                      <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.line}</span>
                     </div>
                   ))}
                   <div style={{ marginTop: 10, paddingTop: 8, borderTop: '2px solid #ddd', display: 'flex', justifyContent: 'space-between', fontWeight: 800, color: '#0A2540' }}>
-                    <span>Total</span><span style={{ color: '#00B4D8' }}>46,00 €</span>
+                    <span>Total</span><span style={{ color: '#00B4D8' }}>62,00 €</span>
                   </div>
                 </div>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, textAlign: 'center', color: 'white', fontWeight: 800, fontSize: 11 }}>Ir a pagar</div>
@@ -738,8 +741,11 @@ export default function Landing() {
             {/* Móvil 3: Recibe el pedido (antes 4º) */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>chiringapp</span>
+                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <img src="/favicon.svg" alt="" width={20} height={20} style={{ display: 'block' }} />
+                    <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>chiringapp</span>
+                  </div>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>● EN VIVO</span>
                 </div>
                 <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
@@ -750,7 +756,7 @@ export default function Landing() {
                       <span style={{ fontWeight: 800, color: '#155724', fontSize: 11 }}>¡Nuevo pedido!</span>
                     </div>
                     <div style={{ fontWeight: 700, color: '#0A2540' }}>Hamaca 14B</div>
-                    <div style={{ fontWeight: 800, color: '#00B4D8', fontSize: 11 }}>46,00 €</div>
+                    <div style={{ fontWeight: 800, color: '#00B4D8', fontSize: 11 }}>62,00 €</div>
                   </div>
                   <div style={{ background: 'white', borderRadius: 8, padding: 8, marginTop: 6, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -766,13 +772,16 @@ export default function Landing() {
             {/* Móvil 4: Panel pedidos (antes 3º) */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>chiringapp</span>
+                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <img src="/favicon.svg" alt="" width={20} height={20} style={{ display: 'block' }} />
+                    <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>chiringapp</span>
+                  </div>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>● EN VIVO</span>
                 </div>
                 <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
                   <div style={{ fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>Pedidos recientes</div>
-                  {[{ hamaca: '14B', total: '46,00€', estado: 'Nuevo' }, { hamaca: '12A', total: '8,50€', estado: 'Preparando' }].map((p, i) => (
+                  {[{ hamaca: '14B', total: '62,00€', estado: 'Nuevo' }, { hamaca: '12A', total: '8,50€', estado: 'Preparando' }].map((p, i) => (
                     <div key={i} style={{ background: 'white', borderRadius: 8, padding: 8, marginBottom: 6, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                         <span style={{ fontWeight: 700, color: '#0A2540' }}>Hamaca {p.hamaca}</span>
