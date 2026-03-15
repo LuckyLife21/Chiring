@@ -417,13 +417,13 @@ export default function Landing() {
       }}>
         <div style={{ position: 'absolute', width: 600, height: 600, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', top: -150, right: -150 }} />
         <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', bottom: -100, left: -100 }} />
-        <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0 }}>
+        <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, zIndex: 0 }}>
           <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: mobile ? 50 : 80 }}>
             <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="white" />
           </svg>
         </div>
-        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 40 : 60, alignItems: mobile ? 'flex-start' : 'center' }}>
-          <div style={{ textAlign: mobile ? 'center' : 'left' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 40 : 60, alignItems: mobile ? 'flex-start' : 'center', position: 'relative', zIndex: 1 }}>
+          <div style={{ textAlign: mobile ? 'center' : 'left', order: mobile ? 2 : 0 }}>
             <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 50, padding: '6px 16px', fontSize: 12, fontWeight: 700, color: 'white', marginBottom: 20 }}>
               🏖️ {t('hero_badge')}
             </div>
@@ -452,7 +452,7 @@ export default function Landing() {
               ))}
             </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', order: mobile ? 1 : 0 }}>
             <div style={{ width: mobile ? 210 : 265, height: mobile ? 460 : 530, background: '#0A2540', borderRadius: 36, border: '7px solid rgba(255,255,255,0.15)', boxShadow: '0 30px 70px rgba(0,0,0,0.4)', overflow: 'hidden', flexShrink: 0 }}>
               <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 16 }}>
                 <div style={{ fontSize: 15, fontWeight: 900, color: 'white' }}>🌊 Chiring</div>
