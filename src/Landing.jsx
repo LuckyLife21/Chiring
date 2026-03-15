@@ -218,7 +218,7 @@ export default function Landing() {
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
                   <div style={{ fontSize: 36, marginBottom: 8 }}>🔐</div>
                   <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>{t('modal_partner_recover_title')}</h2>
-                  <p style={{ fontSize: 13, color: '#888' }}>{t('modal_partner_recover_desc')}</p>
+                  <p style={{ fontSize: 13, color: '#888' }}>{t('modal_chiringuito_recover_desc')}</p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <input style={inputStyle} type="email" placeholder="tu@email.com" value={chiringuitoResetEmail} onChange={e => { setChiringuitoResetEmail(e.target.value); setChiringuitoResetError('') }} onKeyDown={e => e.key === 'Enter' && handleChiringuitoReset()} />
@@ -237,7 +237,7 @@ export default function Landing() {
               <>
                 <div style={{ textAlign: 'center', marginBottom: 28 }}>
                   <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={56} color="#0077B6" /></div>
-                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>chiringapp</h2>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>Chiring</h2>
                   <p style={{ fontSize: 13, color: '#888' }}>{t('panel_subtitle')}</p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
