@@ -694,7 +694,7 @@ export default function Landing() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: mobile ? 20 : 28 }}>
             {/* Fila 1: 4 primeros teléfonos */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 12 : 14, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: 'nowrap' }}>
-            {/* Móvil 1: Menú — precios como en carrito (7, 11, 14, 16, 14) */}
+            {/* Móvil 1: Menú del cliente (lo que ve al escanear QR) — carta con precios unitarios */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -706,10 +706,10 @@ export default function Landing() {
                 </div>
                 <div style={{ background: '#F0F8FF', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ fontSize: 10 }}>
-                    {[{ label: '🍺 Cerveza', q: 2, line: '7,00€' }, { label: '🥪 Bocadillo', q: 2, line: '11,00€' }, { label: '🥤 Mojito', q: 2, line: '14,00€' }, { label: '🍷 Jarra sangría', q: 1, line: '16,00€' }, { label: '🍕 Pizza grande', q: 1, line: '14,00€' }].map((item, i) => (
+                    {[{ label: '🍺 Cerveza', p: '3,50€' }, { label: '🥪 Bocadillo', p: '5,50€' }, { label: '🥤 Mojito', p: '7,00€' }, { label: '🍷 Jarra sangría', p: '16,00€' }, { label: '🍕 Pizza grande', p: '14,00€' }].map((item, i) => (
                       <div key={i} style={{ background: 'white', borderRadius: 8, padding: 6, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#0A2540', fontWeight: 700 }}>{item.label} x{item.q}</span>
-                        <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.line}</span>
+                        <span style={{ color: '#0A2540', fontWeight: 700 }}>{item.label}</span>
+                        <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.p}</span>
                       </div>
                     ))}
                   </div>
@@ -721,19 +721,19 @@ export default function Landing() {
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_menu')}</div>
             </div>
-            {/* Móvil 2: Carrito — botón igual que Ver carrito (mismo contenedor y estilo) */}
+            {/* Móvil 2: Carrito — mismo contenido que antes tenía el menú (resumen con cantidades + botón) */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'white', padding: 10, flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#0A2540', borderBottom: '1px solid #eee' }}>← Tu pedido</div>
-                <div style={{ background: '#F7F7F7', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ fontSize: 10 }}>
-                    {[{ n: 'Cerveza', q: 2, line: '7,00€' }, { n: 'Bocadillo', q: 2, line: '11,00€' }, { n: 'Mojito', q: 2, line: '14,00€' }, { n: 'Jarra sangría', q: 1, line: '16,00€' }, { n: 'Pizza grande', q: 1, line: '14,00€' }].map((item, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 0', borderBottom: '1px solid #eee' }}>
-                        <span style={{ color: '#0A2540' }}>{item.n} x{item.q}</span>
+                    {[{ label: '🍺 Cerveza', q: 2, line: '7,00€' }, { label: '🥪 Bocadillo', q: 2, line: '11,00€' }, { label: '🥤 Mojito', q: 2, line: '14,00€' }, { label: '🍷 Jarra sangría', q: 1, line: '16,00€' }, { label: '🍕 Pizza grande', q: 1, line: '14,00€' }].map((item, i) => (
+                      <div key={i} style={{ background: 'white', borderRadius: 8, padding: 6, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ color: '#0A2540', fontWeight: 700 }}>{item.label} x{item.q}</span>
                         <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.line}</span>
                       </div>
                     ))}
-                    <div style={{ marginTop: 10, paddingTop: 8, borderTop: '2px solid #ddd', display: 'flex', justifyContent: 'space-between', fontWeight: 800, color: '#0A2540' }}>
+                    <div style={{ marginTop: 4, paddingTop: 6, borderTop: '2px solid #ddd', display: 'flex', justifyContent: 'space-between', fontWeight: 800, color: '#0A2540', fontSize: 10 }}>
                       <span>Total</span><span style={{ color: '#00B4D8' }}>62,00 €</span>
                     </div>
                   </div>
@@ -806,23 +806,46 @@ export default function Landing() {
             </div>
             {/* Fila 2: Manager y Estadísticas */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 12 : 14, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
-            {/* Móvil 5: Panel Manager (tabs y secciones) */}
+            {/* Móvil 5: Manager — estilo Stats como en la app (tabs, KPIs, secciones) */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Manager</span>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
+                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>Manager</span>
+                    <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>Playa Luna</div>
+                  </div>
+                  <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
                 </div>
-                <div style={{ background: 'white', padding: 6, flexShrink: 0, display: 'flex', gap: 4, overflowX: 'auto' }}>
+                <div style={{ background: 'white', padding: '4px 6px', flexShrink: 0, display: 'flex', gap: 2, overflowX: 'auto' }}>
                   {['Stats', 'Productos', 'Categorías', 'Hamacas', 'Códigos', 'Config'].map((tab, i) => (
-                    <span key={tab} style={{ padding: '4px 6px', borderRadius: 6, fontSize: 9, fontWeight: 700, whiteSpace: 'nowrap', background: i === 0 ? '#00B4D8' : 'transparent', color: i === 0 ? 'white' : '#666' }}>{tab}</span>
+                    <span key={tab} style={{ padding: '3px 5px', borderRadius: 4, fontSize: 8, fontWeight: 700, whiteSpace: 'nowrap', background: i === 0 ? '#00B4D8' : 'transparent', color: i === 0 ? 'white' : '#666' }}>{tab}</span>
                   ))}
                 </div>
-                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
-                  <div style={{ fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>Chiringuito Playa Sol</div>
-                  {['📊 Stats — pedidos e ingresos', '📦 Productos — carta', '🗂️ Categorías', '🪑 Hamacas y QR', '🏷️ Códigos descuento', '⚙️ Configuración'].map((line, i) => (
-                    <div key={i} style={{ background: 'white', borderRadius: 8, padding: '6px 10px', marginBottom: 4, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ color: '#0A2540', fontWeight: 600 }}>{line}</span>
+                <div style={{ background: '#F5F5F5', padding: 6, flex: 1, minHeight: 0, overflow: 'auto', fontSize: 8 }}>
+                  <div style={{ background: '#E8F4FF', padding: '4px 6px', borderRadius: 4, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+                    <span style={{ color: '#666', fontWeight: 600 }}>Primeros pasos:</span>
+                    <span style={{ background: '#00B4D8', color: 'white', padding: '2px 6px', borderRadius: 4, fontWeight: 600 }}>1. Añade productos</span>
+                    <span style={{ background: '#00B4D8', color: 'white', padding: '2px 6px', borderRadius: 4, fontWeight: 600 }}>2. Crea hamacas</span>
+                    <span style={{ background: '#00B4D8', color: 'white', padding: '2px 6px', borderRadius: 4, fontWeight: 600 }}>3. Imprime QR</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
+                    {['Hoy', '7 días', '30 días'].map((period, i) => (
+                      <span key={period} style={{ padding: '3px 6px', borderRadius: 4, fontSize: 7, fontWeight: 700, background: i === 0 ? '#00B4D8' : 'white', color: i === 0 ? 'white' : '#666', boxShadow: i === 0 ? 'none' : '0 1px 2px rgba(0,0,0,0.06)' }}>{period}</span>
+                    ))}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 4 }}>
+                    {[{ icon: '💰', label: 'Ingresos', val: '0€' }, { icon: '📋', label: 'Pedidos', val: '0' }, { icon: '🎯', label: 'Ticket', val: '0€' }, { icon: '🪑', label: 'Hamacas', val: '0' }].map((k, i) => (
+                      <div key={i} style={{ background: 'white', borderRadius: 6, padding: 6, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', textAlign: 'center' }}>
+                        <div style={{ fontSize: 10, marginBottom: 2 }}>{k.icon}</div>
+                        <div style={{ fontWeight: 800, color: '#0A2540', fontSize: 9 }}>{k.val}</div>
+                        <div style={{ color: '#888', fontSize: 7 }}>{k.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {['Productos más vendidos', 'Ventas por hora', 'Historial pedidos'].map((tit, i) => (
+                    <div key={i} style={{ background: 'white', borderRadius: 6, padding: 6, marginBottom: 4, boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                      <div style={{ fontWeight: 700, color: '#0A2540', fontSize: 8, marginBottom: 4 }}>{tit}</div>
+                      <div style={{ color: '#999', fontSize: 7 }}>Sin datos aún</div>
                     </div>
                   ))}
                 </div>
