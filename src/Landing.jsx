@@ -694,28 +694,40 @@ export default function Landing() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: mobile ? 20 : 28 }}>
             {/* Fila 1: 4 primeros teléfonos */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 12 : 14, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: 'nowrap' }}>
-            {/* Móvil 1: Menú del cliente (lo que ve al escanear QR) — carta con precios unitarios */}
+            {/* Móvil 1: Panel real del cliente al escanear QR (¿Qué te apetece?, categorías, tarjetas con +) */}
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <img src="/favicon.svg" alt="" width={22} height={22} style={{ display: 'block' }} />
-                    <span style={{ fontSize: 12, fontWeight: 900, color: 'white' }}>chiringapp</span>
+                <div style={{ background: 'linear-gradient(180deg,#00B4D8,#0077B6)', padding: '8px 8px 12px', flexShrink: 0, position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <img src="/favicon.svg" alt="" width={20} height={20} style={{ display: 'block' }} />
+                      <span style={{ fontSize: 11, fontWeight: 900, color: 'white' }}>chiringapp</span>
+                    </div>
+                    <span style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '3px 8px', fontSize: 9, fontWeight: 700, color: 'white' }}>🪑 14B</span>
                   </div>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>● EN VIVO</span>
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>Chiringuito Playa Sol</div>
+                  <div style={{ fontSize: 12, fontWeight: 900, color: 'white', marginBottom: 2 }}>¿Qué te apetece? 😎</div>
+                  <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.9)' }}>Pedido directo a tu hamaca</div>
                 </div>
-                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div style={{ fontSize: 10 }}>
-                    {[{ label: '🍺 Cerveza', p: '3,50€' }, { label: '🥪 Bocadillo', p: '5,50€' }, { label: '🥤 Mojito', p: '7,00€' }, { label: '🍷 Jarra sangría', p: '16,00€' }, { label: '🍕 Pizza grande', p: '14,00€' }].map((item, i) => (
-                      <div key={i} style={{ background: 'white', borderRadius: 8, padding: 6, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#0A2540', fontWeight: 700 }}>{item.label}</span>
-                        <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.p}</span>
+                <div style={{ background: 'white', padding: '6px 8px', flexShrink: 0, display: 'flex', gap: 6, overflowX: 'auto' }}>
+                  {[{ name: 'Comida', icon: '🍔', active: true }, { name: 'Bebidas', icon: '🍺', active: false }, { name: 'Helados', icon: '🍦', active: false }, { name: 'Pizza', icon: '🍕', active: false }].map((c, i) => (
+                    <span key={i} style={{ flexShrink: 0, padding: '4px 8px', borderRadius: 20, fontSize: 8, fontWeight: 700, background: c.active ? '#00B4D8' : '#F0F8FF', color: c.active ? 'white' : '#666', border: c.active ? '1.5px solid #FFB800' : '1px solid #eee', display: 'flex', alignItems: 'center', gap: 4 }}>{c.icon} {c.name}</span>
+                  ))}
+                </div>
+                <div style={{ background: '#F5F5F5', padding: 8, flex: 1, minHeight: 0, overflow: 'auto' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    {[{ title: 'Patatas Bravas', desc: 'Con alioli y brava', price: '5,50 €', color: '#E8D5C4' }, { title: 'Bocadillo Calamares', desc: 'Estilo Madrid', price: '6,00 €', color: '#D4E4C4' }].map((p, i) => (
+                      <div key={i} style={{ background: 'white', borderRadius: 10, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', position: 'relative' }}>
+                        <div style={{ height: 52, background: p.color, position: 'relative' }}>
+                          <div style={{ position: 'absolute', bottom: 4, right: 4, width: 20, height: 20, borderRadius: '50%', background: '#00B4D8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 12, fontWeight: 800 }}>+</div>
+                        </div>
+                        <div style={{ padding: 6 }}>
+                          <div style={{ fontSize: 9, fontWeight: 800, color: '#0A2540', marginBottom: 2 }}>{p.title}</div>
+                          <div style={{ fontSize: 7, color: '#888', marginBottom: 4 }}>{p.desc}</div>
+                          <div style={{ fontSize: 9, fontWeight: 800, color: '#00B4D8' }}>{p.price}</div>
+                        </div>
                       </div>
                     ))}
-                  </div>
-                  <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: '6px 8px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                    <span style={{ color: 'white', fontWeight: 700, fontSize: 10 }}>Ver carrito · 62,00€</span>
                   </div>
                 </div>
               </div>
