@@ -316,8 +316,9 @@ export default function Landing() {
         boxSizing: 'border-box',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
-          <a href="/" aria-label="ChiringApp - Ir al inicio" style={{ fontSize: 22, fontWeight: 900, color: navBg ? '#0A2540' : 'white', letterSpacing: -1, textDecoration: 'none', cursor: 'pointer' }}>
-            🌊 chiringapp
+          <a href="/" aria-label="ChiringApp - Ir al inicio" style={{ fontSize: 22, fontWeight: 900, color: navBg ? '#0A2540' : 'white', letterSpacing: -1, textDecoration: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <img src="/favicon.svg" alt="" width={28} height={28} style={{ display: 'block' }} />
+            chiringapp
           </a>
           {!mobile && (
             <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
@@ -766,7 +767,10 @@ export default function Landing() {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '2fr 1fr 1fr 1fr', gap: 32, marginBottom: 40 }}>
             <div>
-              <div style={{ fontSize: 20, fontWeight: 900, color: 'white', marginBottom: 12 }}>🌊 chiringapp</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: 'white', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <img src="/favicon.svg" alt="" width={24} height={24} style={{ display: 'block' }} />
+                chiringapp
+              </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: 260 }}>
                 {t('footer_tagline')}
               </p>
