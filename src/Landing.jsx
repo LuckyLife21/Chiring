@@ -696,7 +696,7 @@ export default function Landing() {
             <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 12 : 14, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: 'nowrap' }}>
             {/* Móvil 1: Menú — precios como en carrito (7, 11, 14, 16, 14) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/favicon.svg" alt="" width={22} height={22} style={{ display: 'block' }} />
@@ -723,7 +723,7 @@ export default function Landing() {
             </div>
             {/* Móvil 2: Carrito — botón igual que Ver carrito (mismo contenedor y estilo) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'white', padding: 10, flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#0A2540', borderBottom: '1px solid #eee' }}>← Tu pedido</div>
                 <div style={{ background: '#F7F7F7', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ fontSize: 10 }}>
@@ -749,7 +749,7 @@ export default function Landing() {
             </div>
             {/* Móvil 3: Recibe el pedido (antes 4º) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/favicon.svg" alt="" width={20} height={20} style={{ display: 'block' }} />
@@ -780,7 +780,7 @@ export default function Landing() {
             </div>
             {/* Móvil 4: Panel pedidos (antes 3º) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/favicon.svg" alt="" width={20} height={20} style={{ display: 'block' }} />
@@ -808,7 +808,7 @@ export default function Landing() {
             <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 12 : 14, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
             {/* Móvil 5: Panel Manager (tabs y secciones) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Manager</span>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
@@ -832,7 +832,7 @@ export default function Landing() {
 
             {/* Móvil 6: Estadísticas del Manager — header mismo color que Manager */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 200 : 235, height: mobile ? 380 : 440, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Stats</span>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
@@ -912,10 +912,15 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* CTA — Registro chiringuito (azul a ancho completo, rompe con el estilo como antes) */}
-      <div style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 60%, #00B4D8 100%)', position: 'relative', overflow: 'hidden', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
+      {/* CTA — Registro chiringuito (azul a ancho completo, con ondulación como el hero) */}
+      <div style={{ padding: mobile ? '60px 24px' : '100px 40px', paddingBottom: mobile ? 80 : 100, background: 'linear-gradient(160deg, #0A2540 0%, #0077B6 60%, #00B4D8 100%)', position: 'relative', overflow: 'visible', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', top: -100, right: -100 }} />
-        <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative' }}>
+        <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, zIndex: 0 }}>
+          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: mobile ? 50 : 80 }}>
+            <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="white" />
+          </svg>
+        </div>
+        <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ fontSize: 44, marginBottom: 12 }}>🏖️</div>
           <h2 style={{ fontSize: mobile ? 28 : 40, fontWeight: 900, color: 'white', letterSpacing: -1, marginBottom: 12 }}>{t('cta_ready')}</h2>
           <p style={{ fontSize: mobile ? 14 : 16, color: 'rgba(255,255,255,0.85)', marginBottom: 28, lineHeight: 1.7 }}>
