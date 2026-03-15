@@ -620,24 +620,42 @@ export default function Landing() {
       </div>
 
       {/* CÓMO FUNCIONA */}
-      <div id="como-funciona" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
+      <div id="como-funciona" style={{ padding: mobile ? '60px 24px' : '100px 40px', background: 'linear-gradient(180deg, #FAFCFF 0%, #fff 30%)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_howSimple')}</div>
-            <h2 style={{ fontSize: mobile ? 30 : 40, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 12 }}>{t('section_howItWorks')}</h2>
-            <p style={{ fontSize: 15, color: '#666', maxWidth: 480, margin: '0 auto' }}>{t('section_howDesc')}</p>
+          <div style={{ textAlign: 'center', marginBottom: mobile ? 40 : 56 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 12 }}>{t('section_howSimple')}</div>
+            <h2 style={{ fontSize: mobile ? 28 : 42, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 14, lineHeight: 1.15 }}>{t('section_howItWorks')}</h2>
+            <p style={{ fontSize: mobile ? 14 : 16, color: '#555', maxWidth: 520, margin: '0 auto', lineHeight: 1.65 }}>{t('section_howDesc')}</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr 1fr', gap: 20 }}>
+          <div style={{ display: 'flex', flexDirection: mobile ? 'column' : 'row', alignItems: 'stretch', gap: mobile ? 24 : 20, position: 'relative' }}>
             {[
-              { num: '01', icon: '📱', title: t('step1_title'), desc: t('step1_desc'), color: '#E0F8FF' },
-              { num: '02', icon: '🛒', title: t('step2_title'), desc: t('step2_desc'), color: '#FFF5E0' },
-              { num: '03', icon: '🏖️', title: t('step3_title'), desc: t('step3_desc'), color: '#E8FFE8' },
-            ].map(s => (
-              <div key={s.num} style={{ background: s.color, borderRadius: 22, padding: 28, position: 'relative', overflow: 'hidden' }}>
-                <div style={{ fontSize: 60, fontWeight: 900, color: 'rgba(0,0,0,0.05)', position: 'absolute', top: -8, right: 12, lineHeight: 1 }}>{s.num}</div>
-                <div style={{ fontSize: 38, marginBottom: 14 }}>{s.icon}</div>
-                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0A2540', marginBottom: 10 }}>{s.title}</h3>
-                <p style={{ fontSize: 14, color: '#555', lineHeight: 1.7 }}>{s.desc}</p>
+              { num: '01', icon: '📱', title: t('step1_title'), desc: t('step1_desc'), color: '#E0F8FF', accent: '#00B4D8' },
+              { num: '02', icon: '🛒', title: t('step2_title'), desc: t('step2_desc'), color: '#FFF8E7', accent: '#E6A800' },
+              { num: '03', icon: '🏖️', title: t('step3_title'), desc: t('step3_desc'), color: '#E8F8EE', accent: '#28a745' },
+            ].map((s, i) => (
+              <div key={s.num} style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                {!mobile && i < 2 && (
+                  <div style={{ position: 'absolute', right: -10, top: '50%', transform: 'translateY(-50%)', width: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+                    <span style={{ fontSize: 20, color: '#00B4D8', opacity: 0.5 }}>→</span>
+                  </div>
+                )}
+                <div style={{
+                  background: s.color,
+                  borderRadius: 24,
+                  padding: mobile ? 24 : 32,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}>
+                  <div style={{ fontSize: 72, fontWeight: 900, color: 'rgba(0,0,0,0.04)', position: 'absolute', top: -4, right: 16, lineHeight: 1, letterSpacing: -2 }}>{s.num}</div>
+                  <div style={{ width: 56, height: 56, borderRadius: 16, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, marginBottom: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.04)' }}>{s.icon}</div>
+                  <h3 style={{ fontSize: mobile ? 17 : 19, fontWeight: 800, color: '#0A2540', marginBottom: 12, position: 'relative' }}>{s.title}</h3>
+                  <p style={{ fontSize: 14, color: '#555', lineHeight: 1.75, flex: 1, position: 'relative' }}>{s.desc}</p>
+                </div>
               </div>
             ))}
           </div>
