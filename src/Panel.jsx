@@ -38,7 +38,10 @@ function Login({ onLogin }) {
     return (
       <div style={ls.bg}>
         <div style={ls.card}>
-          <div style={ls.logo}>🌊 Chiring</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
+            <img src="/favicon.svg" alt="" width={36} height={36} style={{ display: 'block' }} />
+            <span style={ls.logo}>chiringapp</span>
+          </div>
           <div style={ls.sub}>Recuperar contraseña</div>
           {!resetEnviado ? <>
             <input style={ls.input} type="email" placeholder="Tu email" value={emailReset}
@@ -68,7 +71,10 @@ function Login({ onLogin }) {
   return (
     <div style={ls.bg}>
       <div style={ls.card}>
-        <div style={ls.logo}>🌊 Chiring</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
+        <img src="/favicon.svg" alt="" width={36} height={36} style={{ display: 'block' }} />
+        <span style={ls.logo}>chiringapp</span>
+      </div>
         <div style={ls.sub}>Panel del chiringuito</div>
         <input style={ls.input} type="email" placeholder="Email" value={email}
           onChange={e => setEmail(e.target.value)} />
@@ -913,7 +919,10 @@ export default function Panel() {
   if (isRecovery) return (
     <div style={ls.bg}>
       <div style={ls.card}>
-        <div style={ls.logo}>🌊 Chiring</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
+        <img src="/favicon.svg" alt="" width={36} height={36} style={{ display: 'block' }} />
+        <span style={ls.logo}>chiringapp</span>
+      </div>
         <div style={ls.sub}>Crea una nueva contraseña</div>
         <input style={ls.input} type="password" placeholder="Nueva contraseña" value={nuevaPassRecovery}
           onChange={e => setNuevaPassRecovery(e.target.value)} />
@@ -964,9 +973,12 @@ export default function Panel() {
     <div style={s.bg}>
       <div style={s.header}>
         <div style={s.headerInner}>
-          <div>
-            <div style={s.logo}>🌊 Chiring</div>
-            <div style={s.logoSub}>{chiringuito?.nombre || 'Panel del Chiringuito'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/favicon.svg" alt="" width={32} height={32} style={{ display: 'block' }} />
+            <div>
+              <div style={s.logo}>chiringapp</div>
+              <div style={s.logoSub}>{chiringuito?.nombre || 'Panel del Chiringuito'}</div>
+            </div>
           </div>
           <div style={{display:'flex', alignItems:'center', gap:8}}>
             {typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
