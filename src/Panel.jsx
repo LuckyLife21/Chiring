@@ -10,7 +10,7 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [olvidado, setOlvidado] = useState(false)
+  const [olvidado, setOlvidado] = useState(() => new URLSearchParams(window.location.search).get('recuperar') === '1')
   const [emailReset, setEmailReset] = useState('')
   const [resetEnviado, setResetEnviado] = useState(false)
   const [resetLoading, setResetLoading] = useState(false)

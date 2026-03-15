@@ -32,6 +32,10 @@ export default function Landing() {
   const [partnerLogin, setPartnerLogin] = useState({ email: '', password: '' })
   const [partnerError, setPartnerError] = useState('')
   const [partnerCargando, setPartnerCargando] = useState(false)
+  const [partnerRecoveryMode, setPartnerRecoveryMode] = useState(false) // false | 'form' | 'sent'
+  const [partnerResetEmail, setPartnerResetEmail] = useState('')
+  const [partnerResetLoading, setPartnerResetLoading] = useState(false)
+  const [partnerResetError, setPartnerResetError] = useState('')
   const [chiringuitoLogin, setChiringuitoLogin] = useState({ email: '', password: '' })
   const [chiringuitoError, setChiringuitoError] = useState('')
   const [chiringuitoCargando, setChiringuitoCargando] = useState(false)
@@ -94,6 +98,25 @@ export default function Landing() {
       setPartnerCargando(false)
     } else {
       window.location.href = '/partner'
+    }
+  }
+
+  async function handlePartnerReset() {
+    const email = (partnerResetEmail || '').trim()
+    if (!email) {
+      setPartnerResetError(lang === 'es' ? 'Escribe tu email' : lang === 'en' ? 'Enter your email' : lang === 'it' ? 'Inserisci la tua email' : 'Entrez votre email')
+      return
+    }
+    setPartnerResetLoading(true)
+    setPartnerResetError('')
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/partner`,
+    })
+    setPartnerResetLoading(false)
+    if (error) {
+      setPartnerResetError(error.message || (lang === 'es' ? 'No se pudo enviar. Comprueba el email.' : 'Could not send. Check the email.'))
+    } else {
+      setPartnerRecoveryMode('sent')
     }
   }
 
@@ -177,7 +200,7 @@ export default function Landing() {
                 {chiringuitoCargando ? t('modal_partner_entering') : t('panel_enter')}
               </button>
               <div style={{ textAlign: 'center', fontSize: 13, color: '#888' }}>
-                <a href="/panel" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
+                <a href="/panel?recuperar=1" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
                 <br />
                 {t('modal_partner_noAccount')}{' '}
                 <a href="/registro" onClick={() => setChiringuitoModal(false)} style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('nav_registerFree')}</a>
@@ -189,41 +212,78 @@ export default function Landing() {
 
       {/* MODAL PARTNER LOGIN */}
       {partnerModal && (
-        <div onClick={() => setPartnerModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+        <div onClick={() => { setPartnerModal(false); setPartnerRecoveryMode(false); setPartnerResetError('') }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 24, padding: 36, maxWidth: 420, width: '100%', boxShadow: '0 30px 60px rgba(0,0,0,0.2)' }}>
-            <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={56} color="#E6A800" /></div>
-              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>{t('modal_partner_title')}</h2>
-              <p style={{ fontSize: 13, color: '#888' }}>{t('modal_partner_subtitle')}</p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 {t('modal_partner_email')}</label>
-                <input style={inputStyle} type="email" placeholder="tu@email.com" value={partnerLogin.email} onChange={e => { setPartnerLogin(f => ({ ...f, email: e.target.value })); setPartnerError('') }} />
-              </div>
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 {t('modal_partner_password')}</label>
-                <input style={inputStyle} type="password" placeholder="••••••••" value={partnerLogin.password} onChange={e => { setPartnerLogin(f => ({ ...f, password: e.target.value })); setPartnerError('') }} onKeyDown={e => e.key === 'Enter' && loginPartner()} />
-              </div>
-
-              {partnerError && (
-                <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>
-                  ⚠️ {partnerError}
+            {partnerRecoveryMode === 'sent' ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                  <div style={{ fontSize: 36, marginBottom: 8 }}>✉️</div>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 8 }}>{t('modal_partner_recover_title')}</h2>
+                  <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>{t('modal_partner_recover_sent')}</p>
                 </div>
-              )}
+                <button type="button" onClick={() => { setPartnerRecoveryMode(false); setPartnerResetEmail('') }} style={{ width: '100%', padding: '14px', background: 'none', border: 'none', fontSize: 14, color: '#0077B6', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+                  {t('modal_partner_recover_back')}
+                </button>
+              </>
+            ) : partnerRecoveryMode === 'form' ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                  <div style={{ fontSize: 36, marginBottom: 8 }}>🔐</div>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>{t('modal_partner_recover_title')}</h2>
+                  <p style={{ fontSize: 13, color: '#888' }}>{t('modal_partner_recover_desc')}</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <input style={inputStyle} type="email" placeholder="tu@email.com" value={partnerResetEmail} onChange={e => { setPartnerResetEmail(e.target.value); setPartnerResetError('') }} onKeyDown={e => e.key === 'Enter' && handlePartnerReset()} />
+                  {partnerResetError && (
+                    <div style={{ fontSize: 13, color: '#cc0000', fontWeight: 600 }}>{partnerResetError}</div>
+                  )}
+                  <button onClick={handlePartnerReset} disabled={partnerResetLoading} style={{ padding: '14px', background: partnerResetLoading ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: partnerResetLoading ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                    {partnerResetLoading ? (lang === 'es' ? 'Enviando...' : lang === 'en' ? 'Sending...' : lang === 'it' ? 'Invio...' : 'Envoi...') : t('modal_partner_recover_btn')}
+                  </button>
+                  <button type="button" onClick={() => { setPartnerRecoveryMode(false); setPartnerResetError('') }} style={{ background: 'none', border: 'none', fontSize: 13, color: '#0077B6', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+                    {t('modal_partner_recover_back')}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: 28 }}>
+                  <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 8 }}><LogoLoginIcon size={56} color="#E6A800" /></div>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', marginBottom: 4 }}>{t('modal_partner_title')}</h2>
+                  <p style={{ fontSize: 13, color: '#888' }}>{t('modal_partner_subtitle')}</p>
+                </div>
 
-              <button onClick={loginPartner} disabled={partnerCargando} style={{ padding: '14px', background: partnerCargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: partnerCargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
-                {partnerCargando ? t('modal_partner_entering') : t('modal_partner_enter')}
-              </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>📧 {t('modal_partner_email')}</label>
+                    <input style={inputStyle} type="email" placeholder="tu@email.com" value={partnerLogin.email} onChange={e => { setPartnerLogin(f => ({ ...f, email: e.target.value })); setPartnerError('') }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 6, display: 'block' }}>🔒 {t('modal_partner_password')}</label>
+                    <input style={inputStyle} type="password" placeholder="••••••••" value={partnerLogin.password} onChange={e => { setPartnerLogin(f => ({ ...f, password: e.target.value })); setPartnerError('') }} onKeyDown={e => e.key === 'Enter' && loginPartner()} />
+                  </div>
 
-              <div style={{ textAlign: 'center', fontSize: 13, color: '#888', lineHeight: 1.8 }}>
-                {t('modal_partner_noAccount')}{' '}
-                <a href="/partner" style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_registerLink')}</a>
-                <br />
-                <a href="/partner?reset=1" style={{ color: '#0077B6', fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>{t('modal_partner_forgot')}</a>
-              </div>
-            </div>
+                  {partnerError && (
+                    <div style={{ background: '#FFF0F0', border: '1.5px solid #ffb3b3', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#cc0000', fontWeight: 600 }}>
+                      ⚠️ {partnerError}
+                    </div>
+                  )}
+
+                  <button onClick={loginPartner} disabled={partnerCargando} style={{ padding: '14px', background: partnerCargando ? '#ccc' : 'linear-gradient(135deg,#00B4D8,#0077B6)', color: 'white', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 800, cursor: partnerCargando ? 'default' : 'pointer', fontFamily: 'Poppins, sans-serif' }}>
+                    {partnerCargando ? t('modal_partner_entering') : t('modal_partner_enter')}
+                  </button>
+
+                  <div style={{ textAlign: 'center', fontSize: 13, color: '#888', lineHeight: 1.8 }}>
+                    {t('modal_partner_noAccount')}{' '}
+                    <a href="/partner" style={{ color: '#0077B6', fontWeight: 700, textDecoration: 'none' }}>{t('modal_partner_registerLink')}</a>
+                    <br />
+                    <button type="button" onClick={() => setPartnerRecoveryMode('form')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 13, color: '#0077B6', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", textDecoration: 'none' }}>
+                      {t('modal_partner_forgot')}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
