@@ -691,75 +691,58 @@ export default function Landing() {
             <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_howSimple')}</div>
             <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1 }}>{t('section_gallery_title')}</h2>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 16 : 20, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: mobile ? 'nowrap' : 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 14 : 18, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: mobile ? 'nowrap' : 'wrap' }}>
             {/* Móvil 1: Menú */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 168 : 188, height: mobile ? 340 : 380, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <img src="/favicon.svg" alt="" width={22} height={22} style={{ display: 'block' }} />
                   <div style={{ fontSize: 12, fontWeight: 900, color: 'white' }}>chiringapp</div>
                 </div>
-                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
-                  {['🍺 Cerveza 3,50€', '🥪 Bocadillo 5,50€', '🥤 Mojito 7,00€'].map((line, i) => (
-                    <div key={i} style={{ background: 'white', borderRadius: 8, padding: 6, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#0A2540', fontWeight: 700 }}>{line.split(' ').slice(0, -1).join(' ')}</span>
-                      <span style={{ color: '#00B4D8', fontWeight: 800 }}>{line.split(' ').pop()}</span>
-                    </div>
-                  ))}
-                  <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: 8, textAlign: 'center', color: 'white', fontWeight: 800, marginTop: 4 }}>🛒 Ver carrito · 16,00€</div>
+                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: 10 }}>
+                    {['🍺 Cerveza', '🥪 Bocadillo', '🥤 Mojito', '🍷 Jarra sangría', '🍕 Pizza grande'].map((label, i) => {
+                      const prices = ['3,50€', '5,50€', '7,00€', '16,00€', '14,00€']
+                      return (
+                        <div key={i} style={{ background: 'white', borderRadius: 8, padding: 6, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ color: '#0A2540', fontWeight: 700 }}>{label}</span>
+                          <span style={{ color: '#00B4D8', fontWeight: 800 }}>{prices[i]}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: 10, textAlign: 'center', color: 'white', fontWeight: 800, flexShrink: 0 }}>🛒 Ver carrito · 46,00€</div>
                 </div>
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_menu')}</div>
             </div>
-            {/* Móvil 2: Carrito */}
+            {/* Móvil 2: Carrito (mismos items que menú, total 46€) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 168 : 188, height: mobile ? 340 : 380, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'white', padding: 10, flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#0A2540', borderBottom: '1px solid #eee' }}>← Tu pedido</div>
                 <div style={{ background: '#F7F7F7', padding: 8, flex: 1, fontSize: 10 }}>
-                  {[{ n: 'Cerveza Estrella', q: 2, p: '3,50€' }, { n: 'Mojito', q: 1, p: '7,00€' }].map((item, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #eee' }}>
+                  {[{ n: 'Cerveza', q: 1, p: '3,50€' }, { n: 'Bocadillo', q: 1, p: '5,50€' }, { n: 'Mojito', q: 1, p: '7,00€' }, { n: 'Jarra sangría', q: 1, p: '16,00€' }, { n: 'Pizza grande', q: 1, p: '14,00€' }].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 0', borderBottom: '1px solid #eee' }}>
                       <span style={{ color: '#0A2540' }}>{item.n} x{item.q}</span>
                       <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.p}</span>
                     </div>
                   ))}
-                  <div style={{ marginTop: 12, paddingTop: 8, borderTop: '2px solid #ddd', display: 'flex', justifyContent: 'space-between', fontWeight: 800, color: '#0A2540' }}>
-                    <span>Total</span><span style={{ color: '#00B4D8' }}>16,00 €</span>
+                  <div style={{ marginTop: 10, paddingTop: 8, borderTop: '2px solid #ddd', display: 'flex', justifyContent: 'space-between', fontWeight: 800, color: '#0A2540' }}>
+                    <span>Total</span><span style={{ color: '#00B4D8' }}>46,00 €</span>
                   </div>
                 </div>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, textAlign: 'center', color: 'white', fontWeight: 800, fontSize: 11 }}>Ir a pagar</div>
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_cart')}</div>
             </div>
-            {/* Móvil 3: Panel pedidos */}
+            {/* Móvil 3: Recibe el pedido (antes 4º) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 168 : 188, height: mobile ? 340 : 380, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>chiringapp</span>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>● EN VIVO</span>
                 </div>
                 <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
-                  <div style={{ fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>Pedidos recientes</div>
-                  {[{ hamaca: '14B', total: '16,00€', estado: 'Nuevo' }, { hamaca: '12A', total: '8,50€', estado: 'Preparando' }].map((p, i) => (
-                    <div key={i} style={{ background: 'white', borderRadius: 8, padding: 8, marginBottom: 6, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontWeight: 700, color: '#0A2540' }}>Hamaca {p.hamaca}</span>
-                        <span style={{ fontWeight: 800, color: '#00B4D8' }}>{p.total}</span>
-                      </div>
-                      <div style={{ fontSize: 9, color: '#28a745', fontWeight: 700 }}>{p.estado}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_panel')}</div>
-            </div>
-            {/* Móvil 4: Recibe el pedido (notificación / alerta) */}
-            <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 168 : 188, height: mobile ? 340 : 380, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>chiringapp</span>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>● EN VIVO</span>
-                </div>
-                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, position: 'relative', fontSize: 10 }}>
                   <div style={{ fontWeight: 800, color: '#0A2540', marginBottom: 6 }}>Pedidos</div>
                   <div style={{ background: '#D4EDDA', borderRadius: 10, padding: 10, border: '2px solid #28a745', boxShadow: '0 2px 12px rgba(40,167,69,0.3)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
@@ -767,7 +750,7 @@ export default function Landing() {
                       <span style={{ fontWeight: 800, color: '#155724', fontSize: 11 }}>¡Nuevo pedido!</span>
                     </div>
                     <div style={{ fontWeight: 700, color: '#0A2540' }}>Hamaca 14B</div>
-                    <div style={{ fontWeight: 800, color: '#00B4D8', fontSize: 11 }}>16,00 €</div>
+                    <div style={{ fontWeight: 800, color: '#00B4D8', fontSize: 11 }}>46,00 €</div>
                   </div>
                   <div style={{ background: 'white', borderRadius: 8, padding: 8, marginTop: 6, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -780,33 +763,47 @@ export default function Landing() {
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_new_order')}</div>
             </div>
-            {/* Móvil 5: Manager / Estadísticas */}
+            {/* Móvil 4: Panel pedidos (antes 3º) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 168 : 188, height: mobile ? 340 : 380, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0 }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Manager</div>
-                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>Chiringuito Playa Sol</div>
+              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>chiringapp</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>● EN VIVO</span>
                 </div>
                 <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
-                  <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
-                    <span style={{ padding: '4px 8px', background: '#00B4D8', color: 'white', borderRadius: 6, fontWeight: 700 }}>Stats</span>
-                    <span style={{ padding: '4px 8px', color: '#666', fontWeight: 600 }}>Productos</span>
-                  </div>
-                  <div style={{ background: 'white', borderRadius: 10, padding: 10, marginBottom: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-                    <div style={{ color: '#888', marginBottom: 4 }}>Hoy</div>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: '#0A2540' }}>12</div>
-                    <div style={{ fontSize: 9, color: '#00B4D8', fontWeight: 700 }}>pedidos</div>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                    <div style={{ background: 'white', borderRadius: 8, padding: 8, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-                      <div style={{ fontSize: 16, fontWeight: 900, color: '#00B4D8' }}>€</div>
-                      <div style={{ fontSize: 8, color: '#888' }}>ventas</div>
+                  <div style={{ fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>Pedidos recientes</div>
+                  {[{ hamaca: '14B', total: '46,00€', estado: 'Nuevo' }, { hamaca: '12A', total: '8,50€', estado: 'Preparando' }].map((p, i) => (
+                    <div key={i} style={{ background: 'white', borderRadius: 8, padding: 8, marginBottom: 6, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <span style={{ fontWeight: 700, color: '#0A2540' }}>Hamaca {p.hamaca}</span>
+                        <span style={{ fontWeight: 800, color: '#00B4D8' }}>{p.total}</span>
+                      </div>
+                      <div style={{ fontSize: 9, color: '#28a745', fontWeight: 700 }}>{p.estado}</div>
                     </div>
-                    <div style={{ background: 'white', borderRadius: 8, padding: 8, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-                      <div style={{ fontSize: 16, fontWeight: 900, color: '#0A2540' }}>7d</div>
-                      <div style={{ fontSize: 8, color: '#888' }}>período</div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_panel')}</div>
+            </div>
+            {/* Móvil 5: Panel Manager (tabs y secciones) */}
+            <div style={{ flexShrink: 0 }}>
+              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Manager</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
+                </div>
+                <div style={{ background: 'white', padding: 6, flexShrink: 0, display: 'flex', gap: 4, overflowX: 'auto' }}>
+                  {['Stats', 'Productos', 'Categorías', 'Hamacas', 'Códigos', 'Config'].map((tab, i) => (
+                    <span key={tab} style={{ padding: '4px 6px', borderRadius: 6, fontSize: 9, fontWeight: 700, whiteSpace: 'nowrap', background: i === 0 ? '#00B4D8' : 'transparent', color: i === 0 ? 'white' : '#666' }}>{tab}</span>
+                  ))}
+                </div>
+                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
+                  <div style={{ fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>Chiringuito Playa Sol</div>
+                  {['📊 Stats — pedidos e ingresos', '📦 Productos — carta', '🗂️ Categorías', '🪑 Hamacas y QR', '🏷️ Códigos descuento', '⚙️ Configuración'].map((line, i) => (
+                    <div key={i} style={{ background: 'white', borderRadius: 8, padding: '6px 10px', marginBottom: 4, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ color: '#0A2540', fontWeight: 600 }}>{line}</span>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_manager')}</div>
