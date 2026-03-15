@@ -6,6 +6,9 @@
 
 body {
   font-family: 'Poppins', sans-serif;
+  /* Solo scroll vertical: evita que deslizar con dos dedos a los lados abra panel o navegue */
+  touch-action: pan-y;
+  overscroll-behavior-x: none;
 }
 
 html, body, #root {
