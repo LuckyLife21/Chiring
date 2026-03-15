@@ -691,10 +691,10 @@ export default function Landing() {
             <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_howSimple')}</div>
             <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1 }}>{t('section_gallery_title')}</h2>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 14 : 18, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: mobile ? 'nowrap' : 'wrap' }}>
-            {/* Móvil 1: Menú (2+2+2 cervezas/bocadillos/mojitos + jarra + pizza = 62€) */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 12 : 14, alignItems: 'flex-start', overflowX: mobile ? 'auto' : 'visible', paddingBottom: mobile ? 8 : 0, margin: mobile ? '0 -24px' : 0, paddingLeft: mobile ? 24 : 0, paddingRight: mobile ? 24 : 0, flexWrap: mobile ? 'nowrap' : 'wrap' }}>
+            {/* Móvil 1: Menú con cantidades (x2, x2, x2, x1, x1) y total 62€ */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/favicon.svg" alt="" width={22} height={22} style={{ display: 'block' }} />
@@ -704,24 +704,24 @@ export default function Landing() {
                 </div>
                 <div style={{ background: '#F0F8FF', padding: 8, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ fontSize: 10 }}>
-                    {['🍺 Cerveza', '🥪 Bocadillo', '🥤 Mojito', '🍷 Jarra sangría', '🍕 Pizza grande'].map((label, i) => {
-                      const prices = ['3,50€', '5,50€', '7,00€', '16,00€', '14,00€']
-                      return (
-                        <div key={i} style={{ background: 'white', borderRadius: 8, padding: 6, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ color: '#0A2540', fontWeight: 700 }}>{label}</span>
-                          <span style={{ color: '#00B4D8', fontWeight: 800 }}>{prices[i]}</span>
-                        </div>
-                      )
-                    })}
+                    {[{ label: '🍺 Cerveza', q: 2, p: '3,50€' }, { label: '🥪 Bocadillo', q: 2, p: '5,50€' }, { label: '🥤 Mojito', q: 2, p: '7,00€' }, { label: '🍷 Jarra sangría', q: 1, p: '16,00€' }, { label: '🍕 Pizza grande', q: 1, p: '14,00€' }].map((item, i) => (
+                      <div key={i} style={{ background: 'white', borderRadius: 8, padding: 6, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ color: '#0A2540', fontWeight: 700 }}>{item.label} x{item.q}</span>
+                        <span style={{ color: '#00B4D8', fontWeight: 800 }}>{item.p}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: '6px 8px', textAlign: 'center', color: 'white', fontWeight: 700, fontSize: 10, flexShrink: 0 }}>🛒 Ver carrito · 62,00€</div>
+                  <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: '6px 8px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    <span style={{ color: 'white', fontWeight: 700, fontSize: 10 }}>Ver carrito · 62,00€</span>
+                  </div>
                 </div>
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_menu')}</div>
             </div>
-            {/* Móvil 2: Carrito (2 cervezas, 2 bocadillos, 2 mojitos, 1 jarra, 1 pizza = 62€) */}
+            {/* Móvil 2: Carrito (mismo estilo botón que tel 1) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'white', padding: 10, flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#0A2540', borderBottom: '1px solid #eee' }}>← Tu pedido</div>
                 <div style={{ background: '#F7F7F7', padding: 8, flex: 1, fontSize: 10 }}>
                   {[{ n: 'Cerveza', q: 2, p: '3,50€', line: '7,00€' }, { n: 'Bocadillo', q: 2, p: '5,50€', line: '11,00€' }, { n: 'Mojito', q: 2, p: '7,00€', line: '14,00€' }, { n: 'Jarra sangría', q: 1, p: '16,00€', line: '16,00€' }, { n: 'Pizza grande', q: 1, p: '14,00€', line: '14,00€' }].map((item, i) => (
@@ -734,13 +734,16 @@ export default function Landing() {
                     <span>Total</span><span style={{ color: '#00B4D8' }}>62,00 €</span>
                   </div>
                 </div>
-                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, textAlign: 'center', color: 'white', fontWeight: 800, fontSize: 11 }}>Ir a pagar</div>
+                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 8, padding: '6px 8px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+                  <span style={{ color: 'white', fontWeight: 700, fontSize: 10 }}>Ir a pagar</span>
+                </div>
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_cart')}</div>
             </div>
             {/* Móvil 3: Recibe el pedido (antes 4º) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/favicon.svg" alt="" width={20} height={20} style={{ display: 'block' }} />
@@ -771,7 +774,7 @@ export default function Landing() {
             </div>
             {/* Móvil 4: Panel pedidos (antes 3º) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/favicon.svg" alt="" width={20} height={20} style={{ display: 'block' }} />
@@ -796,7 +799,7 @@ export default function Landing() {
             </div>
             {/* Móvil 5: Panel Manager (tabs y secciones) */}
             <div style={{ flexShrink: 0 }}>
-              <div style={{ width: mobile ? 175 : 208, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ background: 'linear-gradient(135deg,#0A2540,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Manager</span>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
@@ -816,6 +819,26 @@ export default function Landing() {
                 </div>
               </div>
               <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_manager')}</div>
+            </div>
+
+            {/* Móvil 6: Estadísticas del Manager */}
+            <div style={{ flexShrink: 0 }}>
+              <div style={{ width: mobile ? 158 : 185, height: mobile ? 350 : 400, background: '#0A2540', borderRadius: 28, border: '6px solid rgba(0,0,0,0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', padding: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>📊 Stats</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>← Volver</span>
+                </div>
+                <div style={{ background: '#F0F8FF', padding: 8, flex: 1, fontSize: 10 }}>
+                  <div style={{ fontWeight: 800, color: '#0A2540', marginBottom: 8 }}>Chiringuito Playa Sol</div>
+                  {[{ label: 'Pedidos hoy', value: '24' }, { label: 'Ingresos hoy', value: '312,50 €' }, { label: 'Ticket medio', value: '13,02 €' }].map((row, i) => (
+                    <div key={i} style={{ background: 'white', borderRadius: 8, padding: '8px 10px', marginBottom: 6, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#0A2540', fontWeight: 600 }}>{row.label}</span>
+                      <span style={{ color: '#00B4D8', fontWeight: 800 }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13, fontWeight: 700, color: '#0A2540' }}>{t('gallery_stats')}</div>
             </div>
           </div>
         </div>
