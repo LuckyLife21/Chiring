@@ -240,6 +240,10 @@ export default function App() {
           <div style={s.cartBar}>
             <button style={s.cartBtn} onClick={()=>setScreen('cart')}>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
                 <div style={s.cartCount}>{count}</div>
                 <span style={{fontSize:15,fontWeight:700}}>Ver mi pedido</span>
               </div>

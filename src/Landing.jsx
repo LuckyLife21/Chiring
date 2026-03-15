@@ -480,8 +480,12 @@ export default function Landing() {
                     </div>
                   ))}
                 </div>
-                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 12, padding: 11, textAlign: 'center', flexShrink: 0 }}>
-                  <div style={{ color: 'white', fontWeight: 800, fontSize: 12 }}>🛒 {t('mockup_view_cart')}</div>
+                <div style={{ background: 'linear-gradient(135deg,#00B4D8,#0077B6)', borderRadius: 12, padding: 11, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                  </svg>
+                  <span style={{ color: 'white', fontWeight: 800, fontSize: 12 }}>{t('mockup_view_cart')}</span>
                 </div>
               </div>
             </div>
