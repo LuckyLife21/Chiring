@@ -69,8 +69,9 @@ export default function Pago({ total, pedidoId, onExito, onVolver }) {
           headers: {
             'Content-Type': 'application/json',
             'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
           },
-          body: JSON.stringify({ amount: total, pedidoId })
+          body: JSON.stringify({ amount: total, pedidoId, apoyoAmount: apoyoEur })
         })
         const data = await res.json()
         if (data.clientSecret) {
