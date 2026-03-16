@@ -711,7 +711,7 @@ export default function Landing() {
       <div id="galeria" style={{ padding: mobile ? '60px 24px' : '80px 40px', background: 'white', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_howSimple')}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('section_gallery_label')}</div>
             <h2 style={{ fontSize: mobile ? 28 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1 }}>{t('section_gallery_title')}</h2>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: mobile ? 20 : 28 }}>
