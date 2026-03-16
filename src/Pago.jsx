@@ -66,7 +66,14 @@ export default function Pago({ total, apoyoEur = 0, pedidoId, onExito, onVolver 
           body: { amount: total, pedidoId, apoyoAmount: apoyoEur },
         })
         if (error) {
-          setError(error.message || 'No se pudo iniciar el pago. Inténtalo de nuevo.')
+          let msg = error.message || 'No se pudo iniciar el pago. Inténtalo de nuevo.'
+          if (error.context && typeof error.context.json === 'function') {
+            try {
+              const body = await error.context.json()
+              if (body && body.error) msg = body.error
+            } catch (_) {}
+          }
+          setError(msg)
           return
         }
         if (data?.clientSecret) {
