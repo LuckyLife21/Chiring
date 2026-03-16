@@ -54,7 +54,7 @@ function FormularioPago({ total, onExito }) {
   )
 }
 
-export default function Pago({ total, pedidoId, onExito, onVolver }) {
+export default function Pago({ total, apoyoEur = 0, pedidoId, onExito, onVolver }) {
   const [clientSecret, setClientSecret] = useState(null)
   const [error, setError] = useState(null)
 

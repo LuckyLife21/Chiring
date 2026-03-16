@@ -45,6 +45,7 @@ export default function App() {
   const [codigoInput, setCodigoInput] = useState('')
   const [codigoAplicado, setCodigoAplicado] = useState(null)
   const [codigoError, setCodigoError] = useState('')
+  const [apoyoEur, setApoyoEur] = useState(0)
 
   useEffect(() => {
     async function cargarDatos() {
@@ -184,7 +185,7 @@ export default function App() {
     <div style={s.phone}>
 
       {screen === 'pago' && (
-        <Pago total={totalConDescuento} pedidoId={pedidoId}
+        <Pago total={totalConDescuento + apoyoEur} apoyoEur={apoyoEur} pedidoId={pedidoId}
           onVolver={() => setScreen('cart')}
           onExito={onPagoExito} />
       )}
@@ -315,6 +316,32 @@ export default function App() {
             </div>
           )}
 
+          <div style={{ padding: '16px 16px 0', marginTop: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#0A2540', marginBottom: 10 }}>¿Apoyar a quienes crean apps útiles?</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[[0, 'No, gracias'], [0.5, '0,50 €'], [1, '1 €'], [2, '2 €']].map(([eur, label]) => (
+                <button
+                  key={eur}
+                  type="button"
+                  onClick={() => setApoyoEur(eur)}
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: 12,
+                    border: apoyoEur === eur ? '2px solid #00B4D8' : '1.5px solid #E0E8F0',
+                    background: apoyoEur === eur ? '#E0F8FF' : 'white',
+                    color: apoyoEur === eur ? '#0077B6' : '#555',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    fontFamily: 'Poppins, sans-serif',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div style={{padding:'0 16px', marginTop:8}}>
             <div style={s.totalBox}>
               <div>
@@ -337,7 +364,7 @@ export default function App() {
           <div style={{padding:'16px'}}>
             <button style={{...s.payBtn, opacity: guardando ? 0.7 : 1}}
               onClick={crearPedido} disabled={guardando}>
-              {guardando ? '⏳ Preparando...' : `💳 Ir a pagar · ${totalConDescuento.toFixed(2).replace('.',',')} €`}
+              {guardando ? '⏳ Preparando...' : `💳 Ir a pagar · ${(totalConDescuento + apoyoEur).toFixed(2).replace('.',',')} €`}
             </button>
           </div>
         </div>
