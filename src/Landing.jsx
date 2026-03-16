@@ -920,6 +920,7 @@ export default function Landing() {
       <div id="antes-despues" style={{ padding: mobile ? '60px 24px' : '80px 40px', background: 'linear-gradient(180deg,#FAFCFF 0%,#fff 100%)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: mobile ? 32 : 48 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00B4D8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{t('beforeAfter_label')}</div>
             <h2 style={{ fontSize: mobile ? 26 : 36, fontWeight: 900, color: '#0A2540', letterSpacing: -1, marginBottom: 8 }}>{t('beforeAfter_title')}</h2>
             <p style={{ fontSize: 15, color: '#666' }}>{t('beforeAfter_sub')}</p>
           </div>
