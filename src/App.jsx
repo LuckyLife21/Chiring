@@ -45,7 +45,9 @@ export default function App() {
   const [codigoInput, setCodigoInput] = useState('')
   const [codigoAplicado, setCodigoAplicado] = useState(null)
   const [codigoError, setCodigoError] = useState('')
-  const [apoyoEur, setApoyoEur] = useState(0)
+  const [apoyoPreset, setApoyoPreset] = useState(0)
+  const [apoyoCustomInput, setApoyoCustomInput] = useState('')
+  const apoyoEur = apoyoPreset === 'custom' ? (parseFloat(apoyoCustomInput.replace(',', '.')) || 0) : apoyoPreset
 
   useEffect(() => {
     async function cargarDatos() {
@@ -318,18 +320,18 @@ export default function App() {
 
           <div style={{ padding: '16px 16px 0', marginTop: 4 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#0A2540', marginBottom: 10 }}>¿Apoyar a quienes crean apps útiles?</div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {[[0, 'No, gracias'], [0.5, '0,50 €'], [1, '1 €'], [2, '2 €']].map(([eur, label]) => (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              {[[0, 'No, gracias'], [0.5, '0,50 €'], [2, '2 €'], [5, '5 €'], [10, '10 €']].map(([eur, label]) => (
                 <button
                   key={eur}
                   type="button"
-                  onClick={() => setApoyoEur(eur)}
+                  onClick={() => { setApoyoPreset(eur); setApoyoCustomInput('') }}
                   style={{
                     padding: '10px 14px',
                     borderRadius: 12,
-                    border: apoyoEur === eur ? '2px solid #00B4D8' : '1.5px solid #E0E8F0',
-                    background: apoyoEur === eur ? '#E0F8FF' : 'white',
-                    color: apoyoEur === eur ? '#0077B6' : '#555',
+                    border: apoyoPreset === eur ? '2px solid #00B4D8' : '1.5px solid #E0E8F0',
+                    background: apoyoPreset === eur ? '#E0F8FF' : 'white',
+                    color: apoyoPreset === eur ? '#0077B6' : '#555',
                     fontSize: 13,
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -339,6 +341,26 @@ export default function App() {
                   {label}
                 </button>
               ))}
+              <span style={{ fontSize: 13, color: '#888', marginLeft: 4 }}>Otro:</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0"
+                value={apoyoPreset === 'custom' ? apoyoCustomInput : ''}
+                onChange={e => { setApoyoCustomInput(e.target.value); setApoyoPreset('custom') }}
+                onFocus={() => setApoyoPreset('custom')}
+                style={{
+                  width: 72,
+                  padding: '10px 12px',
+                  borderRadius: 12,
+                  border: apoyoPreset === 'custom' ? '2px solid #00B4D8' : '1.5px solid #E0E8F0',
+                  background: apoyoPreset === 'custom' ? '#E0F8FF' : 'white',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  fontFamily: 'Poppins, sans-serif',
+                }}
+              />
+              <span style={{ fontSize: 13, color: '#888' }}>€</span>
             </div>
           </div>
 
