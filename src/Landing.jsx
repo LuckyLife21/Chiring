@@ -541,6 +541,9 @@ export default function Landing() {
           <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: mobile ? 50 : 80 }}>
             <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="white" />
           </svg>
+          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: mobile ? 50 : 80, marginTop: -1 }}>
+            <path d="M0,40 C360,0 1080,80 1440,40 L1440,80 L0,80 Z" fill="white" />
+          </svg>
         </div>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 40 : 60, alignItems: mobile ? 'flex-start' : 'center', position: 'relative', zIndex: 1 }}>
           <div style={{ textAlign: mobile ? 'center' : 'left', order: mobile ? 2 : 0 }}>
@@ -584,9 +587,11 @@ export default function Landing() {
               <div style={{ background: '#F0F8FF', padding: 12, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
                   {[
-                    { icon: '🍺', name: 'Cerveza Estrella', desc: 'Bien fresquita', price: '3,50€' },
-                    { icon: '🥪', name: 'Bocadillo Calamares', desc: 'Con alioli', price: '5,50€' },
-                    { icon: '🥤', name: 'Mojito', desc: 'Con hierbabuena', price: '7,00€' },
+                    { icon: '🍺', name: 'Cerveza x2', desc: 'Bien fresquita', price: '7,00€' },
+                    { icon: '🥪', name: 'Bocadillo calamares x2', desc: 'Con alioli', price: '11,00€' },
+                    { icon: '🍹', name: 'Jarra sangría x1', desc: 'Para compartir', price: '16,00€' },
+                    { icon: '🍕', name: 'Pizza grande x1', desc: 'Para picar', price: '18,00€' },
+                    { icon: '🥤', name: 'Mojito x2', desc: 'Con hierbabuena', price: '10,00€' },
                   ].map(p => (
                     <div key={p.name} style={{ background: 'white', borderRadius: 12, padding: 10, marginBottom: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -1009,6 +1014,9 @@ export default function Landing() {
         <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, zIndex: 0 }}>
           <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: mobile ? 50 : 80 }}>
             <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="white" />
+          </svg>
+          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: mobile ? 50 : 80, marginTop: -1 }}>
+            <path d="M0,40 C360,0 1080,80 1440,40 L1440,80 L0,80 Z" fill="white" />
           </svg>
         </div>
         <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative', zIndex: 1 }}>
