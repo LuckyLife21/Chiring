@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { supabase } from './supabase'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
@@ -61,23 +62,17 @@ export default function Pago({ total, apoyoEur = 0, pedidoId, onExito, onVolver 
   useEffect(() => {
     async function crearPago() {
       try {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://rleznycvhifnxvqjfcex.supabase.co'
-        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_GKqQQB9plG-DH9EwC7yOeA_2-oXbQG8'
-        const url = `${supabaseUrl}/functions/v1/crear-pago`
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-          },
-          body: JSON.stringify({ amount: total, pedidoId, apoyoAmount: apoyoEur })
+        const { data, error } = await supabase.functions.invoke('crear-pago', {
+          body: { amount: total, pedidoId, apoyoAmount: apoyoEur },
         })
-        const data = await res.json()
-        if (data.clientSecret) {
+        if (error) {
+          setError(error.message || 'No se pudo iniciar el pago. Inténtalo de nuevo.')
+          return
+        }
+        if (data?.clientSecret) {
           setClientSecret(data.clientSecret)
         } else {
-          setError(data.error || 'No se pudo iniciar el pago. Inténtalo de nuevo.')
+          setError('No se pudo iniciar el pago. Inténtalo de nuevo.')
         }
       } catch (err) {
         setError('Error de conexión: ' + err.message)
