@@ -455,7 +455,20 @@ function Manager({ chiringuito, onVolver }) {
         </div>
       </div>
 
-      {msg && <div style={{background:'#D4EDDA', color:'#155724', padding:'12px 20px', textAlign:'center', fontWeight:700, fontSize:14}}>{msg}</div>}
+      {msg && (
+        <div
+          style={{
+            background: msg.startsWith('⚠️') ? '#FDECEA' : '#D4EDDA',
+            color: msg.startsWith('⚠️') ? '#B71C1C' : '#155724',
+            padding: '12px 20px',
+            textAlign: 'center',
+            fontWeight: 700,
+            fontSize: 14
+          }}
+        >
+          {msg}
+        </div>
+      )}
 
       {(productos.length === 0 || hamacas.length === 0) && (
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '12px 16px', background: 'linear-gradient(135deg,#E0F8FF,#F0F8FF)', borderBottom: '1px solid #00B4D8', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
